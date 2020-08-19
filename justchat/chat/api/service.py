@@ -23,14 +23,15 @@ class CustomListModelMixin(mixins.ListModelMixin):
 
     def get_queryset(self):
         queryset = Chat.objects.all()
-        username = self.request.query_params.get('username')
+        username = self.request.query_params.get('username', None)
 
         if username:
             contact = get_user_contact(username)
             queryset = contact.chats.all()
+            
         return queryset
 
-class PermissionModelCusomViewSet(mixins.CreateModelMixin, 
+class PermissionModelCustomViewSet(mixins.CreateModelMixin, 
                                   mixins.DestroyModelMixin,
                                   mixins.RetrieveModelMixin,
                                   mixins.UpdateModelMixin,
