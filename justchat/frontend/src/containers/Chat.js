@@ -45,7 +45,7 @@ class Chat extends React.Component {
   sendMessageHandler = (e) => {
     e.preventDefault();
     const messageObject = {
-      from: "qwerty",
+      from: this.props.username,
       content: this.state.message,
     };
     WebSocketInstance.newChatMessage(messageObject);
@@ -75,9 +75,9 @@ class Chat extends React.Component {
     const currentUser = this.props.username;
     return messages.map((message, i, arr) => (
       <li
-        key={message.id}
+        key={`${message.id}__${Math.random()}`}
         style={{ marginBottom: arr.length - 1 === i ? '300px' : '15px' }}
-        className={message.author === currentUser ? 'sent' : 'replies'}>
+        className={message.author === currentUser ? 'replies' : 'sent'}>
         <img src="http://emilcarlsson.se/assets/mikeross.png" />
         <p>{message.content}
           <br />
