@@ -1,13 +1,32 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+
+class Contact(models.Model):
+    user = models.ForeignKey(User, related_name='friends', on_delete=models.CASCADE)
+    friends = models.ManyToManyField('self', blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+
 class Message(models.Model):
-    author = models.ForeignKey(User, related_name='author_messages', on_delete=models.CASCADE, null=True)
+    contact = models.ForeignKey(Contact, related_name='messages', on_delete=models.CASCADE, null=True)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.author.username
+        return self.contact.username
+
+
+class Chat(models.Model):
+    participants = models.ManyToManyField(Contact, related_name='chats')
+    messages = models.ManyToManyField(Message, blank=True)
+
+    def __str__(self):
+        return f'{self.pk}'
 
     def last_10_messages():
-        return Message.objects.order_by('-timestamp').all()[:10]
+        return self.messages.objects.order_by('-timestamp').all()[:10]
+

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'corsheaders',
     'channels',
+    'drf_yasg',
     'rest_auth',
     'rest_auth.registration',
     'rest_framework',
