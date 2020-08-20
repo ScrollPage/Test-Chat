@@ -4,7 +4,7 @@ from channels.generic.websocket import WebsocketConsumer
 import json
 
 from .models import Message
-from .service import get_last_10_messages
+from .service import get_last_10_messages, get_user_contact, get_current_chat
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -17,11 +17,13 @@ class ChatConsumer(WebsocketConsumer):
         self.send_message(content)
 
     def new_message(self, data):
-        author = data['from']
-        author_user = User.objects.get(username=author)
+        user_contact = get_user_contact(data['from'])
         message = Message.objects.create(
-            author=author_user, 
+            contact=user_contact,
             content=data['message'])
+        current_chat = get_current_chat(data['chatId'])
+        current_chat.messages.add(message)
+        current_chat.save()
         content = {
             'command': 'new_message',
             'message': self.message_to_json(message)

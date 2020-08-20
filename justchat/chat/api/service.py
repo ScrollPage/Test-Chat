@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
 from chat.models import Chat, Contact
+from chat.service import get_user_contact
 
 class PermissionMixin:
     '''Mixin permission для action'''
@@ -12,11 +13,6 @@ class PermissionMixin:
             return [permission() for permission in self.permission_classes_by_action[self.action]]
         except KeyError:
             return [permission() for permission in self.permission_class]
-
-def get_user_contact(username):
-    user = get_object_or_404(User, username=username)
-    contact = get_object_or_404(Contact, user=user)
-    return contact
 
 class CustomListModelMixin(mixins.ListModelMixin):
     '''Custom list mixin'''
