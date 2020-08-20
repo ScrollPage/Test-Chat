@@ -17,8 +17,8 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.contact.username
+    # def __str__(self):
+    #     return self.contact.username
 
     class Meta:
         verbose_name = 'Сообщение'

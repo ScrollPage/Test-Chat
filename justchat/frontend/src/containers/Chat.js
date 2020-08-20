@@ -3,14 +3,24 @@ import { connect } from 'react-redux';
 import WebSocketInstance from '../websocket';
 
 class Chat extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { message: '' }
 
+  state = { message: '' }
+
+  initialiseChat() {
     this.waitForSocketConnection(() => {
       WebSocketInstance.addCallbacks(this.setMessages.bind(this), this.addMessage.bind(this))
-      WebSocketInstance.fetchMessages(this.props.currentUser);
+      WebSocketInstance.fetchMessages(this.props.currentUser, this.props.match.params.chatID);
     });
+    WebSocketInstance.connect(this.props.match.params.chatID);
+  }
+
+  constructor(props) {
+    super(props);
+    this.initialiseChat();
+  }
+
+  UNSAFE_componentWillReceiveProps() {
+    this.initialiseChat();
   }
 
   waitForSocketConnection(callback) {
@@ -104,36 +114,36 @@ class Chat extends React.Component {
   render() {
     const messages = this.state.messages;
     return (
-        <>
-          <div className="messages">
-            <ul id="chat-log">
-              {
-                messages &&
-                this.renderMessages(messages)
-              }
-              <div style={{ float: "left", clear: "both" }}
-                ref={(el) => { this.messagesEnd = el; }}>
-              </div>
-            </ul>
-          </div>
-          <div className="message-input">
-            <form onSubmit={this.sendMessageHandler}>
-              <div className="wrap">
-                <input
-                  onChange={this.messageChangeHandler}
-                  value={this.state.message}
-                  required
-                  id="chat-message-input"
-                  type="text"
-                  placeholder="Write your message..." />
-                <i className="fa fa-paperclip attachment" aria-hidden="true"></i>
-                <button id="chat-message-submit" className="submit">
-                  <i className="fa fa-paper-plane" aria-hidden="true"></i>
-                </button>
-              </div>
-            </form>
-          </div>
-        </>
+      <>
+        <div className="messages">
+          <ul id="chat-log">
+            {
+              messages &&
+              this.renderMessages(messages)
+            }
+            <div style={{ float: "left", clear: "both" }}
+              ref={(el) => { this.messagesEnd = el; }}>
+            </div>
+          </ul>
+        </div>
+        <div className="message-input">
+          <form onSubmit={this.sendMessageHandler}>
+            <div className="wrap">
+              <input
+                onChange={this.messageChangeHandler}
+                value={this.state.message}
+                required
+                id="chat-message-input"
+                type="text"
+                placeholder="Write your message..." />
+              <i className="fa fa-paperclip attachment" aria-hidden="true"></i>
+              <button id="chat-message-submit" className="submit">
+                <i className="fa fa-paper-plane" aria-hidden="true"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </>
     );
   };
 }
