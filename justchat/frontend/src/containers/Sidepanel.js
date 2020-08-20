@@ -18,7 +18,6 @@ class Sidepanel extends React.Component {
         };
         axios.get(`http://127.0.0.1:8000/api/v1/chat/?username=${username}`)
             .then(res => {
-                console.log(res.data);
                 this.setState({
                     chats: res.data
                 });

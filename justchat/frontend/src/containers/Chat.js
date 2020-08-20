@@ -9,18 +9,22 @@ class Chat extends React.Component {
   initialiseChat() {
     this.waitForSocketConnection(() => {
       WebSocketInstance.addCallbacks(this.setMessages.bind(this), this.addMessage.bind(this))
-      WebSocketInstance.fetchMessages(this.props.currentUser, this.props.match.params.chatID);
+      WebSocketInstance.fetchMessages(this.props.username, this.props.match.params.chatID);
     });
+
     WebSocketInstance.connect(this.props.match.params.chatID);
   }
+
 
   constructor(props) {
     super(props);
     this.initialiseChat();
+    console.log('props');
   }
 
   UNSAFE_componentWillReceiveProps() {
     this.initialiseChat();
+    console.log('new_props')
   }
 
   waitForSocketConnection(callback) {
