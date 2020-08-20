@@ -32,9 +32,6 @@ class Chat(models.Model):
     def __str__(self):
         return f'{self.pk}'
 
-    def last_10_messages():
-        return self.messages.objects.order_by('-timestamp').all()[:10]
-
     class Meta:
         verbose_name = 'Чат'
         verbose_name_plural = 'Чаты'
