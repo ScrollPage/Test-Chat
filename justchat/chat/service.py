@@ -5,7 +5,7 @@ from .models import Chat, Contact
 
 def get_last_10_messages(chat_id):
     chat = get_object_or_404(Chat, id=chat_id)
-    return chat.messages.order_by['-timestamp'].all()[:10]
+    return chat.messages.all().order_by('-timestamp')[:10]
 
 def get_user_contact(username):
     user = get_object_or_404(User, username=username)
