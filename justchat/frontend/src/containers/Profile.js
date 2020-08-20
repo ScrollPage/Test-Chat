@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 class Profile extends React.Component {
+  // ${this.props.match.params.chatID !== undefined ? this.props.match.params.chatID : 'Жопа'}
+  
   render() {
     return (
       <div className="contact-profile">
