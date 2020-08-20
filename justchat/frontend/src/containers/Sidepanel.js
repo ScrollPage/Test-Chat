@@ -63,7 +63,7 @@ class Sidepanel extends React.Component {
             return (
                 <Contact
                     key={chat.id}
-                    name="Harvey Specter"
+                    name={`Чат Номер ${chat.id}`}
                     picURL="http://emilcarlsson.se/assets/louislitt.png"
                     status="busy"
                     chatURL={`/${chat.id}`} />
