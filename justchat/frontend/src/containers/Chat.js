@@ -8,12 +8,8 @@ class Chat extends React.Component {
 
   initialiseChat() {
     this.waitForSocketConnection(() => {
-      WebSocketInstance.addCallbacks(
-        this.setMessages.bind(this), 
-        this.addMessage.bind(this)
-      );
       WebSocketInstance.fetchMessages(
-        this.props.username, 
+        this.props.username,
         this.props.match.params.chatID
       );
     });
@@ -40,14 +36,6 @@ class Chat extends React.Component {
           component.waitForSocketConnection(callback);
         }
       }, 100);
-  }
-
-  addMessage(message) {
-    this.setState({ messages: [...this.state.messages, message] });
-  }
-
-  setMessages(messages) {
-    this.setState({ messages: messages.reverse() });
   }
 
   messageChangeHandler = (event) => {
@@ -121,7 +109,7 @@ class Chat extends React.Component {
       WebSocketInstance.disconnect();
       this.waitForSocketConnection(() => {
         WebSocketInstance.fetchMessages(
-          this.props.username, 
+          this.props.username,
           newProps.match.params.chatID
         );
       });
@@ -131,14 +119,13 @@ class Chat extends React.Component {
   }
 
   render() {
-    const messages = this.state.messages;
     return (
       <>
         <div className="messages">
           <ul id="chat-log">
             {
-              messages &&
-              this.renderMessages(messages)
+              this.props.messages &&
+              this.renderMessages(this.props.messages)
             }
             <div style={{ float: "left", clear: "both" }}
               ref={(el) => { this.messagesEnd = el; }}>
@@ -169,7 +156,8 @@ class Chat extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    username: state.username
+    username: state.auth.username,
+    messages: state.message.messages
   }
 }
 

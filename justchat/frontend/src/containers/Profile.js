@@ -1,10 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 class Profile extends React.Component {
   // ${this.props.match.params.chatID !== undefined ? this.props.match.params.chatID : 'Жопа'}
   
   render() {
+    if(this.props.token === null) {
+      return (
+        <Redirect to="/" />
+      )
+    }
+
     return (
       <div className="contact-profile">
         {
@@ -28,7 +35,8 @@ class Profile extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    username: state.username
+    username: state.auth.username,
+    token: state.auth.token
   }
 }
 

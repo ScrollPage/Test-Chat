@@ -1,39 +1,45 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import * as actions from '../store/actions/auth';
-import Contact from '../components/Contact';
-import axios from 'axios';
+import React from "react";
+import { connect } from "react-redux";
+import * as authActions from "../store/actions/auth";
+import * as navActions from "../store/actions/nav";
+import * as messageActions from "../store/actions/messages";
+import Contact from "../components/Contact";
 
 class Sidepanel extends React.Component {
 
     state = {
         loginForm: true,
-        chats: []
     }
 
-    getUserChats(token, username) {
-        axios.defaults.headers = {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`
-        };
-        axios.get(`http://127.0.0.1:8000/api/v1/chat/?username=${username}`)
-            .then(res => {
-                this.setState({
-                    chats: res.data
-                });
-            });
+    openAddChatPopup() {
+        this.props.addChat();
+    }
+
+    waitForAuthDetails() {
+        const component = this;
+        setTimeout(function () {
+            if (
+                component.props.token !== null &&
+                component.props.token !== undefined
+            ) {
+                component.props.getUserChats(
+                    component.props.username,
+                    component.props.token
+                );
+                return;
+            } else {
+                console.log("waiting for aut details...");
+                component.waitForAuthDetails();
+            }
+        }, 100);
     }
 
     componentDidMount() {
-        if (this.props.token !== null && this.props.username !== null) {
-            this.getUserChats(this.props.token, this.props.username);
-        }
+        this.waitForAuthDetails();
     }
 
-    UNSAFE_componentWillReceiveProps(newProps) {
-        if (newProps.token !== null && newProps.username !== null) {
-            this.getUserChats(newProps.token, newProps.username);
-        }
+    componentDidMount() {
+        this.waitForAuthDetails();
     }
 
     changeForm = () => {
@@ -59,7 +65,7 @@ class Sidepanel extends React.Component {
 
     render() {
 
-        const activeChats = this.state.chats.map(chat => {
+        const activeChats = this.props.chats.map(chat => {
             return (
                 <Contact
                     key={chat.id}
@@ -134,11 +140,17 @@ class Sidepanel extends React.Component {
                 </div>
                 <div id="contacts">
                     <ul>
-                        {activeChats}
+                        {this.props.token === null ? <p style={{textAlign: 'center', marginTop: '30px'}}>У вас нет Чатов</p> : activeChats }
                     </ul>
                 </div>
                 <div id="bottom-bar">
-                    <button id="addcontact"><i className="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Add contact</span></button>
+                    <button
+                        id="addcontact"
+                        onClick={() => this.openAddChatPopup()}
+                    >
+                        <i className="fa fa-user-plus fa-fw" aria-hidden="true" />
+                        <span>Add contact</span>
+                    </button>
                     <button id="settings"><i className="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
                 </div>
             </div>
@@ -148,18 +160,21 @@ class Sidepanel extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        isAuthenticated: state.token !== null,
-        loading: state.loading,
-        token: state.token,
-        username: state.username
+        isAuthenticated: state.auth.token !== null,
+        loading: state.auth.loading,
+        token: state.auth.token,
+        username: state.auth.username,
+        chats: state.message.chats
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        login: (userName, password) => dispatch(actions.authLogin(userName, password)),
-        logout: () => dispatch(actions.logout()),
-        signup: (username, email, password1, password2) => dispatch(actions.authSignup(username, email, password1, password2)),
+        login: (userName, password) => dispatch(authActions.authLogin(userName, password)),
+        logout: () => dispatch(authActions.logout()),
+        signup: (username, email, password1, password2) => dispatch(authActions.authSignup(username, email, password1, password2)),
+        addChat: () => dispatch(navActions.openAddChatPopup()),
+        getUserChats: (username, token) => dispatch(messageActions.getUserChats(username, token))
     }
 }
 
