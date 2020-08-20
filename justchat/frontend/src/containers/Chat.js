@@ -8,10 +8,15 @@ class Chat extends React.Component {
 
   initialiseChat() {
     this.waitForSocketConnection(() => {
-      WebSocketInstance.addCallbacks(this.setMessages.bind(this), this.addMessage.bind(this))
-      WebSocketInstance.fetchMessages(this.props.username, this.props.match.params.chatID);
+      WebSocketInstance.addCallbacks(
+        this.setMessages.bind(this), 
+        this.addMessage.bind(this)
+      );
+      WebSocketInstance.fetchMessages(
+        this.props.username, 
+        this.props.match.params.chatID
+      );
     });
-
     WebSocketInstance.connect(this.props.match.params.chatID);
   }
 
@@ -20,11 +25,6 @@ class Chat extends React.Component {
     super(props);
     this.initialiseChat();
     console.log('props');
-  }
-
-  UNSAFE_componentWillReceiveProps() {
-    this.initialiseChat();
-    console.log('new_props')
   }
 
   waitForSocketConnection(callback) {
@@ -114,6 +114,20 @@ class Chat extends React.Component {
 
   componentDidUpdate() {
     this.scrollToBottom();
+  }
+
+  UNSAFE_componentWillReceiveProps(newProps) {
+    if (this.props.match.params.chatID !== newProps.match.params.chatID) {
+      WebSocketInstance.disconnect();
+      this.waitForSocketConnection(() => {
+        WebSocketInstance.fetchMessages(
+          this.props.username, 
+          newProps.match.params.chatID
+        );
+      });
+      WebSocketInstance.connect(newProps.match.params.chatID);
+    }
+    console.log('new_props')
   }
 
   render() {

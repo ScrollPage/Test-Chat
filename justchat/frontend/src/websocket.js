@@ -37,6 +37,10 @@ class WebSocketService {
     };
   }
 
+  disconnect() {
+    this.socketRef.close();
+  }
+
   socketNewMessage(data) {
     const parsedData = JSON.parse(data);
     const command = parsedData.command;
@@ -52,11 +56,20 @@ class WebSocketService {
   }
 
   fetchMessages(username, chatId) {
-    this.sendMessage({ command: 'fetch_messages', username: username, chatId: chatId });
+    this.sendMessage({ 
+      command: 'fetch_messages', 
+      username: username, 
+      chatId: chatId 
+    });
   }
 
   newChatMessage(message) {
-    this.sendMessage({ command: 'new_message', from: message.from, message: message.content, chatId: message.chatId }); 
+    this.sendMessage({ 
+      command: 'new_message', 
+      from: message.from, 
+      message: message.content, 
+      chatId: message.chatId 
+    }); 
   }
 
   addCallbacks(messagesCallback, newMessageCallback) {
