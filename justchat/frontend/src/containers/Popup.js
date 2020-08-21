@@ -11,7 +11,9 @@ class AddChatModal extends React.Component {
           visible={this.props.isVisible}
           onCancel={this.props.close}
         >
-          {this.props.children}
+          <div style={{margin: '60px'}}>
+            {this.props.children}
+          </div> 
         </Modal>
       </>
     );
