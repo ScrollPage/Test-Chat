@@ -5,8 +5,11 @@ import { openAddChatPopup } from '../store/actions/nav';
 import { getUserChats } from '../store/actions/messages';
 import { authLogin, logout, authSignup } from '../store/actions/auth';
 import WebSocketInstance from '../websocket';
+import useReactRouter from 'use-react-router'
 
 const Sidepanel = () => {
+
+    const { match } = useReactRouter();
 
     const isAuthenticated = useSelector(state => state.auth.token !== null);
     const loading = useSelector(state => state.auth.loading);
@@ -33,8 +36,10 @@ const Sidepanel = () => {
     }
 
     const logoutHandler = () => {
-        WebSocketInstance.disconnect();
-        dispatch(logout());
+        if (match.params.chatID !== undefined && match.params.chatID !== null) {
+            WebSocketInstance.disconnect();
+        }
+        dispatch(logout()); 
     }
 
     const authenticate = (e) => {

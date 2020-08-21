@@ -182,7 +182,6 @@ const Chat = () => {
   }, [messages]);
 
   useEffect(() => {
-    console.log('new_props');
     initialiseChat();
     return () => {
       WebSocketInstance.disconnect();
