@@ -24,10 +24,12 @@ class ChatSerializer(serializers.ModelSerializer):
         fields = '__all__'
     
     def create(self, validated_data):
+        participants = self.data.get('participants', None)
+        print(participants)
         chat = Chat()
         chat.save()
-        for username in self.data.get('participants', None):
+        for username in participants:
             contact = get_user_contact(username)
-            chat.participants.add(contact)
+            chat.participants.add(contact.id)
         chat.save()
         return chat

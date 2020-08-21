@@ -23,7 +23,10 @@ class CustomListModelMixin(mixins.ListModelMixin):
 
         if username:
             contact = get_user_contact(username)
-            queryset = contact.chats.all()
+            try:
+                queryset = contact.chats.all()
+            except AttributeError:
+                queryset = []
             
         return queryset
 
