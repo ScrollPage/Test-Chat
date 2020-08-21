@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { openAddChatPopup } from '../store/actions/nav';
 import { getUserChats } from '../store/actions/messages';
 import { authLogin, logout, authSignup } from '../store/actions/auth';
+import WebSocketInstance from '../websocket';
 
 const Sidepanel = () => {
 
@@ -18,24 +19,10 @@ const Sidepanel = () => {
     const [loginForm, setLoginForm] = useState(true);
 
     useEffect(() => {
-        let period = 0;
-        waitForAuthDetails(period);
-    })
-
-    const waitForAuthDetails = (period) => {
-        let newPeriod = period + 1;
-        if (period < 10) {
-            setTimeout(() => {
-                if (token !== null && token !== undefined) {
-                    dispatch(getUserChats(username, token));
-                    return;
-                } else {
-                    console.log("waiting for auth details...");
-                    waitForAuthDetails(newPeriod);
-                }
-            }, 100);
-        }
-    }
+        if (token !== null && token !== undefined) {
+            dispatch(getUserChats(username, token));
+        } 
+    }, [token])
 
     const addChat = () => {
         dispatch(openAddChatPopup());
@@ -46,6 +33,7 @@ const Sidepanel = () => {
     }
 
     const logoutHandler = () => {
+        WebSocketInstance.disconnect();
         dispatch(logout());
     }
 
