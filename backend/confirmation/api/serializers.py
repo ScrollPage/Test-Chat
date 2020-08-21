@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
+from confirmation.models import MyToken
+
 class CreateUserSerializer(serializers.ModelSerializer):
     '''Создание пользоватля'''
     class Meta:
@@ -19,3 +21,9 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+class TokenSerializer(serializers.ModelSerializer):
+    '''Сериализация токена'''
+    class Meta:
+        model = MyToken
+        fields = ['token']
