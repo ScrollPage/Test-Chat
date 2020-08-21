@@ -28,10 +28,10 @@ class CustomListModelMixin(mixins.ListModelMixin):
         return queryset
 
 class PermissionModelCustomViewSet(mixins.CreateModelMixin, 
-                                  mixins.DestroyModelMixin,
-                                  mixins.RetrieveModelMixin,
-                                  mixins.UpdateModelMixin,
-                                  PermissionMixin,
-                                  CustomListModelMixin,
-                                  GenericViewSet):
+                                   mixins.DestroyModelMixin,
+                                   mixins.RetrieveModelMixin,
+                                   mixins.UpdateModelMixin,
+                                   PermissionMixin,
+                                   CustomListModelMixin,
+                                   GenericViewSet):
     '''Model viewset с переделанный list методом'''
