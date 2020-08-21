@@ -1,43 +1,36 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-class Profile extends React.Component {
-  // ${this.props.match.params.chatID !== undefined ? this.props.match.params.chatID : 'Жопа'}
-  
-  render() {
-    if(this.props.token === null) {
-      return (
-        <Redirect to="/" />
-      )
-    }
+export const Profile = () => {
 
+  const token = useSelector(state => state.auth.token);
+  const username = useSelector(state => state.auth.username);
+
+  if (token === null) {
     return (
-      <div className="contact-profile">
-        {
-          this.props.username !== null ?
-            <>
-              <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-              <p>{this.props.username}</p>
-              <div className="social-media">
-                <i className="fa fa-facebook" aria-hidden="true"></i>
-                <i className="fa fa-twitter" aria-hidden="true"></i>
-                <i className="fa fa-instagram" aria-hidden="true"></i>
-              </div>
-            </>
-            :
-            null
-        }
-      </div>
+      <Redirect to="/" />
     )
   }
+
+  return (
+    <div className="contact-profile">
+      {
+        username !== null ?
+          <>
+            <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
+            <p>{username}</p>
+            <div className="social-media">
+              <i className="fa fa-facebook" aria-hidden="true"></i>
+              <i className="fa fa-twitter" aria-hidden="true"></i>
+              <i className="fa fa-instagram" aria-hidden="true"></i>
+            </div>
+          </>
+          :
+          null
+      }
+    </div>
+  )
 }
 
-const mapStateToProps = state => {
-  return {
-    username: state.auth.username,
-    token: state.auth.token
-  }
-}
-
-export default connect(mapStateToProps)(Profile); 
+export default Profile; 

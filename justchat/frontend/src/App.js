@@ -15,14 +15,11 @@ class App extends React.Component {
 
   componentDidMount() {
     this.props.onTryAutoSignup();
+    WebSocketInstance.addCallbacks(this.props.setMessages.bind(this), this.props.addMessage.bind(this));
   }
 
   constructor(props) {
     super(props);
-    WebSocketInstance.addCallbacks(
-      this.props.setMessages.bind(this),
-      this.props.addMessage.bind(this)
-    );
   }
 
   render() {
@@ -31,7 +28,7 @@ class App extends React.Component {
         <div id="frame">
           <Sidepanel />
           <div className="content">
-            <AddChatModal 
+            <AddChatModal
               isVisible={this.props.showAddChatPopup}
               close={() => this.props.closeAddChatPopup()}
             >
@@ -62,4 +59,58 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App); 
+export default connect(mapStateToProps, mapDispatchToProps)(App);
+
+
+// import React, { useEffect } from 'react';
+// import { useSelector, useDispatch } from 'react-redux';
+// import { closeAddChatPopup } from './store/actions/nav';
+// import { setMessages, addMessage } from './store/actions/messages';
+// import { authCheckState } from './store/actions/auth';
+// import WebSocketInstance from './websocket';
+// import { BrowserRouter as Router } from 'react-router-dom';
+// import BaseRouter from './routes';
+// import Sidepanel from './containers/Sidepanel';
+// import Profile from './containers/Profile';
+// import AddChatModal from './containers/Popup';
+// import AddChatForm from './containers/Form';
+
+// const App = () => {
+
+//   const showAddChatPopup = useSelector(state => state.nav.showAddChatPopup);
+
+//   const dispatch = useDispatch();
+
+//   const setMessagesHandler = () => {
+//     dispatch(setMessages);
+//   }
+
+//   const addMessageHandler = () => {
+//     dispatch(addMessage);
+//   }
+
+//   useEffect(() => {
+//     dispatch(authCheckState());
+//     WebSocketInstance.addCallbacks(setMessagesHandler.bind(this), addMessageHandler.bind(this));
+//   }, []);
+
+//   return (
+//     <Router>
+//       <div id="frame">
+//         <Sidepanel />
+//         <div className="content">
+//           <AddChatModal
+//             isVisible={showAddChatPopup}
+//             close={() => dispatch(closeAddChatPopup())}
+//           >
+//             <AddChatForm />
+//           </AddChatModal>
+//           <Profile />
+//           <BaseRouter />
+//         </div>
+//       </div>
+//     </Router>
+//   );
+// }
+
+// export default App;
