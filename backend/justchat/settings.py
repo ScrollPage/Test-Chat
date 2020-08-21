@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'corsheaders',
     'channels',
+    'djoser',
     'drf_yasg',
     # 'rest_auth',
     # 'rest_auth.registration',
@@ -199,3 +200,12 @@ SIMPLE_JWT = {
 #Domens
 DJANGO_DOMEN = 'http://127.0.0.1:8000'
 REACT_DOMEN = 'http://127.0.0.1:1234'
+
+#Djoser
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+    'SERIALIZERS': {},
+}
