@@ -66,7 +66,7 @@ const Sidepanel = () => {
                 name={`Чат Номер ${chat.id}`}
                 picURL="http://emilcarlsson.se/assets/louislitt.png"
                 status="busy"
-                chatURL={`/${chat.id}`} />
+                chatURL={`/chat/${chat.id}`} />
         )
     })
 

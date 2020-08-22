@@ -6,7 +6,7 @@ import { Redirect } from 'react-router';
 
 const AccountActivation = () => {
 
-  const { location, history, match } = useReactRouter();
+  const { location } = useReactRouter();
 
   const [redirect, setRedirect] = useState(false);
 

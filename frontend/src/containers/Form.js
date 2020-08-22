@@ -39,7 +39,6 @@ const AddChatForm = () => {
 
   const onFinish = values => {
     const combinedUsers = [...usernames, username];
-    console.log(combinedUsers);
     axios.defaults.headers = {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`
