@@ -6,6 +6,9 @@ export const AUTH_LOGOUT = "AUTH_LOGOUT";
 export const OPEN_ADD_CHAT_POPUP = "OPEN_ADD_CHAT_POPUP";
 export const CLOSE_ADD_CHAT_POPUP = "CLOSE_ADD_CHAT_POPUP";
 
+export const OPEN_ALERT = "OPEN_ALERT";
+export const CLOSE_ALERT = "CLOSE_ALERT";
+
 export const ADD_MESSAGE = "ADD_MESSAGE";
 export const SET_MESSAGES = "SET_MESSAGES";
 export const GET_CHATS_SUCCESS = "GET_CHATS_SUCCESS";

@@ -5,10 +5,10 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import 'antd/dist/antd.css';
 import App from './App';
-import 'antd/dist/antd.css'; 
 import authReducer from './store/reducers/auth';
 import navReducer from './store/reducers/nav';
 import messageReducer from './store/reducers/messages';
+import alertReducer from './store/reducers/alert';
 
 const composeEnhances = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
@@ -17,7 +17,8 @@ function configureStore() {
   const rootReducer = combineReducers({
     auth: authReducer,
     nav: navReducer,
-    message: messageReducer
+    message: messageReducer,
+    alert: alertReducer
   });
 
   const store = createStore(rootReducer, composeEnhances(

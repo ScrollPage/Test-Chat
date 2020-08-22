@@ -1,18 +1,3 @@
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: #27ae60;
-  font-family: "proxima-nova", "Source Sans Pro", sans-serif;
-  font-size: 1em;
-  letter-spacing: 0.1px;
-  color: #32465a;
-  text-rendering: optimizeLegibility;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  -webkit-font-smoothing: antialiased;
-}
-
 #frame {
   width: 100%;
   min-width: 360px;
@@ -298,7 +283,6 @@ position: absolute;
 margin: 10px 0 0 20px;
 }
 #frame #sidepanel #search input {
-font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
 padding: 10px 0 10px 46px;
 width: calc(100% - 25px);
 border: none;
@@ -454,7 +438,6 @@ background: #32465a;
 color: #f5f5f5;
 cursor: pointer;
 font-size: 0.85em;
-font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
 }
 @media screen and (max-width: 735px) {
 #frame #sidepanel #bottom-bar button {
@@ -614,7 +597,6 @@ z-index: 99;
 position: relative;
 }
 #frame .content .message-input .wrap input {
-font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
 float: left;
 border: none;
 width: calc(100% - 90px);
@@ -686,7 +668,6 @@ background: #32465a;
 color: #f5f5f5;
 cursor: pointer;
 font-size: 0.85em;
-font-family: "proxima-nova", "Source Sans Pro", sans-serif;
 margin-bottom: 6px;
 border-radius: 3px;
 padding: 7px;

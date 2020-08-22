@@ -3,6 +3,10 @@ import { useSelector } from 'react-redux';
 import useReactRouter from 'use-react-router'
 import WebSocketInstance from '../websocket';
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
+import styled from 'styled-components';
+import ChatItem from '../components/Chat/ChatItem';
+import ChatInput from '../components/Chat/ChatInput';
+import ChatHeader from '../components/Chat/ChatHeader';
 
 const Chat = () => {
 
@@ -66,69 +70,49 @@ const Chat = () => {
     messagesEnd.scrollIntoViewIfNeeded({ behavior: "smooth" });
   }
 
-  const renderTimestamp = timestamp => {
-    let prefix = '';
-    const timeDiff = Math.round((new Date().getTime() - new Date(timestamp).getTime()) / 60000);
-    if (timeDiff < 1) { // less than one minute ago
-      prefix = 'just now...';
-    } else if (timeDiff < 60 && timeDiff > 1) { // less than sixty minutes ago
-      prefix = `${timeDiff} minutes ago`;
-    } else if (timeDiff < 24 * 60 && timeDiff > 60) { // less than 24 hours ago
-      prefix = `${Math.round(timeDiff / 60)} hours ago`;
-    } else if (timeDiff < 31 * 24 * 60 && timeDiff > 24 * 60) { // less than 7 days ago
-      prefix = `${Math.round(timeDiff / (60 * 24))} days ago`;
-    } else {
-      prefix = `${new Date(timestamp)}`;
-    }
-    return prefix
-  }
-
   const renderMessages = () => {
     return messages.map((message, i, arr) => (
-      <li
+      <ChatItem
         key={`${message.id}__${Math.random()}`}
-        style={{ marginBottom: arr.length - 1 === i ? '300px' : '15px' }}
-        className={message.author === username ? 'replies' : 'sent'}>
-        <img src="http://emilcarlsson.se/assets/mikeross.png" />
-        <p>{message.content}
-          <br />
-          <small>
-            {renderTimestamp(message.timestamp)}
-          </small>
-        </p>
-      </li>
+        name={message.author}
+        time={message.timestamp}
+        message={message.content}
+        isUsername={message.author === username ? true : false}
+      />
     ));
   }
 
   return (
-    <>
-      <div className="messages">
-        <ul id="chat-log">
+    <StyledChat>
+      <ChatHeader />
+      <StyledChatInner>
+        <ul>
           {messages && renderMessages(messages)}
-          <div style={{ float: "left", clear: "both" }}
-            ref={el => messagesEnd = el}>
-          </div>
         </ul>
+      </StyledChatInner>
+      <ChatInput
+        sendMessage={sendMessageHandler}
+        messageChange={messageChangeHandler}
+        message={message}
+      />
+      <div style={{ float: "left", clear: "both" }}
+        ref={el => messagesEnd = el}>
       </div>
-      <div className="message-input">
-        <form onSubmit={sendMessageHandler}>
-          <div className="wrap">
-            <input
-              onChange={messageChangeHandler}
-              value={message}
-              required
-              id="chat-message-input"
-              type="text"
-              placeholder="Write your message..." />
-            <i className="fa fa-paperclip attachment" aria-hidden="true"></i>
-            <button id="chat-message-submit" className="submit">
-              <i className="fa fa-paper-plane" aria-hidden="true"></i>
-            </button>
-          </div>
-        </form>
-      </div>
-    </>
+    </StyledChat>
   );
 }
 
 export default Chat;
+
+const StyledChat = styled.div`
+  position: relative;
+  height: auto;
+  max-height: calc(100vh - 80px);
+  min-height: calc(100vh - 80px);
+  /* overflow-y: scroll; */
+  overflow-x: hidden;
+`;
+
+const StyledChatInner = styled.div`
+  /* height: 100%; */
+`;

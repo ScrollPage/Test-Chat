@@ -5,11 +5,11 @@ import * as authActions from './store/actions/auth';
 import * as navActions from './store/actions/nav';
 import * as messagesActions from './store/actions/messages';
 import BaseRouter from './routes';
-import Sidepanel from './containers/Sidepanel';
-import Profile from './containers/Profile';
 import AddChatModal from './containers/Popup';
 import AddChatForm from './containers/Form';
 import WebSocketInstance from './websocket';
+import { Alert } from './components/Alert';
+import Layout from './components/Layout/Layout';
 
 class App extends React.Component {
 
@@ -22,22 +22,34 @@ class App extends React.Component {
     super(props);
   }
 
+  //   render() {
+  //     return (
+  //       <Router>
+  //         <div id="frame">
+  //           <Sidepanel />
+  //           <div className="content">
+  //             <AddChatModal
+  //               isVisible={this.props.showAddChatPopup}
+  //               close={() => this.props.closeAddChatPopup()}
+  //             >
+  //               <AddChatForm />
+  //             </AddChatModal>
+  //             <Profile />
+  //             <BaseRouter />
+  //           </div>
+  //         </div>
+  //       </Router>
+  //     );
+  //   };
+  // }
+
   render() {
     return (
       <Router>
-        <div id="frame">
-          <Sidepanel />
-          <div className="content">
-            <AddChatModal
-              isVisible={this.props.showAddChatPopup}
-              close={() => this.props.closeAddChatPopup()}
-            >
-              <AddChatForm />
-            </AddChatModal>
-            <Profile />
-            <BaseRouter />
-          </div>
-        </div>
+        <Layout>
+          <Alert />
+          <BaseRouter />
+        </Layout>
       </Router>
     );
   };

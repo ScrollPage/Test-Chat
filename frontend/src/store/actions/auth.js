@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as actionTypes from './actionTypes';
+import { openAlert } from './alert';
 
 export const authStart = () => {
   return {
@@ -54,25 +55,27 @@ export const authLogin = (username, password) => {
         localStorage.setItem('expirationDate', expirationDate);
         dispatch(authSuccess(username, token));
         dispatch(checkAuthTimeout(3600));
+        dispatch(openAlert('Вы успешно вошли!', 'success'));
       })
       .catch(err => {
-        dispatch(authFail(err))
+        dispatch(authFail(err));
+        dispatch(openAlert('Неверный логин или пароль!', 'warning'));
       })
   }
 }
 
-export const authSignup = (username, email, password1, password2) => {
+export const authSignup = (username, email, password) => {
   return dispatch => {
     axios.post('http://127.0.0.1:8000/api/v1/register/ ', {
       username: username,
       email: email,
-      password: password1
+      password: password
     })
       .then(res => {
-        alert('На ваш E-mail пришло письмо. Ебитесь!');
+        dispatch(openAlert('На ваш E-mail пришло подтверждение!', 'success'));
       })
       .catch(err => {
-        alert('Что-то с вашими данными не так!');
+        dispatch(openAlert('Что-то пошло не так!', 'warning'));
       })
   }
 }
