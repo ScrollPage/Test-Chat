@@ -1,21 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { authActivate } from '../store/actions/auth';
-import useReactRouter from 'use-react-router'
+import useReactRouter from 'use-react-router';
+import { Redirect } from 'react-router';
 
 const AccountActivation = () => {
 
-  const { match } = useReactRouter();
+  const { location, history, match } = useReactRouter();
+
+  const [redirect, setRedirect] = useState(false);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(authActivate(match.params.token));
-  }, [])
+    if (new URLSearchParams(location.search).get("token") !== null 
+    && new URLSearchParams(location.search).get("token") !== undefined) {
+      dispatch(authActivate(new URLSearchParams(location.search).get("token")));
+      setTimeout(() => {
+        setRedirect(true);
+      }, 5000)
+    }
+  }, [location.search])
+
+  if (redirect) {
+    return (
+      <Redirect to="/" />
+    )
+  }
 
   return (
     <div>
-      Привет 
+      Через 5 секунд тебя перенаправит на сайт! 
     </div>
   );
 }

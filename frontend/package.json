@@ -27,6 +27,7 @@
     "redux-thunk": "^2.3.0",
     "scroll-into-view-if-needed": "^2.2.25",
     "socket.io-client": "^2.3.0",
+    "store": "^2.0.12",
     "use-react-router": "^1.0.7"
   },
   "description": ""

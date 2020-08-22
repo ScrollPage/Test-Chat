@@ -6,7 +6,7 @@ import AccountActivation from "./containers/AccountActivation";
 
 const BaseRouter = () => (
   <>
-     <Route exact path="/:chatID/" component={Chat} />
+     <Route exact path="chat/:chatID/" component={Chat} />
      <Route exact path="/account-activation" component={AccountActivation} />
   </>
 );

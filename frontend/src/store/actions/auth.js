@@ -42,12 +42,12 @@ export const checkAuthTimeout = expirationTime => {
 export const authLogin = (username, password) => {
   return dispatch => {
     dispatch(authStart());
-    axios.post('http://127.0.0.1:8000/rest-auth/login/', {
+    axios.post('http://127.0.0.1:8000/auth/jwt/create', {
       username: username,
       password: password
     })
       .then(res => {
-        const token = res.data.key;
+        const token = res.data.access;
         const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
         localStorage.setItem('token', token);
         localStorage.setItem('username', username);
@@ -63,7 +63,6 @@ export const authLogin = (username, password) => {
 
 export const authSignup = (username, email, password1, password2) => {
   return dispatch => {
-    dispatch(authStart());
     axios.post('http://127.0.0.1:8000/api/v1/register/ ', {
       username: username,
       email: email,
@@ -73,7 +72,7 @@ export const authSignup = (username, email, password1, password2) => {
         alert('На ваш E-mail пришло письмо. Ебитесь!');
       })
       .catch(err => {
-        dispatch(authFail(err))
+        alert('Что-то с вашими данными не так!');
       })
   }
 }
@@ -110,3 +109,4 @@ export const authActivate = (token) => {
       })
   }
 }
+
