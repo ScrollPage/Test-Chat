@@ -64,20 +64,13 @@ export const authLogin = (username, password) => {
 export const authSignup = (username, email, password1, password2) => {
   return dispatch => {
     dispatch(authStart());
-    axios.post('http://127.0.0.1:8000/rest-auth/registration/', {
+    axios.post('http://127.0.0.1:8000/api/v1/register/ ', {
       username: username,
       email: email,
-      password1: password1,
-      password2: password2
+      password: password1
     })
       .then(res => {
-        const token = res.data.key;
-        const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
-        localStorage.setItem('token', token);
-        localStorage.setItem('username', username);
-        localStorage.setItem('expirationDate', expirationDate);
-        dispatch(authSuccess(username, token));
-        dispatch(checkAuthTimeout(3600));
+        alert('На ваш E-mail пришло письмо. Ебитесь!');
       })
       .catch(err => {
         dispatch(authFail(err))
@@ -100,5 +93,20 @@ export const authCheckState = () => {
         dispatch(checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000));
       }
     }
+  }
+}
+
+export const authActivate = (token) => {
+  return dispatch => {
+    axios.post('http://127.0.0.1:8000/api/v1/activate/ ', {
+      token: token
+    })
+      .then(res => {
+        console.log(res);
+        console.log('Актвация прошла успешно');
+      })
+      .catch(err => {
+        console.leg('Ошибка активации');
+      })
   }
 }
