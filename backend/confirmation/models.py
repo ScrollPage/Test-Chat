@@ -32,7 +32,7 @@ def send_conf_mail(sender, instance=None, created=False, **kwargs):
             )
             send_mail(
                 "Подтверждение регистрации",
-                f"Перейдите по ссылке, чтобы завершить регистрацию: http://{settings.REACT_DOMEN}/account-activation/?token={m.token}",
+                f"Перейдите по ссылке, чтобы завершить регистрацию: {settings.REACT_DOMEN}/account-activation/?token={m.token}",
                 settings.EMAIL_HOST_USER, 
                 [instance.email, ], 
                 fail_silently=False
