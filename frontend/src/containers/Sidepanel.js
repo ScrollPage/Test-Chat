@@ -9,7 +9,7 @@ import useReactRouter from 'use-react-router'
 
 const Sidepanel = () => {
 
-    const { match } = useReactRouter();
+    const { match, history } = useReactRouter();
 
     const isAuthenticated = useSelector(state => state.auth.token !== null);
     const loading = useSelector(state => state.auth.loading);
@@ -40,6 +40,7 @@ const Sidepanel = () => {
             WebSocketInstance.disconnect();
         }
         dispatch(logout()); 
+        history.push('/');
     }
 
     const authenticate = (e) => {

@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { authActivate } from '../store/actions/auth';
 import useReactRouter from 'use-react-router';
-import { Redirect } from 'react-router';
 
 const AccountActivation = () => {
 
-  const { location } = useReactRouter();
-
-  const [redirect, setRedirect] = useState(false);
+  const { location, history } = useReactRouter();
 
   const dispatch = useDispatch();
 
@@ -17,16 +14,10 @@ const AccountActivation = () => {
     && new URLSearchParams(location.search).get("token") !== undefined) {
       dispatch(authActivate(new URLSearchParams(location.search).get("token")));
       setTimeout(() => {
-        setRedirect(true);
+        history.push('/');
       }, 5000)
     }
   }, [location.search])
-
-  if (redirect) {
-    return (
-      <Redirect to="/" />
-    )
-  }
 
   return (
     <div>
