@@ -15,9 +15,10 @@ class RegistrationView(generics.CreateAPIView):
     serializer_class = CreateUserSerializer
     permission_classes = [permissions.AllowAny, ]
 
-class UserConfirmationView(generics.GenericAPIView):
+class UserActivationView(generics.GenericAPIView):
     '''Подтверждение аккаунта пользователя'''
     serializer_class = TokenSerializer
+    permission_classes = [permissions.AllowAny, ]
 
     def post(self, request):
         token = request.data['token']

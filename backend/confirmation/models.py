@@ -32,7 +32,7 @@ def send_conf_mail(sender, instance=None, created=False, **kwargs):
             )
             send_mail(
                 "Подтверждение регистрации",
-                # f"Перейдите по ссылке, чтобы завершить регистрацию: {settings.DJANGO_DOMEN}/account/authorization_confirm/{m.token}",s
+                f"Перейдите по ссылке, чтобы завершить регистрацию: {settings.DJANGO_DOMEN}/account/authorization_confirm/{m.token}",
                 settings.EMAIL_HOST_USER, 
                 [instance.email, ], 
                 fail_silently=False
