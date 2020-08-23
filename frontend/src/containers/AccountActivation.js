@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { authActivate } from '../store/actions/auth';
 import useReactRouter from 'use-react-router';
+import styled from 'styled-components';
 
 const AccountActivation = () => {
 
@@ -20,10 +21,17 @@ const AccountActivation = () => {
   }, [location.search])
 
   return (
-    <div>
-      Через 5 секунд тебя перенаправит на сайт! 
-    </div>
+    <StyledAccountActivation>
+      <h1>Через 5 секунд тебя перенаправит на сайт!</h1> 
+    </StyledAccountActivation>
   );
 }
 
 export default AccountActivation;
+
+const StyledAccountActivation = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+

@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import ChatItem from '../components/Chat/ChatItem';
 import ChatInput from '../components/Chat/ChatInput';
 import ChatHeader from '../components/Chat/ChatHeader';
+import CustomScroll from 'react-custom-scroll';
 
 const Chat = () => {
 
@@ -86,9 +87,7 @@ const Chat = () => {
     <StyledChat>
       <ChatHeader />
       <StyledChatInner>
-        <ul>
-          {messages && renderMessages(messages)}
-        </ul>
+        {messages && renderMessages(messages)}
       </StyledChatInner>
       <ChatInput
         sendMessage={sendMessageHandler}
@@ -109,8 +108,18 @@ const StyledChat = styled.div`
   height: auto;
   max-height: calc(100vh - 80px);
   min-height: calc(100vh - 80px);
-  /* overflow-y: scroll; */
+  overflow-y: scroll;
   overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 1em;
+    background-color: #F5F5F5;
+  }
+  &::-webkit-scrollbar-track {
+    height: 90%;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #1890ff;
+  }
 `;
 
 const StyledChatInner = styled.div`

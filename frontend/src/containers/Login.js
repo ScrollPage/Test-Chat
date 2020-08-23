@@ -52,54 +52,52 @@ const Login = () => {
 
   return (
     <StyledLogin>
-      <div>
-        <div className="log__top">
-          <h3>Войти в аккаунт</h3>
-          <p>Пожалуйста войдите в свой аккаунт</p>
-        </div>
-        <Form onFinish={handleSubmit}>
-          <Form.Item
-            name="username"
-            hasFeedback
-            help={errorMessege(touched.username, errors.username)}
-            validateStatus={!touched.username ? null : errors.username ? "error" : "success"}
-          >
-            <Input
-              id="log__username"
-              name="username"
-              size="large"
-              placeholder="E-mail"
-              prefix={<UserOutlined />}
-              value={values.username}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            hasFeedback
-            help={errorMessege(touched.password, errors.password)}
-            validateStatus={!touched.password ? null : errors.password ? "error" : "success"}
-          >
-            <Input.Password
-              id="log__password"
-              name="password"
-              size="large"
-              placeholder="Пароль"
-              prefix={<LockOutlined />}
-              value={values.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-          </Form.Item>
-          <Form.Item >
-            <Button type="primary" htmlType="submit" size="large" disabled={isSubmitting}>
-              Войти в аккаунт
-            </Button>
-          </Form.Item>
-        </Form>
-        <Link to='/register'><p>Зарегистрироваться</p></Link>
+      <div className="log__top">
+        <h3>Войти в аккаунт</h3>
+        <p>Пожалуйста войдите в свой аккаунт</p>
       </div>
+      <Form onFinish={handleSubmit}>
+        <Form.Item
+          name="username"
+          hasFeedback
+          help={errorMessege(touched.username, errors.username)}
+          validateStatus={!touched.username ? null : errors.username ? "error" : "success"}
+        >
+          <Input
+            id="log__username"
+            name="username"
+            size="large"
+            placeholder="E-mail"
+            prefix={<UserOutlined />}
+            value={values.username}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          hasFeedback
+          help={errorMessege(touched.password, errors.password)}
+          validateStatus={!touched.password ? null : errors.password ? "error" : "success"}
+        >
+          <Input.Password
+            id="log__password"
+            name="password"
+            size="large"
+            placeholder="Пароль"
+            prefix={<LockOutlined />}
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+        </Form.Item>
+        <Form.Item >
+          <Button type="primary" htmlType="submit" size="large" disabled={isSubmitting}>
+            Войти в аккаунт
+            </Button>
+        </Form.Item>
+      </Form>
+      <Link to='/register'><p>Зарегистрироваться</p></Link>
     </StyledLogin>
   );
 }
@@ -107,27 +105,21 @@ const Login = () => {
 export default Login;
 
 const StyledLogin = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 50px 0px;
-  flex-grow: 10;
   .log__top {
     padding-bottom: 3rem;
   }
   .ant-btn {
     width: 100%;
   }    
-  > div {
-    width: 100%;
-    max-width: 400px;
-    padding: 50px ;
-    border-radius: 1rem;
-    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-    h3, p {
-      text-align: center;
-    }   
-    p {
-      opacity: 0.8;  
-    }
+  width: 100%;
+  max-width: 400px;
+  padding: 50px ;
+  border-radius: 1rem;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  h3, p {
+    text-align: center;
+  }   
+  p {
+    opacity: 0.8;  
   }
 `;

@@ -83,7 +83,6 @@ const StyledHeaderInner = styled.div`
   > div {
     &:first-of-type {
       font-weight: 900;
-      /* opacity: 0.8; */
       font-size: 18px;
     }
   }

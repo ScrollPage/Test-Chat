@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { useSelector } from 'react-redux';
+import PublicRoute from './PublicRoute';
 
 import Chat from "./containers/Chat";
 import AccountActivation from "./containers/AccountActivation";
@@ -19,9 +20,9 @@ const BaseRouter = () => {
 
   let routes = (
     <>
-      <Route exact path="/" component={Login} />
-      <Route exact path="/register" component={Register} />
-      <Route exact path="/account-activation" component={AccountActivation} />
+      <PublicRoute exact path="/" component={Login} />
+      <PublicRoute exact path="/register" component={Register} />
+      <PublicRoute exact path="/account-activation" component={AccountActivation} />
       <Redirect to={"/"} />
     </>
   )

@@ -18,10 +18,10 @@ const Layout = ({ children }) => {
       {isAuthenticated ? <Header /> : null}
       <Container>
         <StyledMain isAuthenticated={isAuthenticated}>
-        {isAuthenticated ? <Navbar /> : null}
+          {isAuthenticated ? <Navbar /> : null}
           <main>{children}</main>
         </StyledMain>
-        
+
       </Container>
     </>
   );
@@ -56,15 +56,20 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const StyledMain = styled.div`
-  padding-top: 80px;
   width: 100%;
   height: 100%;
   display: flex;
+  ${props => props.isAuthenticated && css`
+    padding-top: 80px;
+  `}
   > main {
     flex: 1;
     ${props => props.isAuthenticated && css`
       margin-left: 220px;
-  `}
+      @media (max-width: 575.98px) {
+        margin-left: 100px;
+      }
+    `}
   }
 `;
 

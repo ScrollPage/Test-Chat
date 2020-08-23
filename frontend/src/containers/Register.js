@@ -66,7 +66,6 @@ const Register = () => {
 
   return (
     <StyledRegister>
-      <div>
         <div className="reg__top">
           <h3>Зарегистрироваться</h3>
           <p>Пожалуйста заполните данные</p>
@@ -139,11 +138,10 @@ const Register = () => {
           <Form.Item>
             <Button type="primary" htmlType="submit" disabled={isSubmitting}>
               Зарегистрироваться
-                        </Button>
+            </Button>
           </Form.Item>
         </Form>
         <Link to='/'><p>Войти</p></Link>
-      </div>
     </StyledRegister>
   );
 }
@@ -151,27 +149,21 @@ const Register = () => {
 export default Register;
 
 const StyledRegister = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 50px 0px;
-  flex-grow: 10;
   .reg__top {
     padding-bottom: 2rem;
   }
   .ant-btn {
     width: 100%;
   }
-  > div  {
-    width: 100%;
-    max-width: 400px;
-    padding: 30px 50px ;
-    border-radius: 1rem;
-    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-    h3, p {
-      text-align: center;
-    }
-    p {
-      opacity: 0.8;
-    }
+  width: 100%;
+  max-width: 400px;
+  padding: 30px 50px ;
+  border-radius: 1rem;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  h3, p {
+    text-align: center;
+  }
+  p {
+    opacity: 0.8;
   }
 `;
