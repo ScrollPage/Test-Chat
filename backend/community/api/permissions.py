@@ -6,7 +6,8 @@ from chat.models import Contact
 class IsCurrentUser(BasePermission):
     '''Тот ли пользователь?'''
     def has_permission(self, request, view):
-        contact = get_object_or_404(view.queryset, pk=view.kwargs["pk"])
-        return bool(
-            request.user and (request.user.username == contact.user.username)
+        contact = get_object_or_404(Contact, pk=view.kwargs["pk"])
+        return any(
+            [(request.user and (request.user.username == contact.user.username)),
+            (view.request.user.is_superuser)]
         )

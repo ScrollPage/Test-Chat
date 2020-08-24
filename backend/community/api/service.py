@@ -3,7 +3,7 @@ from rest_framework import mixins
 
 from justchat.service import PermissionMixin
 
-class RetrieveUpdateDestroyPermissionViewset(#PermissionMixin, 
+class RetrieveUpdateDestroyPermissionViewset(PermissionMixin, 
                                              GenericViewSet,
                                              mixins.UpdateModelMixin,
                                              mixins.DestroyModelMixin,

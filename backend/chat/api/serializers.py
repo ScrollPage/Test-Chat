@@ -2,11 +2,7 @@ from rest_framework import serializers
 
 from chat.models import Chat, Contact, Message
 from chat.service import get_user_contact
-
-class UserSerializer(serializers.StringRelatedField):
-    '''Returns a username of the user'''
-    def to_internal_value(self, value):
-        return value
+from justchat.service import UserSerializer
 
 class ContactSerializer(serializers.ModelSerializer):
     '''Сериализует пользователя'''
