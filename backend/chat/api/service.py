@@ -8,11 +8,11 @@ from chat.service import get_user_contact
 
 class PermissionMixin:
     '''Mixin permission для action'''
-    def get_permission(self):
+    def get_permissions(self):
         try:
             return [permission() for permission in self.permission_classes_by_action[self.action]]
         except KeyError:
-            return [permission() for permission in self.permission_class]
+            return [permission() for permission in self.permission_classes]
 
 class CustomListModelMixin(mixins.ListModelMixin):
     '''Custom list mixin'''
