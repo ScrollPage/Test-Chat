@@ -4,8 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
 from chat.models import Chat, Contact
-from chat.service import get_user_contact
-from justchat.service import PermissionMixin
+from justchat.service import PermissionMixin, get_user_contact
 
 class CustomListModelMixin(mixins.ListModelMixin):
     '''Custom list mixin'''

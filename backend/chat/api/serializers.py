@@ -1,15 +1,11 @@
 from rest_framework import serializers
 
 from chat.models import Chat, Contact, Message
-from chat.service import get_user_contact
-from justchat.service import UserSerializer
-
-class ContactSerializer(serializers.ModelSerializer):
-    '''Сериализует пользователя'''
-    user = UserSerializer()
-    class Meta:
-        model = Contact
-        exclude = ['friends']
+from justchat.service import (
+    UserSerializer, 
+    ContactSerializer, 
+    get_user_contact
+)
 
 class MessageSerializer(serializers.ModelSerializer):
     '''Message serializer'''

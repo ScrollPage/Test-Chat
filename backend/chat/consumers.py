@@ -4,7 +4,8 @@ from channels.generic.websocket import WebsocketConsumer
 import json
 
 from .models import Message
-from .service import get_last_10_messages, get_user_contact, get_current_chat
+from .service import get_last_10_messages, get_current_chat
+from justchat.service import get_user_contact
 
 class ChatConsumer(WebsocketConsumer):
 

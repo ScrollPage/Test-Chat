@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     # 'rest_framework.authtoken',
 
     'chat',
-    'confirmation'
+    'confirmation',
+    'community'
 ]
 
 MIDDLEWARE = [
@@ -73,7 +74,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'justchat.wsgi.application'
-ASGI_APPLICATION = "justchat.routing.application"
+ASGI_APPLICATION = 'justchat.routing.application'
 
 CHANNEL_LAYERS = {
     'default': {

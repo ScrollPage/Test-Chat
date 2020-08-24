@@ -2,7 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 from chat.models import Contact
-from justchat.service import UserSerializer
+from justchat.service import UserSerializer, ContactSerializer
+from community.models import AddRequest
 
 class UserDetailSerializer(serializers.ModelSerializer):
     '''Сериализует пользователя'''
@@ -26,4 +27,13 @@ class ContactDetailSerializer(serializers.ModelSerializer):
     friends = ContactFriendsSerializer(many=True)
     class Meta:
         model = Contact
+        fields = '__all__'
+
+
+class AddRequestSerializer(serializers.ModelSerializer):
+    '''Создает запрос на добавление'''
+    r_from = ContactSerializer(read_only=True)
+    r_to = ContactSerializer(read_only=True)
+    class Meta:
+        model = AddRequest
         fields = '__all__'

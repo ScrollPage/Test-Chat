@@ -11,3 +11,11 @@ class RetrieveUpdateDestroyPermissionViewset(PermissionMixin,
                                             ):
     '''Обзор, кастомизцая, удаление'''
     pass
+
+class ListCreatePermissionViewset(PermissionMixin,
+                                  GenericViewSet,
+                                  mixins.CreateModelMixin,
+                                  mixins.ListModelMixin
+                                  ):
+    '''Глобальный обзорб создание'''
+    pass
