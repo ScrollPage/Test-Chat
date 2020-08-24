@@ -4,6 +4,7 @@ from django.db import models
 class Contact(models.Model):
     user = models.ForeignKey(User, related_name='friends', on_delete=models.CASCADE)
     friends = models.ManyToManyField('self', blank=True)
+    image = models.ImageField('Изображение', upload_to = 'user_avatars/%Y/%m/%d', blank=True)
 
     def __str__(self):
         return self.user.username

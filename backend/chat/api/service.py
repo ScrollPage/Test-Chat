@@ -1,18 +1,11 @@
 from rest_framework.viewsets import GenericViewSet
-from rest_framework import mixins 
+from rest_framework import mixins
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
 from chat.models import Chat, Contact
 from chat.service import get_user_contact
-
-class PermissionMixin:
-    '''Mixin permission для action'''
-    def get_permissions(self):
-        try:
-            return [permission() for permission in self.permission_classes_by_action[self.action]]
-        except KeyError:
-            return [permission() for permission in self.permission_classes]
+from justchat.service import PermissionMixin
 
 class CustomListModelMixin(mixins.ListModelMixin):
     '''Custom list mixin'''

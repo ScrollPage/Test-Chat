@@ -1,11 +1,11 @@
 from rest_framework.routers import DefaultRouter
 
-from .views import ChatModelPermissionViewSet
+from .views import ContactCustomViewSet
 
 urlpatterns = [
     
 ]
 
 r = DefaultRouter()
-r.register(r'chat', ChatModelPermissionViewSet, basename='chat')
+r.register(r'contact', ContactCustomViewSet, basename='contact')
 urlpatterns += r.urls

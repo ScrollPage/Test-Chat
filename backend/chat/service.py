@@ -9,7 +9,7 @@ def get_last_10_messages(chat_id):
 
 def get_user_contact(username):
     user = get_object_or_404(User, username=username)
-    return Contact.objects.get_or_create(user=user)[0]
+    return get_object_or_404(Contact, user=user)
 
 def get_current_chat(chat_id):
     return get_object_or_404(Chat, id=chat_id)
