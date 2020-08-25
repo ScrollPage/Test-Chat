@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from .serializers import CreateUserSerializer, TokenSerializer
 from confirmation.models import MyToken
+from chat.models import Contact
 
 class RegistrationView(generics.CreateAPIView):
     '''Создание пользователя'''
@@ -29,5 +30,6 @@ class UserActivationView(generics.GenericAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             user.is_active = True
+            Contact.objects.create(user=user)
             user.save()
             return Response(status=status.HTTP_200_OK)

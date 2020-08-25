@@ -9,7 +9,7 @@ from .service import generate_token
 
 class MyToken(models.Model):
     '''Токены для подтвреждения почты'''
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=True)
     token = models.CharField(max_length=100, default='')
     created = models.DateTimeField(auto_now_add=True)
 
