@@ -29,6 +29,7 @@ from community.models import AddRequest
 from justchat.service import get_user_contact
 
 class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
+    '''Обзор, обновление и удаление контакта'''
     serializer_class = ContactDetailSerializer
     permission_classes = [IsCurrentUser, ]
     permission_classes_by_action = {
@@ -55,7 +56,7 @@ class AddRequestCustomViewset(ListCreatePermissionViewset):
     permission_classes = [permissions.IsAuthenticated, ]
     permission_classes_by_action = {
         'list': [IsUsersInvites, ],
-        'create': [IsSenderNotCurrentAndNotFriends, ]
+        'create': [IsSenderNotCurrentAndNotFriends, IsNotSent]
     }
 
     def get_queryset(self):

@@ -86,8 +86,7 @@ class IsNotSent(BasePermission):
             )
         except AddRequest.DoesNotExist:
             return True
-        finally:
-            return False
+        return False
 
 class IsFriends(BasePermission):
     '''Друзья ли?'''
