@@ -22,8 +22,22 @@ const getUserChatsSuccess = chats => {
   };
 };
 
+const setLoadingMessages = () => {
+  return {
+    type: actionTypes.SET_LOADING_MESSAGES
+  };
+};
+
+const fetchErrorMessages = (error) => {
+  return {
+    type: actionTypes.FETCH_ERROR_MESSAGES,
+    error: error
+  };
+};
+
 export const getUserChats = (username, token) => {
   return dispatch => {
+    setLoadingMessages();
     axios.defaults.headers = {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`
@@ -32,6 +46,9 @@ export const getUserChats = (username, token) => {
       .get(`http://127.0.0.1:8000/api/v1/chat/?username=${username}`)
       .then(res => {
         dispatch(getUserChatsSuccess(res.data));
+      })
+      .catch(error => {
+        dispatch(fetchErrorMessages(error));
       });
   };
 };

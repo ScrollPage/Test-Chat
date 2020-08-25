@@ -10,6 +10,7 @@ const Dialogs = () => {
   const chats = useSelector(state => state.message.chats);
   const token = useSelector(state => state.auth.token);
   const username = useSelector(state => state.auth.username);
+  const loading = useSelector(state => state.message.loading);
 
   const dispatch = useDispatch();
 
@@ -20,10 +21,10 @@ const Dialogs = () => {
   }, [token])
 
   const renderChats = (chats) => (
-    chats.map(chat => (
+    chats.map((chat, index) => (
       <Dialog
-        key={chat.id}
-        name={chat.participants.length === 2 ? chat.participants[0] === username ? chat.participants[1] : chat.participants[0] : `Беседа Номер ${chat.id}`}
+        key={`message__key__${chat.id}`}
+        name={chat.participants.length === 2 ? chat.participants[0].user === username ? chat.participants[1].user : chat.participants[0].user : `Беседа Номер ${chat.id}`}
         chatURL={`/dialogs/${chat.id}`}
       />
     ))
@@ -33,7 +34,9 @@ const Dialogs = () => {
     <>
       <SearchDialog />
       <StyledDialogs>
-        {chats ? chats.length === 0 ? 'У вас нет диалогов' : renderChats(chats) : null}
+        {loading ? 'Загрузка' :
+          chats.length === 0 ? 'У вас нет диалогов' :
+            renderChats(chats)}
       </StyledDialogs>
     </>
   );
