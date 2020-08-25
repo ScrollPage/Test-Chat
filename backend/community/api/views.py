@@ -22,7 +22,8 @@ from .permissions import (
     OneOfUsers,
     IsReceiver,
     IsFriends,
-    IsSenderAndNotCurrent,
+    IsSenderNotCurrentAndNotFriends,
+    IsNotSent,
 )
 from community.models import AddRequest
 from justchat.service import get_user_contact
@@ -54,7 +55,7 @@ class AddRequestCustomViewset(ListCreatePermissionViewset):
     permission_classes = [permissions.IsAuthenticated, ]
     permission_classes_by_action = {
         'list': [IsUsersInvites, ],
-        'create': [IsSenderAndNotCurrent, ]
+        'create': [IsSenderNotCurrentAndNotFriends, ]
     }
 
     def get_queryset(self):
