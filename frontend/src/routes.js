@@ -1,6 +1,5 @@
 import React from "react";
-import { Route, Redirect } from "react-router-dom";
-import { useSelector } from 'react-redux';
+import { Switch, Route, Redirect } from "react-router-dom";
 import PublicRoute from './PublicRoute';
 
 import Chat from "./containers/Chat";
@@ -14,37 +13,33 @@ import News from "./containers/News";
 import Friends from "./containers/Friends";
 import Teams from "./containers/Teams";
 
-const BaseRouter = () => {
-
-  const isAuthenticated = useSelector(state => !!state.auth.token);
-
-  let routes = (
-    <>
-      <PublicRoute exact path="/" component={Login} />
-      <PublicRoute exact path="/register" component={Register} />
-      <PublicRoute exact path="/account-activation" component={AccountActivation} />
-      <Redirect to={"/"} />
-    </>
-  )
-
-  if (isAuthenticated) {
-    routes = (
-      <>
-        <Route exact path="/my_page" component={MyPage} />
-        <Route exact path="/news" component={News} />
-        <Route exact path="/dialogs" component={Dialogs} />
-        <Route exact path="/friends" component={Friends} />
-        <Route exact path="/teams" component={Teams} />
-        <Route exact path="/settings" component={Settings} />
-        <Route exact path="/dialogs/:chatID" component={Chat} />
-        <Route exact path="/account-activation" component={AccountActivation} />
-        <Redirect exact to={"/dialogs"} />
-      </>
-    )
-  }
+const BaseRouter = ({ isAuth }) => {
 
   return (
-    routes
+    <>
+      {
+        isAuth ? (
+          <Switch>
+            <Route path="/dialogs" component={Dialogs} exact />
+            <Route path="/my_page" component={MyPage} />
+            <Route path="/news" component={News} />
+            <Route path="/friends" component={Friends} />
+            <Route path="/teams" component={Teams} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/dialogs/:chatID" component={Chat} />
+            <Route path="/account-activation" component={AccountActivation} />
+            <Redirect to="/dialogs" />
+          </Switch >)
+          : (
+            <Switch>
+              <PublicRoute path="/" component={Login} exact />
+              <PublicRoute path="/register" component={Register} />
+              <PublicRoute path="/account-activation" component={AccountActivation} />
+              <Redirect to="/" />
+            </Switch>
+          )
+      }
+    </>
   );
 }
 

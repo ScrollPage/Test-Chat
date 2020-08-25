@@ -61,13 +61,16 @@ const StyledMain = styled.div`
   display: flex;
   ${props => props.isAuthenticated && css`
     padding-top: 80px;
+    @media (max-width: 575.98px) {
+      padding-top: 60px;
+    }
   `}
   > main {
     flex: 1;
     ${props => props.isAuthenticated && css`
       margin-left: 220px;
       @media (max-width: 575.98px) {
-        margin-left: 100px;
+        margin-left: 55px;
       }
     `}
   }

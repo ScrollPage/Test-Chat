@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import useReactRouter from 'use-react-router'
+import useReactRouter from 'use-react-router';
 import WebSocketInstance from '../websocket';
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
 import styled from 'styled-components';
@@ -58,13 +58,15 @@ const Chat = () => {
 
   const sendMessageHandler = (e) => {
     e.preventDefault();
-    const messageObject = {
-      from: username,
-      content: message,
-      chatId: match.params.chatID
-    };
-    WebSocketInstance.newChatMessage(messageObject);
-    setMessage("");
+    if (message.trim() !== '') {
+      const messageObject = {
+        from: username,
+        content: message,
+        chatId: match.params.chatID
+      };
+      WebSocketInstance.newChatMessage(messageObject);
+      setMessage("");
+    }
   }
 
   const scrollToBottom = () => {

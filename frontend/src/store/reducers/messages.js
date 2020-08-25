@@ -25,16 +25,16 @@ const setChats = (state, action) => {
 };
 
 const reducer = (state = initialState, action) => {
-  switch (action.type) {
+  switch (action.type) { 
     case actionTypes.ADD_MESSAGE:
       return addMessage(state, action);
     case actionTypes.SET_MESSAGES:
       return setMessages(state, action);
     case actionTypes.GET_CHATS_SUCCESS:
-      return setChats(state, action);
+      return setChats(state, action); 
     default:
-      return state;
+      return state; 
   }
 };
 
-export default reducer;
+export default reducer

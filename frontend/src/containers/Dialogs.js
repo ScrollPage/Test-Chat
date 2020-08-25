@@ -14,8 +14,10 @@ const Dialogs = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getUserChats(username, token));
-  }, [])
+    if (token !== null) {
+      dispatch(getUserChats(username, token));
+    }
+  }, [token])
 
   const renderChats = (chats) => (
     chats.map(chat => (

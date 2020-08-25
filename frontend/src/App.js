@@ -5,8 +5,8 @@ import * as authActions from './store/actions/auth';
 import * as navActions from './store/actions/nav';
 import * as messagesActions from './store/actions/messages';
 import BaseRouter from './routes';
-import AddChatModal from './containers/Popup';
-import AddChatForm from './containers/Form';
+// import AddChatModal from './containers/Popup';
+// import AddChatForm from './containers/Form';
 import WebSocketInstance from './websocket';
 import { Alert } from './components/Alert';
 import Layout from './components/Layout/Layout';
@@ -48,7 +48,7 @@ class App extends React.Component {
       <Router>
         <Layout>
           <Alert />
-          <BaseRouter />
+          <BaseRouter isAuth={!!localStorage.getItem('token')} />
         </Layout>
       </Router>
     );
@@ -58,7 +58,7 @@ class App extends React.Component {
 const mapStateToProps = state => {
   return {
     showAddChatPopup: state.nav.showAddChatPopup,
-    authentificated: state.auth.token
+    isAuth: !!state.auth.token
   }
 }
 
