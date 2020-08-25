@@ -48,6 +48,23 @@ class IsReceiver(BasePermission):
         receiver_user = get_object_or_404(Contact, id=receiver_id).user
         return bool(request.user and (request.user==receiver_user))
 
+class IsSenderAndNotCurrent(BasePermission):
+    '''Отправитель и не тот же самый ли?'''
+    def has_permission(self, request, view):
+        data = request.data
+        try:
+            sender_id = data['sender']
+            receiver_id = data['receiver']
+        except KeyError:
+            return True
+        sender_user = get_object_or_404(Contact, id=sender_id).user
+        receiver_user = get_object_or_404(Contact, id=receiver_id).user
+        return all([
+            (request.user),
+            (request.user==sender_user),
+            (sender_user!=receiver_user)
+        ])
+
 class IsFriends(BasePermission):
     '''Друзья ли?'''
     def has_permission(self, request, view):
