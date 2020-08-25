@@ -1,4 +1,4 @@
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins
 
 from justchat.service import PermissionMixin
@@ -18,4 +18,8 @@ class ListCreatePermissionViewset(PermissionMixin,
                                   mixins.ListModelMixin
                                   ):
     '''Глобальный обзорб создание'''
+    pass
+    
+class ModelViewSetPermission(PermissionMixin, ModelViewSet):
+    '''ModelViewSet and PermissionMixin'''
     pass

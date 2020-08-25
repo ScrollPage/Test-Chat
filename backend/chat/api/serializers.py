@@ -24,7 +24,6 @@ class ChatSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         participants = self.data.get('participants', None)
-        print(participants)
         chat = Chat()
         chat.save()
         for username in participants:
