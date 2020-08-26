@@ -14,7 +14,9 @@ from .service import (
 from .serializers import (
     ContactDetailSerializer, 
     AddRequestSerializer, 
-    FriendActionsSerializer
+    FriendActionsSerializer,
+    ContactIdSerializer,
+    ContactFriendsSerializer
 )
 from .permissions import (
     IsCurrentUser, 
@@ -116,3 +118,24 @@ class FriendPermissionViewset(ModelViewSetPermission):
         sender_contact.save()
         receiver_contact.save()
         return Response(status=status.HTTP_200_OK)
+
+class ContactIdView(generics.GenericAPIView):
+    '''Возвращает id пользователя по имени'''
+    serializer_class = ContactIdSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get(self, request, *args, **kwargs):
+        username = self.request.query_params.get('username', None)
+        contact = get_user_contact(username)
+        serializer = self.serializer_class(contact)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+class ContactFriendsView(generics.ListAPIView):
+    '''Выводит список друзей контакта'''
+    serializer_class = ContactFriendsSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        id = self.request.query_params.get('id', None)
+        contact = get_object_or_404(Contact, id=id)
+        return contact.friends

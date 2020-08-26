@@ -5,7 +5,9 @@ from django.urls import path
 from .views import (
     ContactCustomViewSet, 
     AddRequestCustomViewset, 
-    FriendPermissionViewset
+    FriendPermissionViewset,
+    ContactIdView,
+    ContactFriendsView
 )
 
 friends_add = FriendPermissionViewset.as_view({
@@ -17,7 +19,8 @@ friends_remove = FriendPermissionViewset.as_view({
 })
 
 urlpatterns = [
-    
+    path('contact/id/', ContactIdView.as_view(), name='contact-id'),
+    path('friends/', ContactFriendsView.as_view(), name='contact-friends'),
 ] 
 
 urlpatterns += format_suffix_patterns([

@@ -12,12 +12,18 @@ class UserDetailSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'last_login']
 
+class ContactIdSerializer(serializers.ModelSerializer):
+    '''Получение id контакта'''
+    class Meta:
+        model = Contact
+        fields = ['id']
+
 class ContactFriendsSerializer(serializers.ModelSerializer):
     '''Менее развернутый контакт'''
     user = UserSerializer()
     class Meta:
         model = Contact
-        fields = ['id', 'user']
+        fields = ['id', 'user', 'image']
 
 class ContactDetailSerializer(serializers.ModelSerializer):
     '''Выводит профиль пользователя'''
