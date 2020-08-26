@@ -22,10 +22,11 @@ class ContactFriendsSerializer(serializers.ModelSerializer):
 class ContactDetailSerializer(serializers.ModelSerializer):
     '''Выводит профиль пользователя'''
     user = UserDetailSerializer()
-    is_friend = serializers.BooleanField()
-    num_friends = serializers.IntegerField()
-    current_user = serializers.BooleanField()
-    # is_sent = serializers.BooleanField()
+    is_friend = serializers.BooleanField(read_only=True)
+    num_friends = serializers.IntegerField(read_only=True)
+    current_user = serializers.BooleanField(read_only=True)
+    is_sent = serializers.BooleanField(read_only=True)
+    is_sent_to_you = serializers.BooleanField(read_only=True)
     friends = ContactFriendsSerializer(many=True)
     class Meta:
         model = Contact

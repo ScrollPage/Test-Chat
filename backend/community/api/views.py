@@ -1,5 +1,5 @@
 from rest_framework import permissions, generics
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Exists
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
@@ -45,9 +45,21 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
             num_friends=Count('friends')
         ).annotate(
             current_user=Count('user', filter=Q(user=self.request.user))
-        )#.annotate(
-            # is_sent=Count('invited', filter=Q(invited__user=self.request.user))
-        # )
+        ).annotate(
+            is_sent=Exists(
+                AddRequest.objects.filter(
+                    sender__user=self.request.user,
+                    receiver__user=user,
+                )
+            )
+        ).annotate(
+            is_sent_to_you=Exists(
+                AddRequest.objects.filter(
+                    sender__user=user,
+                    receiver__user=self.request.user
+                )
+            )
+        )
         return queryset
 
 class AddRequestCustomViewset(ListCreatePermissionViewset):
@@ -104,30 +116,3 @@ class FriendPermissionViewset(ModelViewSetPermission):
         sender_contact.save()
         receiver_contact.save()
         return Response(status=status.HTTP_200_OK)
-
-# class FriendsView(generics.GenericAPIView):
-#     '''Добавление и удаление друзей'''
-#     def post(self, request):
-#         data = request.data
-#         sender_id = data['sender']
-#         receiver_id = data['receiver']
-#         sender_contact = get_object_or_404(Contact, id=sender_id)
-#         receiver_contact = get_object_or_404(Contact, id=receiver_id)
-#         sender_contact.friends.add(receiver_contact)
-#         receiver_contact.friends.add(sender_contact)
-#         sender_contact.save()
-#         receiver_contact.save()
-#         return Response(status=status.HTTP_200_OK)
-
-
-#     def delete(self, request):
-#         data = request.data
-#         sender_id = data['sender']
-#         receiver_id = data['receiver']
-#         sender_contact = get_object_or_404(Contact, id=sender_id)
-#         receiver_contact = get_object_or_404(Contact, id=receiver_id)
-#         sender_contact.friends.remove(receiver_contact)
-#         receiver_contact.friends.remove(sender_contact)
-#         sender_contact.save()
-#         receiver_contact.save()
-#         return Response(status=status.HTTP_200_OK)
