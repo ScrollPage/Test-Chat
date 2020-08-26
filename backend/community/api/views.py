@@ -138,4 +138,4 @@ class ContactFriendsView(generics.ListAPIView):
     def get_queryset(self):
         id = self.request.query_params.get('id', None)
         contact = get_object_or_404(Contact, id=id)
-        return contact.friends
+        return contact.friends.all()
