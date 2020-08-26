@@ -8,9 +8,16 @@ from community.models import AddRequest
 
 class UserDetailSerializer(serializers.ModelSerializer):
     '''Сериализует пользователя'''
+    last_login = serializers.DateTimeField(read_only=True)
     class Meta:
         model = User
         fields = ['username', 'email', 'last_login']
+
+class ContactStatusSerializer(serializers.ModelSerializer):
+    '''Для измнения статуса'''
+    class Meta:
+        model = Contact
+        fields = ['status']
 
 class ContactIdSerializer(serializers.ModelSerializer):
     '''Получение id контакта'''
@@ -33,7 +40,7 @@ class ContactDetailSerializer(serializers.ModelSerializer):
     current_user = serializers.BooleanField(read_only=True)
     is_sent = serializers.BooleanField(read_only=True)
     is_sent_to_you = serializers.BooleanField(read_only=True)
-    friends = ContactFriendsSerializer(many=True)
+    friends = ContactFriendsSerializer(many=True, read_only=True)
     class Meta:
         model = Contact
         fields = '__all__'

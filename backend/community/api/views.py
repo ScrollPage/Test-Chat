@@ -16,7 +16,9 @@ from .serializers import (
     AddRequestSerializer, 
     FriendActionsSerializer,
     ContactIdSerializer,
-    ContactFriendsSerializer
+    ContactFriendsSerializer,
+    UserDetailSerializer,
+    ContactStatusSerializer
 )
 from .permissions import (
     IsCurrentUser, 
@@ -37,6 +39,27 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
     permission_classes_by_action = {
         'retrieve': [permissions.IsAuthenticated, ]
     }
+
+    def update(self, request, *args, **kwargs):
+        data = request.data
+        contact_data = {
+            'status': data['status']
+        }
+        user_data = {
+            'username': data['user.username'],
+            'email':data['user.email']
+        }
+        contact = get_object_or_404(Contact, id=kwargs['pk'])
+        user = contact.user
+        contact_serializer = ContactStatusSerializer(contact, contact_data)
+        user_serializer = UserDetailSerializer(user, user_data)
+        if contact_serializer.is_valid() and user_serializer.is_valid():
+            contact_serializer.save()
+            user_serializer.save()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
 
     def get_queryset(self):
         pk = self.kwargs['pk']
