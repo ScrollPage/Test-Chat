@@ -1,5 +1,5 @@
 from rest_framework import permissions, generics
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Exists
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,7 +14,11 @@ from .service import (
 from .serializers import (
     ContactDetailSerializer, 
     AddRequestSerializer, 
-    FriendActionsSerializer
+    FriendActionsSerializer,
+    ContactIdSerializer,
+    ContactFriendsSerializer,
+    UserDetailSerializer,
+    ContactStatusSerializer
 )
 from .permissions import (
     IsCurrentUser, 
@@ -36,6 +40,27 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
         'retrieve': [permissions.IsAuthenticated, ]
     }
 
+    def update(self, request, *args, **kwargs):
+        data = request.data
+        contact_data = {
+            'status': data['status']
+        }
+        user_data = {
+            'username': data['user.username'],
+            'email':data['user.email']
+        }
+        contact = get_object_or_404(Contact, id=kwargs['pk'])
+        user = contact.user
+        contact_serializer = ContactStatusSerializer(contact, contact_data)
+        user_serializer = UserDetailSerializer(user, user_data)
+        if contact_serializer.is_valid() and user_serializer.is_valid():
+            contact_serializer.save()
+            user_serializer.save()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+
     def get_queryset(self):
         pk = self.kwargs['pk']
         user = get_object_or_404(Contact, id=pk).user
@@ -45,9 +70,21 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
             num_friends=Count('friends')
         ).annotate(
             current_user=Count('user', filter=Q(user=self.request.user))
-        )#.annotate(
-            # is_sent=Count('invited', filter=Q(invited__user=self.request.user))
-        # )
+        ).annotate(
+            is_sent=Exists(
+                AddRequest.objects.filter(
+                    sender__user=self.request.user,
+                    receiver__user=user,
+                )
+            )
+        ).annotate(
+            is_sent_to_you=Exists(
+                AddRequest.objects.filter(
+                    sender__user=user,
+                    receiver__user=self.request.user
+                )
+            )
+        )
         return queryset
 
 class AddRequestCustomViewset(ListCreatePermissionViewset):
@@ -105,29 +142,23 @@ class FriendPermissionViewset(ModelViewSetPermission):
         receiver_contact.save()
         return Response(status=status.HTTP_200_OK)
 
-# class FriendsView(generics.GenericAPIView):
-#     '''Добавление и удаление друзей'''
-#     def post(self, request):
-#         data = request.data
-#         sender_id = data['sender']
-#         receiver_id = data['receiver']
-#         sender_contact = get_object_or_404(Contact, id=sender_id)
-#         receiver_contact = get_object_or_404(Contact, id=receiver_id)
-#         sender_contact.friends.add(receiver_contact)
-#         receiver_contact.friends.add(sender_contact)
-#         sender_contact.save()
-#         receiver_contact.save()
-#         return Response(status=status.HTTP_200_OK)
+class ContactIdView(generics.GenericAPIView):
+    '''Возвращает id пользователя по имени'''
+    serializer_class = ContactIdSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
 
+    def get(self, request, *args, **kwargs):
+        username = self.request.query_params.get('username', None)
+        contact = get_user_contact(username)
+        serializer = self.serializer_class(contact)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-#     def delete(self, request):
-#         data = request.data
-#         sender_id = data['sender']
-#         receiver_id = data['receiver']
-#         sender_contact = get_object_or_404(Contact, id=sender_id)
-#         receiver_contact = get_object_or_404(Contact, id=receiver_id)
-#         sender_contact.friends.remove(receiver_contact)
-#         receiver_contact.friends.remove(sender_contact)
-#         sender_contact.save()
-#         receiver_contact.save()
-#         return Response(status=status.HTTP_200_OK)
+class ContactFriendsView(generics.ListAPIView):
+    '''Выводит список друзей контакта'''
+    serializer_class = ContactFriendsSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        id = self.request.query_params.get('id', None)
+        contact = get_object_or_404(Contact, id=id)
+        return contact.friends.all()

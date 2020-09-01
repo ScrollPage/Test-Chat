@@ -8,25 +8,39 @@ from community.models import AddRequest
 
 class UserDetailSerializer(serializers.ModelSerializer):
     '''Сериализует пользователя'''
+    last_login = serializers.DateTimeField(read_only=True)
     class Meta:
         model = User
         fields = ['username', 'email', 'last_login']
+
+class ContactStatusSerializer(serializers.ModelSerializer):
+    '''Для измнения статуса'''
+    class Meta:
+        model = Contact
+        fields = ['status']
+
+class ContactIdSerializer(serializers.ModelSerializer):
+    '''Получение id контакта'''
+    class Meta:
+        model = Contact
+        fields = ['id']
 
 class ContactFriendsSerializer(serializers.ModelSerializer):
     '''Менее развернутый контакт'''
     user = UserSerializer()
     class Meta:
         model = Contact
-        fields = ['id', 'user']
+        fields = ['id', 'user', 'image']
 
 class ContactDetailSerializer(serializers.ModelSerializer):
     '''Выводит профиль пользователя'''
     user = UserDetailSerializer()
-    is_friend = serializers.BooleanField()
-    num_friends = serializers.IntegerField()
-    current_user = serializers.BooleanField()
-    # is_sent = serializers.BooleanField()
-    friends = ContactFriendsSerializer(many=True)
+    is_friend = serializers.BooleanField(read_only=True)
+    num_friends = serializers.IntegerField(read_only=True)
+    current_user = serializers.BooleanField(read_only=True)
+    is_sent = serializers.BooleanField(read_only=True)
+    is_sent_to_you = serializers.BooleanField(read_only=True)
+    friends = ContactFriendsSerializer(many=True, read_only=True)
     class Meta:
         model = Contact
         fields = '__all__'

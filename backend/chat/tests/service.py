@@ -2,14 +2,14 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 import requests
 
-def create_user(self):
+def create_user(self, username='test'):
     url = reverse('register')
-    data = {'username': 'test', 'email': '', 'password': 'qwerasdfzxcv1234'}
+    data = {'username': username, 'email': '', 'password': 'qwerasdfzxcv1234'}
     response = self.client.post(url, data, format='json')
-    return User.objects.get(id=1)
+    return User.objects.last()
 
-def get_header(url):
+def get_header(url, username='admin', password='admin'):
     '''Необходимо создать своего супер-пользователя'''
-    data = {'username': 'admin', 'password': 'admin'}
+    data = {'username': username, 'password': password}
     r = requests.post(url, data)
     return {'Authorization': f"Token {r.json()['access']}"}
