@@ -1,18 +1,6 @@
-from django.contrib.auth.models import User
 from django.db import models
 
-class Contact(models.Model):
-    user = models.ForeignKey(User, related_name='friends', on_delete=models.CASCADE)
-    status = models.CharField(max_length=100, default='', blank=True)
-    friends = models.ManyToManyField('self', blank=True)
-    image = models.ImageField('Изображение', upload_to = 'user_avatars/%Y/%m/%d', blank=True)
-
-    def __str__(self):
-        return self.user.username
-
-    class Meta:
-        verbose_name = 'Контакт'
-        verbose_name_plural = 'Контакты'
+from contact.models import Contact
 
 class Message(models.Model):
     contact = models.ForeignKey(Contact, related_name='messages', on_delete=models.CASCADE, null=True)
@@ -20,7 +8,7 @@ class Message(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.contact.user.username
+        return self.contact.slug
 
     class Meta:
         verbose_name = 'Сообщение'
@@ -37,4 +25,3 @@ class Chat(models.Model):
     class Meta:
         verbose_name = 'Чат'
         verbose_name_plural = 'Чаты'
-

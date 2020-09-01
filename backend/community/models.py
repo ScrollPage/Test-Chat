@@ -1,6 +1,6 @@
 from django.db import models
 
-from chat.models import Contact
+from contact.models import Contact
 
 class AddRequest(models.Model):
     sender = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name = 'invited', null=True)

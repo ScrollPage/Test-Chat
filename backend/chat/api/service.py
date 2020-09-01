@@ -1,20 +1,20 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
 
-from chat.models import Chat, Contact
-from justchat.service import PermissionMixin, get_user_contact
+from chat.models import Chat
+from contact.models import Contact
+from backend.service import PermissionMixin
 
 class CustomListModelMixin(mixins.ListModelMixin):
     '''Custom list mixin'''
 
     def get_queryset(self):
         queryset = Chat.objects.all()
-        username = self.request.query_params.get('username', None)
+        id = self.request.query_params.get('id', None)
 
-        if username:
-            contact = get_user_contact(username)
+        if id:
+            contact = get_object_or_404(Contact, id=id)
             try:
                 queryset = contact.chats.all()
             except AttributeError:

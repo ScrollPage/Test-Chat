@@ -1,7 +1,8 @@
 from rest_framework import permissions, generics
 
-from chat.models import Chat, Contact
-from .serializers import ChatSerializer, ContactSerializer
+from chat.models import Chat
+from contact.models import Contact
+from .serializers import ChatSerializer
 from .service import PermissionModelCustomViewSet
 
 class ChatModelPermissionViewSet(PermissionModelCustomViewSet):

@@ -1,7 +1,7 @@
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins
 
-from justchat.service import PermissionMixin
+from backend.service import PermissionMixin
 
 class RetrieveUpdateDestroyPermissionViewset(PermissionMixin, 
                                              GenericViewSet,

@@ -1,11 +1,14 @@
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 
-from chat.models import Chat, Contact, Message
-from justchat.service import (
-    UserSerializer, 
-    ContactSerializer, 
-    get_user_contact
-)
+from chat.models import Chat, Message
+from contact.models import Contact
+
+class ContactSerializer(serializers.ModelSerializer):
+    '''Сериализация контакта'''
+    class Meta:
+        model = Contact
+        fields = ['first_name', 'last_name', 'slug']
 
 class MessageSerializer(serializers.ModelSerializer):
     '''Message serializer'''
@@ -26,8 +29,7 @@ class ChatSerializer(serializers.ModelSerializer):
         participants = self.data.get('participants', None)
         chat = Chat()
         chat.save()
-        for username in participants:
-            contact = get_user_contact(username)
-            chat.participants.add(contact.id)
+        for id in participants:
+            chat.participants.add(get_object_or_404(Contact, id=id))
         chat.save()
         return chat

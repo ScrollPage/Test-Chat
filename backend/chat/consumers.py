@@ -1,11 +1,9 @@
-from django.contrib.auth.models import User
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
 
 from .models import Message
 from .service import get_last_10_messages, get_current_chat
-from justchat.service import get_user_contact
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -18,7 +16,7 @@ class ChatConsumer(WebsocketConsumer):
         self.send_message(content)
 
     def new_message(self, data):
-        user_contact = get_user_contact(data['from'])
+        user_contact = get_object_or_404(Contact, id=data['from'])
         message = Message.objects.create(
             contact=user_contact,
             content=data['message']

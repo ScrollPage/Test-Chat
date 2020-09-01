@@ -1,40 +1,18 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
 from chat.models import Contact
-from justchat.service import UserSerializer, ContactSerializer
+from backend.service import ContactSerializer
 from community.models import AddRequest
-
-class UserDetailSerializer(serializers.ModelSerializer):
-    '''Сериализует пользователя'''
-    last_login = serializers.DateTimeField(read_only=True)
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'last_login']
-
-class ContactStatusSerializer(serializers.ModelSerializer):
-    '''Для измнения статуса'''
-    class Meta:
-        model = Contact
-        fields = ['status']
-
-class ContactIdSerializer(serializers.ModelSerializer):
-    '''Получение id контакта'''
-    class Meta:
-        model = Contact
-        fields = ['id']
 
 class ContactFriendsSerializer(serializers.ModelSerializer):
     '''Менее развернутый контакт'''
-    user = UserSerializer()
     class Meta:
         model = Contact
-        fields = ['id', 'user', 'image']
+        fields = ['id', 'first_name', 'last_name', 'slug', 'avatar']
 
 class ContactDetailSerializer(serializers.ModelSerializer):
     '''Выводит профиль пользователя'''
-    user = UserDetailSerializer()
     is_friend = serializers.BooleanField(read_only=True)
     num_friends = serializers.IntegerField(read_only=True)
     current_user = serializers.BooleanField(read_only=True)
@@ -43,7 +21,15 @@ class ContactDetailSerializer(serializers.ModelSerializer):
     friends = ContactFriendsSerializer(many=True, read_only=True)
     class Meta:
         model = Contact
-        fields = '__all__'
+        exclude = [
+            'groups', 
+            'password', 
+            'user_permissions', 
+            'is_admin', 
+            'is_staff', 
+            'is_superuser',
+            'is_active',
+        ]
 
 class FriendActionsSerializer(serializers.Serializer):
     sender = serializers.IntegerField()

@@ -1,80 +1,70 @@
-from rest_framework.test import (
-    APITestCase, 
-    force_authenticate, 
-    APIRequestFactory
-)
+from rest_framework.test import APITestCase
 from rest_framework import status
-import requests
-from django.conf import settings
-from chat.tests.service import get_header
-from django.contrib.auth.models import User
+from django.urls import reverse
+import json
 
-from community.api.views import ContactCustomViewSet
+from contact.models import Contact
 
-class TestViews(APITestCase):
+class ContactTestCase(APITestCase):
 
-    def test_detail_contact_auth_view(self):
-        '''Убедиться, что обзор аккаунта доступен всем зарегестрированным'''
-        url = f'{settings.DJANGO_DOMEN}/api/v1/contact/1/'
-        headers = get_header(
-            f'{settings.DJANGO_DOMEN}/auth/jwt/create/'
+    def setUp(self):
+        self.user1 = Contact.objects.create_user(
+            email='test1@case.test',
+            first_name='Test',
+            last_name='Case',
+            phone_number=0,
+            slug='test_case',
+            password='very_strong_psw'
         )
-        response = requests.get(url, headers=headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_detail_destroy_update_unauth(self):
-        '''Проверка работы прав доступа'''
-        url = f'{settings.DJANGO_DOMEN}/api/v1/contact/1/'
-        retrieve_response = requests.get(url)
-        destroy_response = requests.delete(url)
-        update_response = requests.put(url)
-        self.assertEqual(retrieve_response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(destroy_response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(update_response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_destroy_update_incorrect_user(self):
-        '''Проверка работы прав доступа'''
-        url = f'{settings.DJANGO_DOMEN}/api/v1/contact/1/'
-        headers = get_header(
-            f'{settings.DJANGO_DOMEN}/auth/jwt/create/',
-            'test',
-            'test'
+        self.user2 = Contact.objects.create_user(
+            email='test2@case.test',
+            first_name='Test',
+            last_name='Case',
+            phone_number=0,
+            slug='test_case',
+            password='very_strong_psw'
         )
-        destroy_response = requests.delete(url, headers=headers)
-        update_response = requests.put(url, headers=headers)
-        self.assertEqual(destroy_response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(update_response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_contact_id_view_unauth(self):
-        '''Проверка работы прав доступа'''
-        url = f'{settings.DJANGO_DOMEN}/api/v1/contact/id/?username=admin'
-        response = requests.get(url)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_contact_id_view_unauth(self):
-        '''Проверка работы прав доступа'''
-        url = f'{settings.DJANGO_DOMEN}/api/v1/contact/id/?username=admin'
-        headers = get_header(
-            f'{settings.DJANGO_DOMEN}/auth/jwt/create/'
-        )
-        response = requests.get(url, headers=headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()['id'], 1)
-
-    def test_friends_unauth(self):
-        url = f'{settings.DJANGO_DOMEN}/api/v1/friends/?id=1'
-        response = requests.get(url)
+    def test_retrieve_unauth(self):
+        url = '/api/v1/contact/1/'
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
-    def test_friends_auth(self):
-        url = f'{settings.DJANGO_DOMEN}/api/v1/friends/?id=1'
-        headers = get_header(
-            f'{settings.DJANGO_DOMEN}/auth/jwt/create/'
-        )
-        response = requests.get(url, headers=headers)
+    def test_retrieve_auth(self):
+        self.client.force_authenticate(user=self.user1)
+        url = reverse('contact-detail', kwargs={'pk': 1})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['email'], 'test1@case.test')
 
-    
+    def test_update_by_owner(self):
+        self.client.force_authenticate(user=self.user1)
+        url = reverse('contact-detail', kwargs={'pk': 1})
+        data = {
+            'email': 'test1@case.test', 
+            'slug': 'idNone', 
+            'first_name': 'NewTest', 
+            'last_name': 'NewCase',
+            'phone_number': 234980,
+            'avatar': '',
+            'status': ''
+        }
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content)['first_name'], 'NewTest')
 
-    
-        
+    # def test_update_by_random_user(self):
+    #     self.client.force_authenticate(user=self.user2)
+    #     url = reverse('contact-detail', kwargs={'pk': 2})
+    #     data = {
+    #         'email': 'test1@case.test',
+    #         'slug': 'idNone',
+    #         'first_name': 'NewTest', 
+    #         'last_name': 'NewCase',
+    #         'phone_number': 234980,
+    #         'avatar': '',
+    #         'status': ''
+    #     }
+    #     response = self.client.put(url, data)
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+

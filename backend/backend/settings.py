@@ -37,11 +37,11 @@ INSTALLED_APPS = [
     # 'rest_auth',
     # 'rest_auth.registration',
     'rest_framework',
-    # 'rest_framework.authtoken',
-
-    'chat',
-    'confirmation',
-    'community'
+    'rest_framework.authtoken',
+    
+    'chat',   
+    'community', 
+    'contact',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'justchat.urls'
+ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
     {
@@ -73,8 +73,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'justchat.wsgi.application'
-ASGI_APPLICATION = 'justchat.routing.application'
+WSGI_APPLICATION = 'backend.wsgi.application'
+ASGI_APPLICATION = 'backend.routing.application'
 
 CHANNEL_LAYERS = {
     'default': {
@@ -158,15 +158,11 @@ CORS_ORIGIN_WHITELIST = (
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-ACCOUNT_EMAIL_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-
 # smtp
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'reqww00@gmail.com'
-EMAIL_HOST_PASSWORD = 'CFHFYXF228hec;'
+EMAIL_HOST_PASSWORD = 'CFHFYXF228hec$'
 EMAIL_PORT = 587
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -214,3 +210,6 @@ DJOSER = {
 #Media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+#User model
+AUTH_USER_MODEL = 'contact.Contact'

@@ -1,39 +1,45 @@
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 import requests
 from django.conf import settings
 
-from .service import get_header
+from contact.models import Contact
+from chat.models import Chat
 
-class TestViews(APITestCase):
+class ChatCreationTestCase(APITestCase):
 
-    def test_chat_creation_authenticated(self):
-        '''Убедиться, что авторизоанные пользователи могут создавать чаты'''
-        url = f'{settings.DJANGO_DOMEN}/api/v1/chat/'
-        data = {"participants": ['admin']}
-        headers = get_header(
-            f'{settings.DJANGO_DOMEN}/auth/jwt/create/'
+    def setUp(self):
+        self.user = Contact.objects.create_user(
+            email='test@case.test',
+            first_name='Test',
+            last_name='Case',
+            phone_number=0,
+            slug='test_case',
+            password='very_strong_psw'
         )
-        r = requests.post(url, data=data, headers=headers)
 
-        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+    def api_authentication(self):
+        self.client.force_authenticate(user=self.user)
 
     def test_chat_creation_unauthenticated(self):
-        '''Убедиться, что неавторизоанные пользователи не могут создавать чаты'''
-        url = f'{settings.DJANGO_DOMEN}/api/v1/chat/'
-        data = {'participants': []}
-        response = self.client.post(url, data, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_chat_list(self):
-        '''Убедиться, что чаты доступны для просмотра всем'''
+        '''Убедиться, что неавторизованные пользователи не могут создавать чаты'''
         url = '/api/v1/chat/'
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = {"participants": []}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    
+    def test_chat_creation_authenticated(self):
+        self.api_authentication()
+        url = '/api/v1/chat/'
+        data = {"participants": []}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_chat_detail(self):
-        '''Убедиться, что опредленный чат доступен для просмотра всем'''
-        url = f'{settings.DJANGO_DOMEN}/api/v1/chat/1/'
-        r = requests.get(url)
-        self.assertEqual(r.status_code, status.HTTP_200_OK)
+    def test_chat_createion_bad_request(self):
+        self.api_authentication()
+        url = '/api/v1/chat/'
+        data = {"participants": []}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
