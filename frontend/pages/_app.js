@@ -9,13 +9,20 @@ import NProgress from 'nprogress';
 import { createGlobalStyle } from 'styled-components';
 import { normalize } from 'styled-normalize';
 
-import { AlertState } from '../context/alert/AlertState';
-import { AuthState } from '../context/auth/AuthState';
-import { MessageState } from '../context/message/MessageState';
+import { AlertState } from '@/context/alert/AlertState';
+import { AuthState } from '@/context/auth/AuthState';
+import { MessageState } from '@/context/message/MessageState';
+import { SearchState } from '@/context/search/SearchState';
+import Cookie from 'js-cookie';
 
-import Alert from '../components/Layout/Alert';
+import Alert from '@/components/Layout/Alert';
 
 axios.defaults.baseURL = 'http://localhost:8000';
+
+axios.defaults.headers = {
+  "Content-Type": "application/json",
+  Authorization: `Token ${Cookie.get('token')}`
+};
 
 NProgress.configure({
   showSpinner: false,
@@ -47,10 +54,12 @@ const MyApp = ({ Component, pageProps }) => {
           <AlertState>
             <AuthState>
               <MessageState>
-                <>
-                  <Alert />
-                  <Component {...pageProps} />
-                </>
+                <SearchState>
+                  <>
+                    <Alert />
+                    <Component {...pageProps} />
+                  </>
+                </SearchState>
               </MessageState>
             </AuthState>
           </AlertState>

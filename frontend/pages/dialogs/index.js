@@ -13,7 +13,7 @@ export default function Dialogs({ chats, userId }) {
   const renderChats = (chats) => (
     chats.map(chat => (
       <Dialog
-        key={`message__key__${chat.id}`}
+        key={`chat__key__${chat.id}`}
         name={chat.participants.length === 2 ? chat.participants[0].id === userId ? chat.participants[1].id : `${chat.participants[0].first_name} ${chat.participants[0].last_name}` : `Беседа Номер ${chat.id}`}
         chatID={chat.id}
       />
@@ -24,7 +24,7 @@ export default function Dialogs({ chats, userId }) {
     <PrivateLayout>
       <SearchDialog />
       <StyledDialogs>
-        {data !== null ? data.length === 0 ? 'У вас нет диалогов' : renderChats(chats) : 'Ошибка'}
+        {data !== null ? data.length === 0 ? 'У вас нет диалогов' : renderChats(data) : 'Ошибка'}
       </StyledDialogs>
     </PrivateLayout>
   );

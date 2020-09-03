@@ -41,7 +41,7 @@ const StyledMain = styled.div`
   display: flex;
   padding-top: 80px;
   @media (max-width: 575.98px) {
-    padding-top: 60px;
+    padding-top: 70px;
   }
   .private-layout__main {
     margin-left: 220px;
