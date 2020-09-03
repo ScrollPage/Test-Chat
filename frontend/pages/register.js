@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, TeamOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -13,9 +13,18 @@ const validationSchema = Yup.object().shape({
   email: Yup.string()
     .email('Некорректный E-mail')
     .required('Введите E-mail'),
-  username: Yup.string()
+  firstName: Yup.string()
     .min(3, 'Слишком короткое имя')
+    .max(30, 'Слишком длинное имя')
     .required('Введите имя'),
+  lastName: Yup.string()
+    .min(3, 'Слишком короткая фамилия')
+    .max(30, 'Слишком длинная фамилия')
+    .required('Введите имя'),
+  phoneNumber: Yup.string()
+    .min(11, 'Необходимо 11 символов')
+    .max(11, 'Необходимо 11 символов')
+    .required('Введите номер телефона'),
   password: Yup.string()
     .matches(
       '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
@@ -45,13 +54,15 @@ export default function Register() {
   const formik = useFormik({
     initialValues: {
       email: '',
-      username: '',
+      firstName: '',
+      lastName: '',
+      phoneNumber: '', 
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
     },
     validationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      authSignup(values.username, values.email, values.password );
+      authSignup(values.email, values.firstName, values.lastName, values.phoneNumber, values.password);
       setSubmitting(true);
       setTimeout(() => {
         resetForm();
@@ -88,17 +99,49 @@ export default function Register() {
             />
           </Form.Item>
           <Form.Item
-            name="username"
+            name="firstName"
             hasFeedback
-            help={errorMessege(touched.username, errors.username)}
-            validateStatus={!touched.username ? null : errors.username ? "error" : "success"}
+            help={errorMessege(touched.firstName, errors.firstName)}
+            validateStatus={!touched.firstName ? null : errors.firstName ? "error" : "success"}
           >
             <Input
-              id="username"
-              name="username"
+              id="firstName"
+              name="firstName"
               placeholder="Имя"
               prefix={<UserOutlined />}
-              value={values.username}
+              value={values.firstName}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+          </Form.Item>
+          <Form.Item
+            name="lastName"
+            hasFeedback
+            help={errorMessege(touched.lastName, errors.lastName)}
+            validateStatus={!touched.lastName ? null : errors.lastName ? "error" : "success"}
+          >
+            <Input
+              id="lastName"
+              name="lastName"
+              placeholder="Фамилия"
+              prefix={<TeamOutlined />}
+              value={values.lastName}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+          </Form.Item>
+          <Form.Item
+            name="phoneNumber"
+            hasFeedback
+            help={errorMessege(touched.phoneNumber, errors.phoneNumber)}
+            validateStatus={!touched.phoneNumber ? null : errors.phoneNumber ? "error" : "success"}
+          >
+            <Input
+              id="phoneNumber"
+              name="phoneNumber"
+              placeholder="Телефон"
+              prefix={<PhoneOutlined />}
+              value={values.phoneNumber}
               onChange={handleChange}
               onBlur={handleBlur}
             />

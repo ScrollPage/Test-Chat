@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import styled from 'styled-components';
 import { Form, Input, Button } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 import { AuthContext } from '@/context/auth/AuthContext';
 
 const validationSchema = Yup.object().shape({
-  username: Yup.string()
+  email: Yup.string()
     .required('Введите логин'),
   password: Yup.string()
     .required('Введите пароль')
@@ -33,12 +33,12 @@ export default function Login() {
 
   const formik = useFormik({
     initialValues: {
-      username: '',
+      email: '',
       password: '',
     },
     validationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      authLogin(values.username, values.password);
+      authLogin(values.email, values.password);
       setSubmitting(true);
       setTimeout(() => {
         resetForm();
@@ -59,18 +59,18 @@ export default function Login() {
         </div>
         <Form onFinish={handleSubmit}>
           <Form.Item
-            name="username"
+            name="email"
             hasFeedback
-            help={errorMessege(touched.username, errors.username)}
-            validateStatus={!touched.username ? null : errors.username ? "error" : "success"}
+            help={errorMessege(touched.email, errors.email)}
+            validateStatus={!touched.email ? null : errors.email ? "error" : "success"}
           >
             <Input
-              id="log__username"
-              name="username"
+              id="email"
+              name="email"
               size="large"
-              placeholder="Логин"
-              prefix={<UserOutlined />}
-              value={values.username}
+              placeholder="E-mail"
+              prefix={<MailOutlined />}
+              value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
             />

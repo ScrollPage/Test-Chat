@@ -15,12 +15,10 @@ export default function Chat() {
 
   const { query } = useRouter();
 
-  const { username } = useContext(AuthContext);
-  const { messages, loading, setLoading, setLoadingFalse} = useContext(MessageContext);
+  const { userId } = useContext(AuthContext);
+  const { messages, loading, setLoading} = useContext(MessageContext);
 
   const [message, setMessage] = useState("");
-
-  // const [loading, setloading] = useState(false);
 
   let messagesEnd = useRef();
 
@@ -38,7 +36,7 @@ export default function Chat() {
 
   const initialiseChat = () => {
     waitForSocketConnection(() => {
-      WebSocketInstance.fetchMessages(username, query.chatID);
+      WebSocketInstance.fetchMessages(userId, query.chatID);
     });
     WebSocketInstance.connect(query.chatID);
   }
@@ -65,7 +63,7 @@ export default function Chat() {
     e.preventDefault();
     if (message.trim() !== '') {
       const messageObject = {
-        from: username,
+        from: userId,
         content: message,
         chatId: query.chatID
       };
@@ -82,10 +80,10 @@ export default function Chat() {
     return messages.map(message => (
       <ChatItem
         key={`${message.id}__${Math.random()}`}
-        name={message.author}
+        name={`${message.first_name} ${message.last_name}`}
         time={message.timestamp}
         message={message.content}
-        isUsername={message.author === username ? true : false}
+        isUsername={message.author === userId ? true : false}
       />
     ));
   }

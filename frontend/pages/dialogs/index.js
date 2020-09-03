@@ -6,15 +6,15 @@ import axios from 'axios';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
 
-export default function Dialogs({ chats, username }) {
+export default function Dialogs({ chats, userId }) {
 
-  const { data } = useSWR(`/api/v1/chat/?username=${username}`, { initialData: chats});
+  const { data } = useSWR(`/api/v1/chat/?id=${userId}`, { initialData: chats});
 
   const renderChats = (chats) => (
     chats.map(chat => (
       <Dialog
         key={`message__key__${chat.id}`}
-        name={chat.participants.length === 2 ? chat.participants[0].user === username ? chat.participants[1].user : chat.participants[0].user : `Беседа Номер ${chat.id}`}
+        name={chat.participants.length === 2 ? chat.participants[0].id === userId ? chat.participants[1].id : `${chat.participants[0].first_name} ${chat.participants[0].last_name}` : `Беседа Номер ${chat.id}`}
         chatID={chat.id}
       />
     ))
@@ -24,7 +24,7 @@ export default function Dialogs({ chats, username }) {
     <PrivateLayout>
       <SearchDialog />
       <StyledDialogs>
-        {data.length === 0 ? 'У вас нет диалогов' : renderChats(chats)}
+        {data !== null ? data.length === 0 ? 'У вас нет диалогов' : renderChats(chats) : 'Ошибка'}
       </StyledDialogs>
     </PrivateLayout>
   );
@@ -32,7 +32,7 @@ export default function Dialogs({ chats, username }) {
 
 export const getServerSideProps = async (ctx) => {
 
-  const username = cookies(ctx)?.username || null; 
+  const userId = cookies(ctx)?.userId || null; 
   const token = cookies(ctx)?.token || null; 
 
   axios.defaults.headers = {
@@ -43,7 +43,7 @@ export const getServerSideProps = async (ctx) => {
   let chats = null;
 
   await axios
-    .get(`/api/v1/chat/?username=${username}`)
+    .get(`/api/v1/chat/?id=${userId}`)
     .then((response) => {
       chats = response?.data;
     })
@@ -52,7 +52,7 @@ export const getServerSideProps = async (ctx) => {
     });
   return { props: { 
     chats: chats,
-    username: username
+    userId: userId
    }};
 }
 
