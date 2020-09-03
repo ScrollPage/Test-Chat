@@ -6,11 +6,13 @@ from .views import (
     ContactCustomViewSet, 
     AddRequestCustomViewset, 
     FriendPermissionViewset, 
-    ContactFriendsView
+    ContactFriendsView,
+    SearchFriendsView
 )
 
 urlpatterns = [
     path('friends/<int:pk>', ContactFriendsView.as_view(), name='contact-friends'),
+    path('people/', SearchFriendsView.as_view(), name='people'),
 ]
 
 friends_add = FriendPermissionViewset.as_view({

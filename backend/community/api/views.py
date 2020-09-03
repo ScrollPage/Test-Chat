@@ -162,6 +162,17 @@ class ContactFriendsView(generics.ListAPIView):
 
 class SearchFriendsView(generics.ListAPIView):
     '''Вывод контактов для поиска людей'''
-    queryset = Contact.objects.all()
     serializer_class = ContactFriendsSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        query_name = self.request.query_params.get('query_name', None)
+        if not query_name:
+            query_name = ''
+        queryset = Contact.objects.all()
+        final_queryset = []
+        for term in query_name.split('_'):
+            final_queryset += queryset.filter(
+                Q(first_name__icontains = term) | Q(last_name__icontains = term)
+            )
+        return final_queryset
