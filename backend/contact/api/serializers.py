@@ -26,15 +26,14 @@ class CreateContactSerializer(serializers.ModelSerializer):
         except ContactCounter.DoesNotExist:
             counter = ContactCounter.objects.create()
             slug = 1
-        user = Contact(
+
+        user = Contact.objects.create_user(
             email=email,
             first_name=first_name,
             last_name=last_name,
             phone_number=phone_number,
             slug=f'id{slug}'
         )
-        user.set_password(password)
-        user.save()
         return user
 
 class TokenSerializer(serializers.ModelSerializer):
