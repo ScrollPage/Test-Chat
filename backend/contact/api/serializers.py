@@ -26,7 +26,6 @@ class CreateContactSerializer(serializers.ModelSerializer):
         except ContactCounter.DoesNotExist:
             counter = ContactCounter.objects.create()
             slug = 1
-
         user = Contact.objects.create_user(
             email=email,
             first_name=first_name,
