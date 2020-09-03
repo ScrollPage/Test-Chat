@@ -196,7 +196,7 @@ SIMPLE_JWT = {
 
 #Domens
 DJANGO_DOMEN = 'http://127.0.0.1:8000'
-REACT_DOMEN = 'http://127.0.0.1:3000'
+REACT_DOMEN = 'http://127.0.0.1:1234'
 
 #Djoser
 DJOSER = {
