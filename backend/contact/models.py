@@ -46,12 +46,13 @@ class ContactManager(BaseUserManager):
     ):
         user = self.model(
             email=self.normalize_email(email),
-            password=password,
             first_name=first_name,
             last_name=last_name,
             phone_number=phone_number,
             slug=slug
         )
+
+        user.set_password(password)
 
         user.is_admin = True
         user.is_staff = True
