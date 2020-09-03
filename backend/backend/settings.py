@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'channels',
     'djoser',
     'drf_yasg',
-    # 'rest_auth',
+    'rest_auth',
     # 'rest_auth.registration',
     'rest_framework',
     'rest_framework.authtoken',
@@ -153,7 +153,7 @@ REST_FRAMEWORK = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1:1234',
+    'http://127.0.0.1:3000',
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
