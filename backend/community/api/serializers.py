@@ -7,9 +7,10 @@ from community.models import AddRequest
 
 class ContactFriendsSerializer(serializers.ModelSerializer):
     '''Менее развернутый контакт'''
+    chat_id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'slug', 'avatar']
+        fields = ['id', 'first_name', 'last_name', 'slug', 'avatar', 'chat_id']
 
 class ContactDetailSerializer(serializers.ModelSerializer):
     '''Выводит профиль пользователя'''

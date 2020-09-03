@@ -1,8 +1,9 @@
 from rest_framework import permissions, generics, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Count, Exists, Q
+from django.db.models import Count, Exists, Q, Sum, Avg
 from django.shortcuts import get_object_or_404
+from django.db import models
 
 from .serializers import (
     ContactDetailSerializer, 
@@ -26,6 +27,7 @@ from .service import (
     ModelViewSetPermission
 )
 from contact.models import Contact
+from chat.models import Chat
 from community.models import AddRequest
 
 class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
@@ -151,4 +153,15 @@ class ContactFriendsView(generics.ListAPIView):
     def get_queryset(self):
         pk = self.kwargs['pk']
         contact = get_object_or_404(Contact, id=pk)
-        return contact.friends.all()
+        queryset = contact.friends.all()
+        for friend in queryset:
+            queryset = queryset.annotate(
+                chat_id=Sum('chats__id', filter=Q(chats__participants=friend))
+            )
+        return queryset
+
+class SearchFriendsView(generics.ListAPIView):
+    '''Вывод контактов для поиска людей'''
+    queryset = Contact.objects.all()
+    serializer_class = ContactFriendsSerializer
+    permission_classes = [permissions.IsAuthenticated]

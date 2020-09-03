@@ -7,7 +7,6 @@ from community.models import AddRequest
 class IsCurrentUser(BasePermission):
     '''Тот ли пользователь?'''
     def has_permission(self, request, view):
-        print('дерьмо')
         contact = get_object_or_404(Contact, pk=view.kwargs['pk'])
         return any([
             (request.user.slug==contact.slug),
