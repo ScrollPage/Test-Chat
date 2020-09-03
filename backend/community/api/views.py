@@ -170,9 +170,8 @@ class SearchFriendsView(generics.ListAPIView):
         if not query_name:
             query_name = ''
         queryset = Contact.objects.all()
-        final_queryset = []
-        for term in query_name.split('_'):
-            final_queryset += queryset.filter(
+        for term in query_name.split('_')[:2]:
+            queryset = queryset.filter(
                 Q(first_name__icontains = term) | Q(last_name__icontains = term)
             )
-        return final_queryset
+        return queryset
