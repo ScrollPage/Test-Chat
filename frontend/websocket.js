@@ -50,10 +50,10 @@ class WebSocketService {
     }
   }
 
-  fetchMessages(username, chatId) {
+  fetchMessages(userId, chatId) {
     this.sendMessage({ 
       command: 'fetch_messages', 
-      username: username, 
+      id: userId, 
       chatId: chatId 
     });
   }

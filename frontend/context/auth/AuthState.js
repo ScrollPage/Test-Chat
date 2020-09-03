@@ -23,17 +23,50 @@ export const AuthState = ({ children }) => {
 
   const initialState = {
     token: null,
-    username: null,
+    firstName: null,
+    lastName: null,
+    phoneNumber: null,
+    slug: null,
+    userId: null,
+    email: null,
     loading: false,
     error: null
   };
 
   const [state, dispatch] = useReducer(AuthReducer, initialState);
 
-  const authLogin = (username, password) => {
+  const authInfo = (token) => {
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`
+    };
+    axios.get('/auth/users/me/')
+      .then(res => {
+        const firstName = res.data.first_name;
+        const lastName = res.data.last_name;
+        const phoneNumber = res.data.phone_number;
+        const slug = res.data.slug;
+        const userId = res.data.id;
+        const email = res.data.email;
+        Cookie.set('firstName', firstName);
+        Cookie.set('lastName', lastName);
+        Cookie.set('phoneNumber', phoneNumber);
+        Cookie.set('slug', slug);
+        Cookie.set('userId', userId);
+        Cookie.set('email', email);
+        console.log('Информация успешно занесена в куки');
+
+        authSuccess(token, firstName, lastName, phoneNumber, slug, userId, email);
+      })
+      .catch(err => {
+        console.log('Ошибка при взятии информации о пользователе')
+      })
+  }
+
+  const authLogin = (email, password) => {
     authStart();
-    axios.post('/auth/jwt/create', {
-      username: username,
+    axios.post('/auth/jwt/create/', {
+      email: email,
       password: password
     })
       .then(res => {
@@ -41,10 +74,8 @@ export const AuthState = ({ children }) => {
         const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
 
         Cookie.set('token', token);
-        Cookie.set('username', username);
         Cookie.set('expirationDate', expirationDate);
-
-        authSuccess(username, token);
+        authInfo(token);
         checkAuthTimeout(3600);
 
         show('Вы успешно вошли!', 'success');
@@ -55,10 +86,12 @@ export const AuthState = ({ children }) => {
       })
   };
 
-  const authSignup = (username, email, password) => {
+  const authSignup = (email, firstName, lastName, phoneNumber, password) => {
     axios.post('/api/v1/register/ ', {
-      username: username,
       email: email,
+      first_name: firstName,
+      last_name: lastName,
+      phone_number: phoneNumber,
       password: password
     })
       .then(res => {
@@ -71,7 +104,12 @@ export const AuthState = ({ children }) => {
 
   const authCheckState = () => {
     const token = Cookie.get('token');
-    const username = Cookie.get('username');
+    const firstName = Cookie.get('firstName');
+    const lastName = Cookie.get('lastName');
+    const phoneNumber = Cookie.get('phoneNumber');
+    const slug = Cookie.get('slug');
+    const userId = Cookie.get('userId');
+    const email = Cookie.get('email');
     if (token === undefined) {
       logout();
     } else {
@@ -79,7 +117,7 @@ export const AuthState = ({ children }) => {
       if (expirationDate <= new Date()) {
         logout();
       } else {
-        authSuccess(username, token);
+        authSuccess(token, firstName, lastName, phoneNumber, slug, userId, email);
         checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000);
       }
     }
@@ -100,7 +138,7 @@ export const AuthState = ({ children }) => {
 
   const authStart = () => dispatch({ type: AUTH_START });
 
-  const authSuccess = (username, token) => dispatch({ type: AUTH_SUCCESS, username, token });
+  const authSuccess = (token, firstName, lastName, phoneNumber, slug, userId, email) => dispatch({ type: AUTH_SUCCESS, token, firstName, lastName, phoneNumber, slug, userId, email });
 
   const authFail = (error) => dispatch({ type: AUTH_FAIL, error });
 
@@ -112,13 +150,18 @@ export const AuthState = ({ children }) => {
       WebSocketInstance.disconnect();
     }
     Cookie.remove('token');
-    Cookie.remove('username');
     Cookie.remove('expirationDate');
-    dispatch({ type: AUTH_LOGOUT});
+    Cookie.remove('firstName');
+    Cookie.remove('lastName');
+    Cookie.remove('phoneNumber');
+    Cookie.remove('slug');
+    Cookie.remove('userId');
+    Cookie.remove('email');
+    dispatch({ type: AUTH_LOGOUT });
     show('Вы успешно вышли!', 'success');
   };
 
-  const { token, username, loading, error } = state;
+  const { token, firstName, lastName, phoneNumber, slug, userId, email, loading, error } = state;
 
   return (
     <AuthContext.Provider value={{
@@ -128,7 +171,7 @@ export const AuthState = ({ children }) => {
       authActivate,
       logout,
       checkAuthTimeout,
-      token, username, loading, error
+      token, firstName, lastName, phoneNumber, slug, userId, email, loading, error
     }}>
       {children}
     </AuthContext.Provider>

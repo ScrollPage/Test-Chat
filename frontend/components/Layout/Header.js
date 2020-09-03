@@ -8,7 +8,7 @@ import { AuthContext } from '@/context/auth/AuthContext';
 
 const Header = () => {
 
-  const { username, logout } = useContext(AuthContext);
+  const { firstName, lastName, logout } = useContext(AuthContext);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -27,7 +27,7 @@ const Header = () => {
             onClick={() => setMenuOpen(state => !state)}
           >
             <Avatar style={{ backgroundColor: 'lightblue', marginRight: '15px' }} icon={<UserOutlined />} />
-            <div>{username}</div>
+            <div>{`${firstName} ${lastName}`}</div>
             <div className="styled-avatar__arrow">
               {menuOpen ? <UpOutlined /> : <DownOutlined />}
             </div>
@@ -53,13 +53,6 @@ const Header = () => {
 }
 
 export default Header;
-
-// export const getServerSideProps = async (ctx) => {
-
-//   const username = cookies(ctx).username; 
-
-//   return { props: { username: username } };
-// }
 
 const StyledHeader = styled.div`
   background: #1890ff;

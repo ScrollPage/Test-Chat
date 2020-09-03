@@ -7,9 +7,9 @@ import {
 
 const handlers = {
   [AUTH_START]: (state) => ({ ...state, error: null, loading: true }),
-  [AUTH_SUCCESS]: (state, { username, token }) => ({ ...state, token: token, username: username, loading: false }),
+  [AUTH_SUCCESS]: (state, { token, firstName, lastName, phoneNumber, slug, userId, email }) => ({ ...state, token: token, firstName: firstName, lastName: lastName, phoneNumber: phoneNumber, slug: slug, userId: userId, email: email, loading: false }),
   [AUTH_FAIL]: (state, { error }) => ({ ...state, error: error, loading: false }),
-  [AUTH_LOGOUT]: (state) => ({ ...state, token: null, username: null}),
+  [AUTH_LOGOUT]: (state) => ({ ...state, token: null, firstName: null, lastName: null, phoneNumber: null, slug: null, userId: null, email: null}),
   DEFAULT: state => state
 };
 
