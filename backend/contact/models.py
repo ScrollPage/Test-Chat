@@ -134,12 +134,6 @@ def send_conf_mail(sender, instance=None, created=False, **kwargs):
                 user=instance, 
                 token=generate_token(instance.email)
             )
-            try:
-                counter = ContactCounter.objects.get(id=1)
-            except ContactCounter.DoesNotExist:
-                counter = ContactCounter.objects.create()
-            counter.counter += 1
-            counter.save()
             send_mail(
                 'Подтверждение регистрации',
                 f"Перейдите по ссылке, чтобы завершить регистрацию: {settings.REACT_DOMEN}/account-activation?token={m.token}",
@@ -147,3 +141,14 @@ def send_conf_mail(sender, instance=None, created=False, **kwargs):
                 [instance.email, ], 
                 fail_silently=False
             )
+
+@receiver(post_save, sender=Contact)
+def increase_counter(sender, instance=None, created=False, **kwargs):
+    '''Увеличние счетчика'''
+    if created:
+        try:
+            counter = ContactCounter.objects.get(id=1)
+        except ContactCounter.DoesNotExist:
+            counter = ContactCounter.objects.create()
+        counter.counter += 1
+        counter.save()
