@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import Message
 from .service import get_last_10_messages, get_current_chat
+from contact.models import Contact
 
 class ChatConsumer(WebsocketConsumer):
 
