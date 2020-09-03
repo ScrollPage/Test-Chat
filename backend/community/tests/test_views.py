@@ -54,7 +54,7 @@ class ContactTestCase(APITestCase):
         self.assertEqual(json.loads(response.content)['first_name'], 'NewTest')
 
     # def test_update_by_random_user(self):
-    #     self.client.force_authenticate(user=self.user2)
+    #     self.client.force_authenticate(user=self.user1)
     #     url = reverse('contact-detail', kwargs={'pk': 2})
     #     data = {
     #         'email': 'test1@case.test',

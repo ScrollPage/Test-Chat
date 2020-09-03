@@ -13,11 +13,12 @@ from .serializers import (
 from .permissions import (
     IsCurrentUser, 
     IsUsersInvites, 
-    IsSenderNotCurrentAndNotFriends, 
+    NotCurrentAndNotFriends, 
     IsNotSent,
     IsReceiver,
     IsFriends,
     OneOfUsers,
+    IsSender,
 )
 from .service import (
     RetrieveUpdateDestroyPermissionViewset,
@@ -58,8 +59,6 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
                     receiver=self.request.user
                 )
             )
-        ).filter(
-            is_active=True
         )
 
         return queryset
@@ -67,16 +66,36 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
 class AddRequestCustomViewset(ListCreatePermissionViewset):
     '''Создание запроса на добавление'''
     serializer_class = AddRequestSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated, IsUsersInvites, ]
     permission_classes_by_action = {
-        'list': [permissions.IsAuthenticated, IsUsersInvites, ],
-        'create': [IsSenderNotCurrentAndNotFriends, IsNotSent]
+        'create': [
+            permissions.IsAuthenticated, 
+            IsSender, 
+            NotCurrentAndNotFriends, 
+            IsNotSent, 
+        ],
+        'destroy': [permissions.IsAuthenticated, IsSender, ]
     }
 
     def get_queryset(self):
         slug = self.request.query_params.get('slug', None)
         contact = get_object_or_404(Contact, slug=slug)
         return AddRequest.objects.filter(receiver=contact)
+
+    @action(detail=False, methods=['post'])
+    def remove(self, request, *args, **kwargs):
+        data = request.data
+        sender_id = data['sender']
+        receiver_id = data['receiver']
+        sender_contact = get_object_or_404(Contact, id=sender_id)
+        receiver_contact = get_object_or_404(Contact, id=receiver_id)
+        add_request = get_object_or_404(
+            AddRequest,
+            sender=sender_contact, 
+            receiver=receiver_contact
+        )
+        add_request.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class FriendPermissionViewset(ModelViewSetPermission):
     '''Добавление и удаление друзей'''

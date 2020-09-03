@@ -21,12 +21,27 @@ friends_remove = FriendPermissionViewset.as_view({
     'post': 'remove',
 })
 
+request_add = AddRequestCustomViewset.as_view({
+    'post': 'create'
+})
+
+request_list = AddRequestCustomViewset.as_view({
+    'get': 'list'
+})
+
+request_remove = AddRequestCustomViewset.as_view({
+    'post': 'remove'
+})
+
 urlpatterns += format_suffix_patterns([
     path('friends/add/', friends_add, name='friends-add'),
-    path('friends/remove/', friends_remove, name='friends-remove')
+    path('friends/remove/', friends_remove, name='friends-remove'),
+    path('request/list/', request_list, name='request-list'),
+    path('request/add/', request_add, name='request-add'),
+    path('request/remove/', request_remove, name='request-remove'),
 ])
 
 r = DefaultRouter()
-r.register(r'request', AddRequestCustomViewset, basename='request')
+# r.register(r'request', AddRequestCustomViewset, basename='request')
 r.register(r'contact', ContactCustomViewSet, basename='contact')
 urlpatterns += r.urls

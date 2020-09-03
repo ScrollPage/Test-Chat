@@ -23,8 +23,8 @@ class IsUsersInvites(BasePermission):
             (request.user.is_superuser)
         ])
 
-class IsSenderNotCurrentAndNotFriends(BasePermission):
-    '''Отправитель, не тот же самый, и не друг ли уже?'''
+class NotCurrentAndNotFriends(BasePermission):
+    '''Не тот же самый, и не друг ли уже?'''
     def has_permission(self, request, view):
         data = request.data
         try:
@@ -35,12 +35,21 @@ class IsSenderNotCurrentAndNotFriends(BasePermission):
         sender_contact = get_object_or_404(Contact, id=sender_id)
         receiver_contact = get_object_or_404(Contact, id=receiver_id)
         return all([
-            (request.user),
-            (request.user==sender_contact),
             (sender_contact!=receiver_contact),
             (receiver_contact not in sender_contact.friends.all()),
             (sender_contact not in receiver_contact.friends.all()),
         ])
+
+class IsSender(BasePermission):
+    '''Отправитель ли'''
+    def has_permission(self, request, view):
+        data = request.data
+        try:
+            sender_id = data['sender']
+        except KeyError:
+            return True
+        sender_contact = get_object_or_404(Contact, id=sender_id)
+        return bool(request.user==sender_contact)
 
 class IsNotSent(BasePermission):
     '''Запрос еще не был отправлен'''

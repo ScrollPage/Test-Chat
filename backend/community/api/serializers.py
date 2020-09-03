@@ -19,6 +19,7 @@ class ContactDetailSerializer(serializers.ModelSerializer):
     is_sent = serializers.BooleanField(read_only=True)
     is_sent_to_you = serializers.BooleanField(read_only=True)
     friends = ContactFriendsSerializer(many=True, read_only=True)
+
     class Meta:
         model = Contact
         exclude = [
@@ -47,9 +48,9 @@ class AddRequestSerializer(serializers.ModelSerializer):
         receiver_id = data.get('receiver', None)
         sender_contact = get_object_or_404(Contact, id=sender_id)
         receiver_contact = get_object_or_404(Contact, id=receiver_id)
-        AddRequest.objects.create(
+        add_request = AddRequest.objects.create(
             sender = sender_contact,
             receiver = receiver_contact
         )
-
-        return AddRequest
+        print(add_request.id)
+        return add_request
