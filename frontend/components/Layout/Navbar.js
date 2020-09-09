@@ -1,11 +1,11 @@
 import React from 'react';
-import { MailOutlined, SettingOutlined, CommentOutlined, HomeOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
+import { MailOutlined, SettingOutlined, CommentOutlined, HomeOutlined, UserOutlined, TeamOutlined, SearchOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
+import Cookie from 'js-cookie';
 
 const navitems = [
-  { key: 'my_page', name: 'Моя страница' },
   { key: 'news', name: 'Новости' },
   { key: 'dialogs', name: 'Сообщения' },
   { key: 'friends', name: 'Друзья' },
@@ -14,7 +14,6 @@ const navitems = [
 ]
 
 const renderIcons = (key) => {
-  if (key === 'my_page') return <HomeOutlined />;
   if (key === 'news') return <MailOutlined />;
   if (key === 'dialogs') return <CommentOutlined />;
   if (key === 'friends') return <UserOutlined />;
@@ -35,17 +34,38 @@ const ActiveLink = ({ children, ...props }) => {
 const renderNavItems = (navitems) => {
 
   return (
-    navitems.map(navitem => (
+    <>
       <ActiveLink
-        key={navitem.key}
-        href={`/${navitem.key}`}
+        key={'global-search'}
+        href='/global-search' 
       >
         <NavLink>
-          <div>{renderIcons(navitem.key)}</div>
-          <div>{navitem.name}</div>
+          <div><SearchOutlined /></div>
+          <div>Новые друзья...</div>
         </NavLink>
       </ActiveLink>
-    ))
+      <ActiveLink
+        key={'my_page'}
+        href='/userpage/[userID]' 
+        as={`/userpage/${Cookie.get('userId')}`}
+      >
+        <NavLink>
+          <div><HomeOutlined /></div>
+          <div>Моя страница</div>
+        </NavLink>
+      </ActiveLink>
+      {navitems.map(navitem => (
+        <ActiveLink
+          key={navitem.key}
+          href={`/${navitem.key}`}
+        >
+          <NavLink>
+            <div>{renderIcons(navitem.key)}</div>
+            <div>{navitem.name}</div>
+          </NavLink>
+        </ActiveLink>
+      ))}
+    </>
   )
 }
 

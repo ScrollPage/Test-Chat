@@ -5,6 +5,7 @@ import { Avatar } from 'antd';
 import Link from 'next/link';
 import Container from '@/styles/Container';
 import { AuthContext } from '@/context/auth/AuthContext';
+import Search from '@/components/UI/Search';
 
 const Header = () => {
 
@@ -27,7 +28,7 @@ const Header = () => {
             onClick={() => setMenuOpen(state => !state)}
           >
             <Avatar style={{ backgroundColor: 'lightblue', marginRight: '15px' }} icon={<UserOutlined />} />
-            <div>{`${firstName} ${lastName}`}</div>
+            <p>{`${firstName} ${lastName}`}</p>
             <div className="styled-avatar__arrow">
               {menuOpen ? <UpOutlined /> : <DownOutlined />}
             </div>
@@ -73,6 +74,8 @@ const StyledHeaderInner = styled.div`
     &:first-of-type {
       font-weight: 900;
       font-size: 18px;
+      display: flex;
+      flex: 1;
     }
   }
   .styled-avatar__arrow {
@@ -88,6 +91,14 @@ const StyledAvatar = styled.div`
   align-items: center;
   height: 100%;
   cursor: pointer !important;
+  @media (max-width: 500px) {
+    p {
+      display: none;
+    }
+  }
+  p {
+    margin-bottom: 0px;
+  }
 `;
 
 const StyledAvatarMenu = styled.div`

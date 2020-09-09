@@ -13,3 +13,5 @@ export const ADD_MESSAGE = "ADD_MESSAGE";
 export const SET_MESSAGES = "SET_MESSAGES";
 export const SET_LOADING_FALSE = "SET_LOADING_FALSE";
 export const SET_LOADING = "SET_LOADING";
+
+export const SET_SEARCH = "SET_SEARCH";
