@@ -1,7 +1,7 @@
 from rest_framework import permissions, generics, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Count, Exists, Q, Sum, Avg
+from django.db.models import Count, Exists, Q, OuterRef, Subquery, Avg, Sum, IntegerField
 from django.shortcuts import get_object_or_404
 from django.db import models
 
@@ -9,7 +9,7 @@ from .serializers import (
     ContactDetailSerializer, 
     AddRequestSerializer,
     FriendActionsSerializer,
-    ContactFriendsSerializer
+    ContactFriendsSerializer,
 )
 from .permissions import (
     IsCurrentUser, 
@@ -24,7 +24,8 @@ from .permissions import (
 from .service import (
     RetrieveUpdateDestroyPermissionViewset,
     ListCreatePermissionViewset,
-    ModelViewSetPermission
+    ModelViewSetPermission,
+    filter_by_query_name
 )
 from contact.models import Contact
 from chat.models import Chat
@@ -39,34 +40,34 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
     }
 
     def get_queryset(self):
-        pk = self.kwargs['pk']
-        contact = get_object_or_404(Contact, id=pk)
-        queryset = Contact.objects.all().annotate(
+        pk = int(self.kwargs['pk'])
+        queryset = Contact.objects.filter(id=pk).annotate(
             is_friend=Count('friends', filter=Q(friends=self.request.user))
         ).annotate(
-            num_friends=Count('friends')
+            num_friends=Avg('friends')
         ).annotate(
             current_user=Count('slug', filter=Q(slug=self.request.user.slug))
         ).annotate(
             is_sent=Exists(
                 AddRequest.objects.filter(
-                    sender=self.request.user,
-                    receiver=contact,
+                    sender__id=self.request.user.id, 
+                    receiver__id=pk
                 )
             )
         ).annotate(
             is_sent_to_you=Exists(
                 AddRequest.objects.filter(
-                    sender=contact,
-                    receiver=self.request.user
+                    sender__id=pk, 
+                    receiver__id=self.request.user.id
                 )
             )
+        ).annotate(
+            chat_id=Avg('chats__id', filter=Q(chats__participants=self.request.user))
         )
-
         return queryset
 
 class AddRequestCustomViewset(ListCreatePermissionViewset):
-    '''Создание запроса на добавление'''
+    '''Создание и удаление запроса на добавление'''
     serializer_class = AddRequestSerializer
     permission_classes = [permissions.IsAuthenticated, IsUsersInvites, ]
     permission_classes_by_action = {
@@ -148,30 +149,27 @@ class ContactFriendsView(generics.ListAPIView):
         для отображния друзей текущего пользователя
     '''
     serializer_class = ContactFriendsSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCurrentUser, ]
+    permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
         contact = get_object_or_404(Contact, id=pk)
         queryset = contact.friends.all()
+        query_name = self.request.query_params.get('query_name', None)
+        queryset = filter_by_query_name(query_name, queryset)
         for friend in queryset:
             queryset = queryset.annotate(
                 chat_id=Sum('chats__id', filter=Q(chats__participants=friend))
             )
         return queryset
 
-class SearchFriendsView(generics.ListAPIView):
+class SearchPeopleView(generics.ListAPIView):
     '''Вывод контактов для поиска людей'''
     serializer_class = ContactFriendsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        query_name = self.request.query_params.get('query_name', None)
-        if not query_name:
-            query_name = ''
         queryset = Contact.objects.all()
-        for term in query_name.split('_')[:2]:
-            queryset = queryset.filter(
-                Q(first_name__icontains = term) | Q(last_name__icontains = term)
-            )
+        query_name = self.request.query_params.get('query_name', None)
+        queryset = filter_by_query_name(query_name, queryset)
         return queryset

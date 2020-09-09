@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 
-from chat.models import Contact
+from chat.models import Chat, Contact
+# from contact.models import Contact
 from backend.service import ContactSerializer
 from community.models import AddRequest
 
@@ -12,7 +13,7 @@ class ContactFriendsSerializer(serializers.ModelSerializer):
         model = Contact
         fields = ['id', 'first_name', 'last_name', 'slug', 'avatar', 'chat_id']
 
-class ContactDetailSerializer(serializers.ModelSerializer):
+class ContactDetailSerializer(ContactFriendsSerializer):
     '''Выводит профиль пользователя'''
     is_friend = serializers.BooleanField(read_only=True)
     num_friends = serializers.IntegerField(read_only=True)

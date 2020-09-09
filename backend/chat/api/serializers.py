@@ -21,6 +21,7 @@ class ChatSerializer(serializers.ModelSerializer):
     '''Chat serializer'''
     participants = ContactSerializer(many=True)
     messages = MessageSerializer(read_only=True, many=True)
+    inside = serializers.BooleanField(read_only=True)
     class Meta:
         model = Chat
         fields = '__all__'
