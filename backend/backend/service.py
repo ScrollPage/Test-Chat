@@ -15,3 +15,9 @@ class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         exclude = ['friends']
+
+class LowContactSerializer(serializers.ModelSerializer):
+    '''Базовая сриализация контакта'''
+    class Meta:
+        model = Contact
+        fields = ['id', 'first_name', 'last_name', 'slug', 'avatar',]

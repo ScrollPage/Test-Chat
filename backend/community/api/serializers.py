@@ -3,15 +3,15 @@ from django.shortcuts import get_object_or_404
 
 from chat.models import Chat, Contact
 # from contact.models import Contact
-from backend.service import ContactSerializer
+from backend.service import ContactSerializer, LowContactSerializer
 from community.models import AddRequest
 
-class ContactFriendsSerializer(serializers.ModelSerializer):
+class ContactFriendsSerializer(LowContactSerializer):
     '''Менее развернутый контакт'''
     chat_id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'slug', 'avatar', 'chat_id']
+        fields = ['chat_id']
 
 class ContactDetailSerializer(ContactFriendsSerializer):
     '''Выводит профиль пользователя'''
@@ -20,7 +20,7 @@ class ContactDetailSerializer(ContactFriendsSerializer):
     current_user = serializers.BooleanField(read_only=True)
     is_sent = serializers.BooleanField(read_only=True)
     is_sent_to_you = serializers.BooleanField(read_only=True)
-    friends = ContactFriendsSerializer(many=True, read_only=True)
+    friends = LowContactSerializer(many=True, read_only=True)
 
     class Meta:
         model = Contact
