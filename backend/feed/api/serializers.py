@@ -18,17 +18,23 @@ class RepostSerializer(serializers.ModelSerializer, BaseFeedSerializer):
         model = RePost
         fields = ['id']
 
-class ShortPostserializer(serializers.ModelSerializer, BaseFeedSerializer):
+class ShortPostSerializer(serializers.ModelSerializer, BaseFeedSerializer):
     '''Вывод поста без доп информации'''
     user = LowReadContactSerializer()
     class Meta:
         model = Post
         fields = ['id', 'user']
 
+class UpdatePostSerializer(serializers.ModelSerializer):
+    '''Сериализатор для метода put'''
+    class Meta:
+        model = Post
+        fields = ['text', 'image']
+
 class PostSerializer(serializers.ModelSerializer, BaseFeedSerializer):
     '''Сериализация поста'''
     user = LowReadContactSerializer()
-    parent = ShortPostserializer()
+    parent = ShortPostSerializer()
     likes = LikeSerializer(many=True, read_only=True)
     reposts = LikeSerializer(many=True, read_only=True)
     class Meta:

@@ -4,6 +4,14 @@ from rest_framework.response import Response
 
 from backend.service import PermissionMixin, LowContactSerializer, LowContactSerializer
 
+class SerializerMixin:
+    '''Класс сериализатора в зависимости от action'''
+    def get_serializer_class(self):
+        try:
+            return self.serializer_class_by_method[self.request.method]
+        except KeyError:
+            return self.serializer_class
+
 class UsersPostsListMixin(mixins.ListModelMixin):
     '''Посты только текущего пользователя'''
     def list(self, request, *args, **kwargs):
@@ -17,7 +25,7 @@ class UsersPostsListMixin(mixins.ListModelMixin):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-class PermisisonModelViewset(PermissionMixin, ModelViewSet, UsersPostsListMixin):
+class PermisisonModelViewset(PermissionMixin, SerializerMixin, ModelViewSet, UsersPostsListMixin):
     '''Все про посты'''
     pass
 
