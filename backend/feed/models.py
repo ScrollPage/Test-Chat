@@ -35,8 +35,8 @@ class Post(models.Model):
         related_name = 'children'
     )
     user = models.ForeignKey(Contact, on_delete=models.DO_NOTHING)
-    text = models.TextField(max_length=1000)
-    image = models.ImageField(upload_to='user_posts/%Y/%m/%d', blank=True)
+    text = models.TextField(max_length=1000, blank=True, default='')
+    image = models.ImageField(upload_to='user_posts/%Y/%m/%d', blank=True, null=True)
     likes = models.ManyToManyField(Like, blank=True)
     reposts = models.ManyToManyField(RePost, blank=True)
 

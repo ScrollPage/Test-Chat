@@ -25,8 +25,14 @@ class UsersPostsListMixin(mixins.ListModelMixin):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-class PermisisonModelViewset(PermissionMixin, SerializerMixin, ModelViewSet, UsersPostsListMixin):
-    '''Все про посты'''
+class PermisisonSerializerModelViewset(PermissionMixin, 
+                                       SerializerMixin, 
+                                       ModelViewSet, 
+                                       UsersPostsListMixin):
+    '''
+    Измененны методы определения прав доступа, класса сериализатора
+    А также измененный метод лист
+    '''
     pass
 
 class LowReadContactSerializer(LowContactSerializer):
@@ -37,4 +43,5 @@ class LowReadContactSerializer(LowContactSerializer):
 
 
 class BaseFeedSerializer(serializers.Serializer):
+    '''Базовый класс для сериализаторов'''
     user = LowContactSerializer()

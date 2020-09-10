@@ -1,10 +1,13 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+
 
 from feed.models import Post, Like, RePost
 from backend.service import LowContactSerializer
 from .service import BaseFeedSerializer, LowReadContactSerializer
 from contact.models import Contact
+from .exceptions import BadRequestError
 
 class LikeSerializer(serializers.ModelSerializer, BaseFeedSerializer):
     '''Вывод пользователя лайка'''
@@ -20,10 +23,10 @@ class RepostSerializer(serializers.ModelSerializer, BaseFeedSerializer):
 
 class ShortPostSerializer(serializers.ModelSerializer, BaseFeedSerializer):
     '''Вывод поста без доп информации'''
-    user = LowReadContactSerializer()
+    id = serializers.IntegerField(required=False)
     class Meta:
         model = Post
-        fields = ['id', 'user']
+        fields = ['id']
 
 class UpdatePostSerializer(serializers.ModelSerializer):
     '''Сериализатор для метода put'''
@@ -31,10 +34,10 @@ class UpdatePostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['text', 'image']
 
-class PostSerializer(serializers.ModelSerializer, BaseFeedSerializer):
+class PostSerializer(serializers.ModelSerializer):
     '''Сериализация поста'''
     user = LowReadContactSerializer()
-    parent = ShortPostSerializer()
+    parent = ShortPostSerializer(required=False)
     likes = LikeSerializer(many=True, read_only=True)
     reposts = LikeSerializer(many=True, read_only=True)
     class Meta:
@@ -44,18 +47,21 @@ class PostSerializer(serializers.ModelSerializer, BaseFeedSerializer):
     def create(self, validated_data):
         text = validated_data.get('text', None)
         image = validated_data.get('image', None)
-        try:
-            slug = validated_data.get('user', None)['slug']
-        except KeyError:
-            slug = None
-        try:
-            parent = validated_data.get('parent', None)['user']['slug']
-        except KeyError:
-            parent = None
-        post = Post.objects.create(
-            text=text,
-            image=image,
-            user=get_object_or_404(Contact, slug=slug),
-            parent=parent
-        )
+        if text or image:
+            try:
+                slug = validated_data.get('user', None)['slug']
+            except KeyError:
+                slug = None
+            try:
+                parent = validated_data.get('parent', None)['id']
+            except KeyError:
+                parent = None
+            post = Post.objects.create(
+                text=text,
+                image=image,
+                user=get_object_or_404(Contact, slug=slug),
+                parent=parent
+            )
+        else:
+            raise BadRequestError('You need either image or text.')
         return post
