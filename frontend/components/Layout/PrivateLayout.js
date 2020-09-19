@@ -39,7 +39,7 @@ const StyledMain = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-  padding-top: 80px;
+  padding-top: 60px;
   @media (max-width: 575.98px) {
     padding-top: 70px;
   }

@@ -6,10 +6,11 @@ import Link from 'next/link';
 import Container from '@/styles/Container';
 import { AuthContext } from '@/context/auth/AuthContext';
 import Search from '@/components/UI/Search';
+import Cookie from 'js-cookie';
 
 const Header = () => {
 
-  const { firstName, lastName, logout } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -28,7 +29,7 @@ const Header = () => {
             onClick={() => setMenuOpen(state => !state)}
           >
             <Avatar style={{ backgroundColor: 'lightblue', marginRight: '15px' }} icon={<UserOutlined />} />
-            <p>{`${firstName} ${lastName}`}</p>
+            <p>{`${Cookie.get('firstName')} ${Cookie.get('lastName')}`}</p>
             <div className="styled-avatar__arrow">
               {menuOpen ? <UpOutlined /> : <DownOutlined />}
             </div>

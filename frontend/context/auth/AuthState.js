@@ -48,12 +48,12 @@ export const AuthState = ({ children }) => {
         const slug = res.data.slug;
         const userId = res.data.id;
         const email = res.data.email;
+        Cookie.set('email', email);
         Cookie.set('firstName', firstName);
         Cookie.set('lastName', lastName);
         Cookie.set('phoneNumber', phoneNumber);
         Cookie.set('slug', slug);
         Cookie.set('userId', userId);
-        Cookie.set('email', email);
         console.log('Информация успешно занесена в куки');
 
         authSuccess(token, firstName, lastName, phoneNumber, slug, userId, email);
@@ -132,7 +132,7 @@ export const AuthState = ({ children }) => {
         show('Активация прошла успешно!', 'success');
       })
       .catch(err => {
-        show('Ошибка активации!', 'success');
+        show('Ошибка активации!', 'warning');
       })
   };
 
@@ -161,6 +161,28 @@ export const AuthState = ({ children }) => {
     show('Вы успешно вышли!', 'success');
   };
 
+  const authChange = (email, firstName, lastName, phoneNumber) => {
+
+    axios.patch(`/api/v1/contact/${Cookie.get('userId')}/`, {
+      email: email,
+      first_name: firstName,
+      last_name: lastName,
+      phone_number: phoneNumber
+    })
+      .then(res => {
+        console.log(res);
+        Cookie.set('email', email);
+        Cookie.set('firstName', firstName);
+        Cookie.set('lastName', lastName);
+        Cookie.set('phoneNumber', phoneNumber);
+        show('Вы успешно сменили данные!', 'success');
+        push({ pathname: '/dialogs' }, undefined, { shallow: true });
+      })
+      .catch(err => {
+        show('Ошибка смены данных!', 'warning');
+      })
+  }
+
   const { token, firstName, lastName, phoneNumber, slug, userId, email, loading, error } = state;
 
   return (
@@ -171,6 +193,7 @@ export const AuthState = ({ children }) => {
       authActivate,
       logout,
       checkAuthTimeout,
+      authChange,
       token, firstName, lastName, phoneNumber, slug, userId, email, loading, error
     }}>
       {children}

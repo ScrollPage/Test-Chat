@@ -38,7 +38,7 @@ const StyledChatHeader = styled.div`
   border-bottom: 1px solid #f0f0f0;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   @media (max-width: 575.98px) {
     padding-top: 15px;
     padding-right: 0;

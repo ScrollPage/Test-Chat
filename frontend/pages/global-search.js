@@ -14,6 +14,8 @@ export default function News() {
 
   const { data } = useSWR(`/api/v1/people/?query_name=${search}`);
 
+  console.log(data);
+
   const renderPeople = (people) => (
     people.map(man => (
       <Friend
@@ -29,7 +31,6 @@ export default function News() {
     <PrivateLayout>
       <StyledGlobalSearch>
         <Search />
-        <hr/>
         {data && renderPeople(data)}
       </StyledGlobalSearch>
     </PrivateLayout>
@@ -65,9 +66,6 @@ export const getServerSideProps = async (ctx) => {
 const StyledGlobalSearch = styled.div`
   display: flex;
   flex-direction: column;
-  hr {
-    border: 1px solid white;
-  }
 `;
 
 

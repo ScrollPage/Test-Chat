@@ -13,6 +13,8 @@ import { AlertState } from '@/context/alert/AlertState';
 import { AuthState } from '@/context/auth/AuthState';
 import { MessageState } from '@/context/message/MessageState';
 import { SearchState } from '@/context/search/SearchState';
+import { FriendState } from '@/context/friend/FriendState';
+
 import Cookie from 'js-cookie';
 
 import Alert from '@/components/Layout/Alert';
@@ -54,12 +56,14 @@ const MyApp = ({ Component, pageProps }) => {
           <AlertState>
             <AuthState>
               <MessageState>
-                <SearchState>
-                  <>
-                    <Alert />
-                    <Component {...pageProps} />
-                  </>
-                </SearchState>
+                <FriendState>
+                  <SearchState>
+                    <>
+                      <Alert />
+                      <Component {...pageProps} />
+                    </>
+                  </SearchState>
+                </FriendState>
               </MessageState>
             </AuthState>
           </AlertState>

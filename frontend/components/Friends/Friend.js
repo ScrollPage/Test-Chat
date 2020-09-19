@@ -1,10 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { FriendContext } from '@/context/friend/FriendContext';
 
 const Friend = ({ userId, name, chatId }) => {
+
+  const { push } = useRouter();
+
+  const { createChat } = useContext(FriendContext);
+
+  const chatIsNull = () => {
+    if (chatId === null) {
+      createChat(userId);
+    } else {
+      push('/dialogs/[chatID]', `/dialogs/${chatId}`, { shallow: true });
+    }
+  }
+
   return (
     <StyledFriend>
       <div>
@@ -20,11 +35,11 @@ const Friend = ({ userId, name, chatId }) => {
             <h4>{name}</h4>
           </a>
         </Link>
-        <Link href='/dialogs/[chatID]' as={`/dialogs/${chatId}`}>
-          <a>
+        {/* <Link href='/dialogs/[chatID]' as={`/dialogs/${chatId}`}> */}
+          <a onClick={() => chatIsNull()}>
             Написать сообщение
           </a>
-        </Link>
+        {/* </Link> */}
       </div>
     </StyledFriend>
   );

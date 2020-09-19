@@ -9,7 +9,7 @@ import UserFriends from '@/components/Userpage/UserFriends';
 
 export default function Teams({ user, userId }) {
 
-  const { data } = useSWR(`/api/v1/contact/${userId}`, { initialData: user });
+  const { data } = useSWR(`/api/v1/contact/${userId}/`, { initialData: user });
 
   return (
     <PrivateLayout>
@@ -40,7 +40,7 @@ export const getServerSideProps = async (ctx) => {
   let user = null;
 
   await axios
-    .get(`/api/v1/contact/${userId}`)
+    .get(`/api/v1/contact/${userId}/`)
     .then((response) => {
       user = response?.data;
     })
@@ -56,6 +56,7 @@ export const getServerSideProps = async (ctx) => {
 }
 
 const StyledUser = styled.div`
+  margin-top: 10px;
   display: flex;
   .user-avatar__friends {
     background-color: #f4f4f4;

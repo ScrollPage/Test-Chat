@@ -30,7 +30,12 @@ const StyledSearch = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
+  position: sticky;
+  top: 60px;
+  z-index: 1; 
   /* max-width: 200px; */
+  padding: 20px 0;
+  background: #fff;
   > div {
     &:first-of-type {
       margin: 0 20px 0 0px;

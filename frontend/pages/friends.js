@@ -6,9 +6,9 @@ import axios from 'axios';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
 
-export default function Friends({friends, userId}) {
+export default function Friends({friends}) {
 
-  const { data } = useSWR(`/api/v1/friends/${userId}`, { initialData: friends});
+  const { data } = useSWR(`/api/v1/friends/`, { initialData: friends});
 
   console.log(data);
 
@@ -27,7 +27,7 @@ export default function Friends({friends, userId}) {
     <PrivateLayout>
       <SearchDialog />
       <StyledFriends>
-        {data !== null ? data.length === 0 ? <p>У вас нет друзей</p> : renderFriends(data) : <p>Ошибка</p>}
+        {data !== null ? data.length === 0 ? <p>У вас нет друзей</p> : renderFriends(data) : <h4>У вас нет друзей</h4>}
       </StyledFriends>
     </PrivateLayout>
   );
@@ -35,7 +35,7 @@ export default function Friends({friends, userId}) {
 
 export const getServerSideProps = async (ctx) => {
 
-  const userId = cookies(ctx)?.userId || null; 
+  // const userId = cookies(ctx)?.userId || null; 
   const token = cookies(ctx)?.token || null; 
 
   axios.defaults.headers = {
@@ -46,7 +46,7 @@ export const getServerSideProps = async (ctx) => {
   let friends = null;
 
   await axios
-    .get(`/api/v1/friends/${userId}`)
+    .get(`/api/v1/friends/`)
     .then((response) => {
       friends = response?.data;
     })
@@ -54,8 +54,7 @@ export const getServerSideProps = async (ctx) => {
       console.log(error);
     });
   return { props: { 
-    friends: friends,
-    userId: userId
+    friends: friends
   }};
 }
 
@@ -64,4 +63,7 @@ const StyledFriends = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  h4 {
+    margin-top: 10px; 
+  }
 `;
