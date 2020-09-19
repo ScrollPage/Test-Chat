@@ -33,6 +33,11 @@ class UpdatePostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['text', 'image']
 
+class UpdateCommentSerializer(serializers.ModelSerializer):
+    '''Сериализатор для обновления сообщения'''
+    class Meta:
+        model = Comment
+        fields = ['text', 'image']
 
 class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     '''Сериализация коммента к посту'''

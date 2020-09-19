@@ -3,19 +3,29 @@ from django.db.models import Count
 
 from .service import (
     PermisisonSerializerModelViewset, 
-    PermissionUpdateDestroyCreateViewset
+    PermissionSerializerExcludeListViewset
 )
 from feed.models import Post, Comment
-from .serializers import PostSerializer, UpdatePostSerializer, CommentSerializer
+from .serializers import (
+    PostSerializer, 
+    UpdatePostSerializer, 
+    CommentSerializer, 
+    UpdateCommentSerializer
+)
+from .permissions import IsCurrentUser
 
 class PostsCustomViewset(PermisisonSerializerModelViewset):
     '''Все про посты'''
+    model = Post
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    permission_classes_by_action = {}
-    serializer_class_by_method = {
-        'PUT': UpdatePostSerializer,
-        'PATCH': UpdatePostSerializer,
+    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes_by_action = {
+        'update': [IsCurrentUser, ],
+        'partial_update': [IsCurrentUser, ],
+    }
+    serializer_class_by_action = {
+        'update': UpdatePostSerializer,
+        'partial_update': UpdatePostSerializer,
     }
 
     def get_queryset(self):
@@ -26,9 +36,17 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
         )
         return queryset
 
-class CommentCustomViewset(PermissionUpdateDestroyCreateViewset):
+class CommentCustomViewset(PermissionSerializerExcludeListViewset):
     '''Все про комменты'''
     queryset = Comment.objects.all()
+    model = Comment
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    permission_classes_by_action = {}
+    permission_classes = [IsCurrentUser, ]
+    permission_classes_by_action = {
+        'create': [permissions.IsAuthenticated, ],
+        'retrieve': [permissions.IsAuthenticated, ]
+    }
+    serializer_class_by_action = {
+        'update': UpdateCommentSerializer,
+        'partial_update': UpdateCommentSerializer,
+    }

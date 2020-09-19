@@ -32,12 +32,14 @@ class PermisisonSerializerModelViewset(PermissionMixin,
     '''
     pass
 
-class PermissionUpdateDestroyCreateViewset(PermissionMixin,
-                                           mixins.UpdateModelMixin,
-                                           mixins.DestroyModelMixin,
-                                           mixins.CreateModelMixin,
-                                           GenericViewSet
-                                        ):
+class PermissionSerializerExcludeListViewset(PermissionMixin,
+                                             SerializerMixin,
+                                             mixins.UpdateModelMixin,
+                                             mixins.DestroyModelMixin,
+                                             mixins.CreateModelMixin,
+                                             mixins.RetrieveModelMixin,
+                                             GenericViewSet,
+                                            ):
     '''Создание, редактирование и удаление'''
     pass
     

@@ -14,7 +14,7 @@ class SerializerMixin:
     '''Класс сериализатора в зависимости от action'''
     def get_serializer_class(self):
         try:
-            return self.serializer_class_by_method[self.request.method]
+            return self.serializer_class_by_action[self.action]
         except KeyError:
             return self.serializer_class
 
