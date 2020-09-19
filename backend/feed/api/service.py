@@ -2,15 +2,12 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins, serializers
 from rest_framework.response import Response
 
-from backend.service import PermissionMixin, LowContactSerializer, LowContactSerializer
-
-class SerializerMixin:
-    '''Класс сериализатора в зависимости от action'''
-    def get_serializer_class(self):
-        try:
-            return self.serializer_class_by_method[self.request.method]
-        except KeyError:
-            return self.serializer_class
+from backend.service import (
+    PermissionMixin, 
+    LowContactSerializer, 
+    LowContactSerializer, 
+    SerializerMixin
+)
 
 class UsersPostsListMixin(mixins.ListModelMixin):
     '''Посты только текущего пользователя'''
@@ -35,6 +32,16 @@ class PermisisonSerializerModelViewset(PermissionMixin,
     '''
     pass
 
+class PermissionUpdateDestroyCreateViewset(PermissionMixin,
+                                           mixins.UpdateModelMixin,
+                                           mixins.DestroyModelMixin,
+                                           mixins.CreateModelMixin,
+                                           GenericViewSet
+                                        ):
+    '''Создание, редактирование и удаление'''
+    pass
+    
+
 class LowReadContactSerializer(LowContactSerializer):
     '''Все поля для чтения, кроме slug'''
     first_name = serializers.CharField(read_only=True)
@@ -45,3 +52,8 @@ class LowReadContactSerializer(LowContactSerializer):
 class BaseFeedSerializer(serializers.Serializer):
     '''Базовый класс для сериализаторов'''
     user = LowContactSerializer()
+
+class AbstractPostSerializer(serializers.Serializer):
+    '''Базовый сериализатор для поста и коммента'''
+    num_likes = serializers.IntegerField(read_only=True)
+    user = LowReadContactSerializer()

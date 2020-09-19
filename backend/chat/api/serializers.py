@@ -10,6 +10,11 @@ class ContactSerializer(serializers.ModelSerializer):
         model = Contact
         fields = ['id', 'first_name', 'last_name', 'slug']
 
+class ContactIDSerializer(serializers.StringRelatedField):
+    '''Сериализация id контакта'''
+    def to_internal_value(self, value):
+        return value
+
 class MessageSerializer(serializers.ModelSerializer):
     '''Message serializer'''
     contact = ContactSerializer(read_only=True)
@@ -18,16 +23,23 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ChatSerializer(serializers.ModelSerializer):
-    '''Chat serializer'''
-    participants = ContactSerializer(many=True)
+    '''Базовый сериализатор для чатов'''
     messages = MessageSerializer(read_only=True, many=True)
-    inside = serializers.BooleanField(read_only=True)
     class Meta:
         model = Chat
         fields = '__all__'
+
+class ChatOverviewSerializer(ChatSerializer):
+    '''Сериализация контакта при обзоре'''
+    participants = ContactSerializer(many=True)
+
+class ChatCreateSerializer(ChatSerializer):
+    '''Сериализация контакта при создании'''
+    participants = ContactIDSerializer(many=True)
     
     def create(self, validated_data):
-        participants = self.data.get('participants', None)
+        print(self.data)
+        participants = validated_data.pop('participants', None)
         chat = Chat()
         chat.save()
         for id in participants:

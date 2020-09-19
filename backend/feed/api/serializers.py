@@ -2,10 +2,9 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
-
-from feed.models import Post, Like, RePost
+from feed.models import Post, Like, RePost, Comment
 from backend.service import LowContactSerializer
-from .service import BaseFeedSerializer, LowReadContactSerializer
+from .service import BaseFeedSerializer, LowReadContactSerializer, AbstractPostSerializer
 from contact.models import Contact
 from .exceptions import BadRequestError
 
@@ -34,12 +33,47 @@ class UpdatePostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['text', 'image']
 
-class PostSerializer(serializers.ModelSerializer):
+
+class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
+    '''Сериализация коммента к посту'''
+    post_id = serializers.IntegerField(write_only=True, required=True)
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+    def create(self, validated_data):
+        text = validated_data.get('text', None)
+        image = validated_data.get('image', None)
+        if text or image:
+            try:
+                slug = validated_data.get('user', None)['slug']
+            except KeyError:
+                slug = None
+            parent = validated_data.get('parent', None)
+            comment = Comment.objects.create(
+                text=text,
+                image=image,
+                user=get_object_or_404(Contact, slug=slug),
+                parent=parent
+            )
+            post_id = validated_data.get('post_id', None)
+            if post_id:
+                post = get_object_or_404(Post, id=post_id)
+                post.comments.add(comment)
+                post.save()
+            else:
+                BadRequestError('You need post id.')
+        else:
+            raise BadRequestError('You need either image or text.')
+        return comment
+
+class PostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     '''Сериализация поста'''
-    user = LowReadContactSerializer()
     parent = ShortPostSerializer(required=False)
-    likes = LikeSerializer(many=True, read_only=True)
-    reposts = LikeSerializer(many=True, read_only=True)
+    num_reposts = serializers.IntegerField(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Post
         fields = '__all__'

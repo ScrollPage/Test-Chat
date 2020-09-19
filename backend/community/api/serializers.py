@@ -54,5 +54,4 @@ class AddRequestSerializer(serializers.ModelSerializer):
             sender = sender_contact,
             receiver = receiver_contact
         )
-        print(add_request.id)
         return add_request

@@ -87,7 +87,7 @@ class Contact(AbstractBaseUser, PermissionsMixin):
     objects = ContactManager()
 
     def __str__(self):
-        return self.email
+        return str(self.id)
 
     def get_url(self):
         try:
