@@ -36,9 +36,9 @@ class ChatOverviewSerializer(ChatSerializer):
 class ChatCreateSerializer(ChatSerializer):
     '''Сериализация контакта при создании'''
     participants = ContactIDSerializer(many=True)
+    id = serializers.IntegerField(read_only=True)
     
     def create(self, validated_data):
-        print(self.data)
         participants = validated_data.pop('participants', None)
         chat = Chat()
         chat.save()
