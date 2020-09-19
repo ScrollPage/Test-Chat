@@ -5,6 +5,7 @@ from contact.models import Contact
 class Like(models.Model):
     '''Стандартный лайк'''
     user = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.user)
@@ -16,6 +17,7 @@ class Like(models.Model):
 class RePost(models.Model):
     '''Стндартный репост'''
     user = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.user)
@@ -37,8 +39,6 @@ class Post(models.Model):
     user = models.ForeignKey(Contact, on_delete=models.DO_NOTHING)
     text = models.TextField(max_length=1000, blank=True, default='')
     image = models.ImageField(upload_to='user_posts/%Y/%m/%d', blank=True, null=True)
-    likes = models.ManyToManyField(Like, blank=True)
-    reposts = models.ManyToManyField(RePost, blank=True)
 
     def __str__(self):
         return str(self.user)

@@ -42,7 +42,7 @@ class AddRequestSerializer(serializers.ModelSerializer):
     '''Создает запрос на добавление'''
     class Meta:
         model = AddRequest
-        fields = '__all__'
+        fields = ['sender', 'receiver']
 
     def create(self, validated_data):
         data = self.data
