@@ -78,6 +78,7 @@ class PostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     parent = ShortPostSerializer(required=False)
     num_reposts = serializers.IntegerField(read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
+    is_liked = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = Post
@@ -105,8 +106,14 @@ class PostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
             raise BadRequestError('You need either image or text.')
         return post
 
-class LikeBigSerializer(serializers.ModelSerializer):
+class LikeCreateSerializer(serializers.ModelSerializer):
     '''Сериализация лайка'''
     class Meta:
         model = Like
         fields = '__all__'
+
+class LikeRemoveSerializer(serializers.ModelSerializer):
+    '''Сериализация лайка'''
+    class Meta:
+        model = Like
+        exclude = ['user']

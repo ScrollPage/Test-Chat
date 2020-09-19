@@ -6,7 +6,7 @@ from django.db.models import Count, Q
 from .service import (
     PermisisonSerializerModelViewset, 
     PermissionSerializerExcludeListViewset,
-    PermissionCreateViewset,
+    PermissionSerializerCreateViewset,
 )
 from feed.models import Post, Comment, Like
 from .serializers import (
@@ -14,9 +14,10 @@ from .serializers import (
     UpdatePostSerializer, 
     CommentSerializer, 
     UpdateCommentSerializer,
-    LikeBigSerializer
+    LikeCreateSerializer,
+    LikeRemoveSerializer,
 )
-from .permissions import IsCurrentUser
+from .permissions import IsCurrentUser, IsNotLiked
 
 class PostsCustomViewset(PermisisonSerializerModelViewset):
     '''Все про посты'''
@@ -39,11 +40,13 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
             num_likes=Count('likes')
         ).annotate(
             num_reposts=Count('reposts')
+        ).annotate(
+            is_liked=Count('likes', filter=Q(likes__user=self.request.user))
         )
         return queryset
 
 class CommentCustomViewset(PermissionSerializerExcludeListViewset):
-    '''Все про комменты'''
+    '''Все про комменты, кроме метода list'''
     queryset = Comment.objects.all()
     model = Comment
     serializer_class = CommentSerializer
@@ -58,22 +61,29 @@ class CommentCustomViewset(PermissionSerializerExcludeListViewset):
     }
 
 
-class LikesCustomViewset(PermissionCreateViewset):
+class LikesCustomViewset(PermissionSerializerCreateViewset):
     '''Создание и удаление лайков'''
     queryset = Like.objects.all()
     model = Like
-    serializer_class = LikeBigSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    permission_classes_by_action = {}
+    serializer_class = LikeCreateSerializer
+    serializer_class_by_action = {
+        'remove': LikeRemoveSerializer,
+    }
+    permission_classes = [permissions.IsAuthenticated, IsNotLiked]
+    permission_classes_by_action = {
+        'remove': [permissions.IsAuthenticated, ],
+    }
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):
-        data = request.data
-        user = int(data['user'])
-        post_id = int(data['post_id'])
-        like = Like.objects.filter(Q(user=user)&Q(post_id=post_id)).first()    
+        user = request.user
         try:
+            post_id = int(request.data['post_id'])
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            like = Like.objects.filter(Q(user=user)&Q(post_id=post_id)).first()    
             like.delete()
-        except Like.DoesNotExist:
+        except AttributeError:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
