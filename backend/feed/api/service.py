@@ -40,7 +40,14 @@ class PermissionSerializerExcludeListViewset(PermissionMixin,
                                              mixins.RetrieveModelMixin,
                                              GenericViewSet,
                                             ):
-    '''Создание, редактирование и удаление'''
+    '''Создание, редактирование и удаление с доп классами'''
+    pass
+
+class PermissionCreateViewset(PermissionMixin,
+                                       mixins.CreateModelMixin,
+                                       GenericViewSet,
+                                    ):
+    '''Создание с доп классами'''
     pass
     
 
