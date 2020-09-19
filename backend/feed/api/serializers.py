@@ -104,3 +104,9 @@ class PostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
         else:
             raise BadRequestError('You need either image or text.')
         return post
+
+class LikeBigSerializer(serializers.ModelSerializer):
+    '''Сериализация лайка'''
+    class Meta:
+        model = Like
+        fields = '__all__'
