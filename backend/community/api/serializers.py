@@ -6,12 +6,12 @@ from chat.models import Chat, Contact
 from backend.service import ContactSerializer, LowContactSerializer
 from community.models import AddRequest
 
-class ContactFriendsSerializer(LowContactSerializer):
+class ContactFriendsSerializer(serializers.ModelSerializer):
     '''Менее развернутый контакт'''
     chat_id = serializers.IntegerField(read_only=True)
     class Meta:
-        model = Contact
-        fields = ['chat_id']
+        model = Contact 
+        fields = fields = ['id', 'first_name', 'last_name', 'slug', 'avatar', 'chat_id']
 
 class ContactDetailSerializer(ContactFriendsSerializer):
     '''Выводит профиль пользователя'''

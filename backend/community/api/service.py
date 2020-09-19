@@ -1,5 +1,6 @@
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins
+from rest_framework.response import Response
 from django.db.models import Q
 
 from backend.service import PermissionMixin
@@ -13,10 +14,24 @@ class RetrieveUpdateDestroyPermissionViewset(PermissionMixin,
     '''Обзор, кастомизцая, удаление'''
     pass
 
+class CustomListModelMixin(mixins.ListModelMixin):
+    '''Фильтрация запросовв зависимости от пользователя'''
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset().filter(receiver=request.user)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 class ListCreatePermissionViewset(PermissionMixin,
                                   GenericViewSet,
                                   mixins.CreateModelMixin,
-                                  mixins.ListModelMixin,
+                                  CustomListModelMixin,
                                   ):
     '''Глобальный обзорб создание'''
     pass

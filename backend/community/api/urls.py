@@ -11,7 +11,7 @@ from .views import (
 )
 
 urlpatterns = [
-    path('friends/<int:pk>/', ContactFriendsView.as_view(), name='contact-friends'),
+    path('friends/', ContactFriendsView.as_view(), name='contact-friends'),
     path('people/', SearchPeopleView.as_view(), name='people'),
 ]
 

@@ -13,15 +13,6 @@ class IsCurrentUser(BasePermission):
             (request.user.is_superuser)
         ])
 
-class IsUsersInvites(BasePermission):
-    '''Имеет ли право видеть приглашения?'''
-    def has_permission(self, request, view):
-        slug = request.query_params.get('slug', None)
-        return any([
-            (request.user.slug==slug),
-            (request.user.is_superuser)
-        ])
-
 class NotCurrentAndNotFriends(BasePermission):
     '''Не тот же самый, и не друг ли уже?'''
     def has_permission(self, request, view):

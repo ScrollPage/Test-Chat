@@ -13,7 +13,6 @@ from .serializers import (
 )
 from .permissions import (
     IsCurrentUser, 
-    IsUsersInvites, 
     NotCurrentAndNotFriends, 
     IsNotSent,
     IsReceiver,
@@ -68,8 +67,9 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
 
 class AddRequestCustomViewset(ListCreatePermissionViewset):
     '''Создание и удаление запроса на добавление'''
+    queryset = AddRequest.objects.all()
     serializer_class = AddRequestSerializer
-    permission_classes = [permissions.IsAuthenticated, IsUsersInvites, ]
+    permission_classes = [permissions.IsAuthenticated, ]
     permission_classes_by_action = {
         'create': [
             permissions.IsAuthenticated, 
@@ -79,11 +79,6 @@ class AddRequestCustomViewset(ListCreatePermissionViewset):
         ],
         'destroy': [permissions.IsAuthenticated, IsSender, ]
     }
-
-    def get_queryset(self):
-        slug = self.request.query_params.get('slug', None)
-        contact = get_object_or_404(Contact, slug=slug)
-        return AddRequest.objects.filter(receiver=contact)
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):
@@ -142,25 +137,17 @@ class FriendPermissionViewset(ModelViewSetPermission):
         return Response(status=status.HTTP_200_OK)
 
 class ContactFriendsView(generics.ListAPIView):
-    '''
-        Выводит список друзей контакта
-
-        Необходим аргумент pk в параметрах строки 
-        для отображния друзей текущего пользователя
-    '''
+    '''Выводит список друзей контакта'''
     serializer_class = ContactFriendsSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
-        pk = self.kwargs['pk']
-        contact = get_object_or_404(Contact, id=pk)
-        queryset = contact.friends.all()
+        user = self.request.user
+        queryset = user.friends.all()
         query_name = self.request.query_params.get('query_name', None)
-        queryset = filter_by_query_name(query_name, queryset)
-        for friend in queryset:
-            queryset = queryset.annotate(
-                chat_id=Sum('chats__id', filter=Q(chats__participants=friend))
-            )
+        queryset = filter_by_query_name(query_name, queryset).annotate(
+            chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user))
+        )
         return queryset
 
 class SearchPeopleView(generics.ListAPIView):
