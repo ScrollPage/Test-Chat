@@ -2,7 +2,12 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 from django.urls import path
 
-from .views import PostsCustomViewset, CommentCustomViewset, LikesCustomViewset
+from .views import (
+    PostsCustomViewset, 
+    CommentCustomViewset, 
+    LikesCustomViewset, 
+    RePostMechanicsCustomViewset
+)
 
 urlpatterns = [
     
@@ -24,4 +29,5 @@ urlpatterns += [
 r = DefaultRouter()
 r.register(r'post', PostsCustomViewset, basename='post')
 r.register(r'comment', CommentCustomViewset, basename='comment')
+r.register(r'repost', RePostMechanicsCustomViewset, basename='repost')
 urlpatterns += r.urls

@@ -23,9 +23,10 @@ class RepostSerializer(serializers.ModelSerializer, BaseFeedSerializer):
 class ShortPostSerializer(serializers.ModelSerializer, BaseFeedSerializer):
     '''Вывод поста без доп информации'''
     id = serializers.IntegerField(required=False)
+    text = serializers.CharField(required=False, read_only=True)
     class Meta:
         model = Post
-        fields = ['id']
+        fields = ['id', 'text', 'user']
 
 class UpdatePostSerializer(serializers.ModelSerializer):
     '''Сериализатор для метода put'''
@@ -94,6 +95,7 @@ class PostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
                 slug = None
             try:
                 parent = validated_data.get('parent', None)['id']
+                parent = Post.objects.get(id=parent)
             except KeyError:
                 parent = None
             post = Post.objects.create(

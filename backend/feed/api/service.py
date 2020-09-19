@@ -22,8 +22,11 @@ class UsersPostsListMixin(mixins.ListModelMixin):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-class PermisisonSerializerModelViewset(PermissionMixin, 
-                                       SerializerMixin, 
+class PermissionSerializerMixin(PermissionMixin, SerializerMixin):
+    '''Доп классы'''
+    pass
+
+class PermisisonSerializerModelViewset(PermissionSerializerMixin, 
                                        ModelViewSet, 
                                        UsersPostsListMixin):
     '''
@@ -32,8 +35,7 @@ class PermisisonSerializerModelViewset(PermissionMixin,
     '''
     pass
 
-class PermissionSerializerExcludeListViewset(PermissionMixin,
-                                             SerializerMixin,
+class PermissionSerializerExcludeListViewset(PermissionSerializerMixin,
                                              mixins.UpdateModelMixin,
                                              mixins.DestroyModelMixin,
                                              mixins.CreateModelMixin,
@@ -43,11 +45,16 @@ class PermissionSerializerExcludeListViewset(PermissionMixin,
     '''Создание, редактирование и удаление с доп классами'''
     pass
 
-class PermissionSerializerCreateViewset(PermissionMixin,
-                                        SerializerMixin,
+class PermissionSerializerCreateViewset(PermissionSerializerMixin,
                                         mixins.CreateModelMixin,
                                         GenericViewSet,
                                     ):
+    '''Создание с доп классами'''
+    pass
+
+class CreateViewset(mixins.CreateModelMixin,
+                    GenericViewSet,
+                ):
     '''Создание с доп классами'''
     pass
     
@@ -61,7 +68,7 @@ class LowReadContactSerializer(LowContactSerializer):
 
 class BaseFeedSerializer(serializers.Serializer):
     '''Базовый класс для сериализаторов'''
-    user = LowContactSerializer()
+    user = LowContactSerializer(read_only=True)
 
 class AbstractPostSerializer(serializers.Serializer):
     '''Базовый сериализатор для поста и коммента'''
