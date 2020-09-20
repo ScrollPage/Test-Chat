@@ -79,6 +79,7 @@ export const AuthState = ({ children }) => {
         checkAuthTimeout(3600);
 
         show('Вы успешно вошли!', 'success');
+        push({ pathname: '/dialogs' }, undefined, { shallow: true });
       })
       .catch(err => {
         authFail(err);

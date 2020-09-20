@@ -6,22 +6,35 @@ import useSWR from 'swr';
 import UserInfo from '@/components/Userpage/UserInfo';
 import UserAvatar from '@/components/Userpage/UserAvatar';
 import UserFriends from '@/components/Userpage/UserFriends';
+import UserPosts from '@/components/Userpage/UserPosts';
 
-export default function Teams({ user, userId }) {
+export default function Teams({ user, userId, posts }) {
 
-  const { data } = useSWR(`/api/v1/contact/${userId}/`, { initialData: user });
+  const swr = (url, iniitalData) => {
+    const { data } = useSWR(url, { initialData: iniitalData });
+    return data;
+  }
+
+  const data = swr(`/api/v1/contact/${userId}/`, user);
+
+  const newPosts = swr("/api/v1/post/", posts);
+
+  console.log(newPosts);
 
   return (
     <PrivateLayout>
       <StyledUser>
         <div>
-          <UserAvatar data={data} userId={userId}/>
+          <UserAvatar data={data} userId={userId} />
           <div className="user-avatar__friends">
             <h4>Друзья: {`(${data.num_friends})`}</h4>
-            <UserFriends friends={data.friends}/>
+            <UserFriends friends={data.friends} />
           </div>
         </div>
-        <UserInfo data={data} />
+        <div className="user-info">
+          <UserInfo data={data} />
+          <UserPosts posts={newPosts}/>
+        </div>
       </StyledUser>
     </PrivateLayout>
   );
@@ -38,6 +51,7 @@ export const getServerSideProps = async (ctx) => {
   };
 
   let user = null;
+  let posts = [];
 
   await axios
     .get(`/api/v1/contact/${userId}/`)
@@ -47,10 +61,21 @@ export const getServerSideProps = async (ctx) => {
     .catch((error) => {
       console.log(error);
     });
+
+  await axios
+    .get(`/api/v1/post/`)
+    .then((response) => {
+      posts = response?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
   return {
     props: {
       user: user,
-      userId: userId
+      userId: userId,
+      posts: posts
     }
   };
 }
@@ -66,10 +91,17 @@ const StyledUser = styled.div`
     margin-right: 20px;
     margin-top: 20px;
     padding: 10px;
+    @media (max-width: 900px) {
+      margin-right: 0px;
+    }
+  }
+  .user-info {
+    flex: 1;
   }
   @media (max-width: 900px) {
     flex-direction: column;
   }
+  
 `;
 
 

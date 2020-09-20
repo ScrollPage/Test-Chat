@@ -43,7 +43,6 @@ export default function Login() {
       setTimeout(() => {
         resetForm();
         setSubmitting(false);
-        push({ pathname: '/dialogs' }, undefined, { shallow: true });
       }, 500)
     }
   });

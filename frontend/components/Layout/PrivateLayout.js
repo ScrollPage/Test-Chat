@@ -6,6 +6,7 @@ import Container from '@/styles/Container';
 import WebSocketInstance from '@/websocket';
 import { MessageContext } from '@/context/message/MessageContext';
 import { AuthContext } from '@/context/auth/AuthContext';
+import Cookie from 'js-cookie';
 
 const PrivateLayout = ({children}) => {
 
