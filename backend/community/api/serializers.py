@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 
-from chat.models import Chat, Contact
-# from contact.models import Contact
+from chat.models import Chat
+from contact.models import Contact
 from backend.service import ContactSerializer, LowContactSerializer
 from community.models import AddRequest
 
@@ -42,7 +42,7 @@ class AddRequestSerializer(serializers.ModelSerializer):
     '''Создает запрос на добавление'''
     class Meta:
         model = AddRequest
-        fields = ['sender', 'receiver']
+        exclude = ['id', 'timestamp']
 
     def create(self, validated_data):
         data = self.data
@@ -54,4 +54,5 @@ class AddRequestSerializer(serializers.ModelSerializer):
             sender = sender_contact,
             receiver = receiver_contact
         )
+        print(add_request.id)
         return add_request

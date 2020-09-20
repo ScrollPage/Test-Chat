@@ -43,7 +43,7 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
         queryset = Contact.objects.filter(id=pk).annotate(
             is_friend=Count('friends', filter=Q(friends=self.request.user))
         ).annotate(
-            num_friends=Avg('friends')
+            num_friends=Count('friends', distinct=True)
         ).annotate(
             current_user=Count('slug', filter=Q(slug=self.request.user.slug))
         ).annotate(

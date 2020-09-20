@@ -86,8 +86,8 @@ class LikesCustomViewset(PermissionSerializerCreateViewset):
             post_id = int(request.data['post_id'])
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        like = Like.objects.filter(Q(user=user)&Q(post_id=post_id)).first()    
         try:
-            like = Like.objects.filter(Q(user=user)&Q(post_id=post_id)).first()    
             like.delete()
         except AttributeError:
             return Response(status=status.HTTP_404_NOT_FOUND)
