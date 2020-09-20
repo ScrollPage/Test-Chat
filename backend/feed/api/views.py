@@ -40,6 +40,17 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
         'destroy': [IsCurrentUser, ],
     }
 
+    def destroy(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        post = get_object_or_404(Post, id=pk)
+        for comment in post.comments.all():
+            try:
+                comment.delete()
+            except AttributeError:
+                pass
+        post.delete()
+        return Reponse(status=status.HTTP_204_NO_CONTENT)
+
     def get_queryset(self):
         queryset = Post.objects.annotate(
             num_likes=Count('likes', distinct=True)
@@ -59,10 +70,10 @@ class CommentCustomViewset(PermissionSerializerExcludeListViewset):
         'update': UpdateCommentSerializer,
         'partial_update': UpdateCommentSerializer,
     }
-    permission_classes = [IsCurrentUser, ]
+    permission_classes = [permissions.IsAuthenticated, ]
     permission_classes_by_action = {
-        'create': [permissions.IsAuthenticated, ],
-        'retrieve': [permissions.IsAuthenticated, ]
+        'update': [IsCurrentUser, ],
+        'partial_update': [IsCurrentUser, ]
     }
 
 
@@ -101,16 +112,14 @@ class RePostMechanicsCustomViewset(CreateViewset):
             
     def perform_create(self, serializer):
         user = self.request.user
-        try:
-            parent = serializer.validated_data['parent'].id
-        except AttributeError:
+        parent = serializer.validated_data.get('parent', None)
+        if not parent:
             raise BadRequestError('You need a parent.')
-        post = get_object_or_404(Post, id=parent).id
         try:
             RePost.objects.filter(post_id=parent).get(user=user)
         except RePost.DoesNotExist:
             RePost.objects.create(
-                post_id=post,
+                post_id=parent,
                 user=user
             )
         super().perform_create(serializer)

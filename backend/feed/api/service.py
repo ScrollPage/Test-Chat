@@ -78,7 +78,8 @@ class AbstractPostSerializer(serializers.Serializer):
     '''Базовый сериализатор для поста и коммента'''
     num_likes = serializers.IntegerField(read_only=True)
     user = LowReadContactSerializer()
-
+    timestamp = serializers.DateTimeField(read_only=True)
+    
 def post_create(self,validated_data, is_post=True):
     '''
     is_post = True - создание поста
