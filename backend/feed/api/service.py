@@ -49,7 +49,7 @@ class PermissionSerializerExcludeListViewset(PermissionSerializerMixin,
     '''Создание, редактирование и удаление с доп классами'''
     pass
 
-class PermissionSerializerCreateViewset(PermissionSerializerMixin,
+class PermissionCreateViewset(PermissionMixin,
                                         mixins.CreateModelMixin,
                                         GenericViewSet,
                                     ):
@@ -77,9 +77,8 @@ class BaseFeedSerializer(serializers.Serializer):
 class AbstractPostSerializer(serializers.Serializer):
     '''Базовый сериализатор для поста и коммента'''
     num_likes = serializers.IntegerField(read_only=True)
-    user = LowReadContactSerializer()
     timestamp = serializers.DateTimeField(read_only=True)
-    
+
 def post_create(self,validated_data, is_post=True):
     '''
     is_post = True - создание поста
@@ -88,20 +87,38 @@ def post_create(self,validated_data, is_post=True):
     text = validated_data.get('text', None)
     image = validated_data.get('image', None)
     if text or image:
-        try:
-            slug = validated_data.get('user', None)['slug']
-        except KeyError:
-            slug = None
+        user = validated_data.get('user', None)
         if is_post:
             parent = None
         else:
             parent = validated_data.get('parent', None)
-        post = Post.objects.create(
+        post = Post.objects.create(**validated_data)
+    else:
+        raise BadRequestError('You need either image or text.')
+    return post
+
+def comment_create(self, validated_data):
+    text = validated_data.pop('text', None)
+    image = validated_data.pop('image', None)
+    if text or image:
+        try:
+            slug = validated_data.pop('user', None)['slug']
+        except KeyError:
+            slug = None
+        parent = validated_data.pop('parent', None)
+        comment = Comment.objects.create(
             text=text,
             image=image,
             user=get_object_or_404(Contact, slug=slug),
             parent=parent
         )
+        post_id = validated_data.get('post_id', None)
+        if post_id:
+            post = get_object_or_404(Post, id=post_id)
+            post.comments.add(comment)
+            post.save()
+        else:
+            BadRequestError('You need post id.')
     else:
         raise BadRequestError('You need either image or text.')
-    return post
+    return comment

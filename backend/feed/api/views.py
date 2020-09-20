@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from .service import (
     PermisisonSerializerModelViewset, 
     PermissionSerializerExcludeListViewset,
-    PermissionSerializerCreateViewset,
+    PermissionCreateViewset,
     CreateViewset,
 )
 from feed.models import Post, Comment, Like, RePost
@@ -16,8 +16,7 @@ from .serializers import (
     UpdatePostSerializer, 
     CommentSerializer, 
     UpdateCommentSerializer,
-    LikeCreateSerializer,
-    LikeRemoveSerializer,
+    LikeSerializer,
     RePostSerializer,
     PostListSerializer,
 )
@@ -52,13 +51,17 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
         return Reponse(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
-        queryset = Post.objects.annotate(
+        queryset = Post.objects.filter(user=self.request.user).annotate(
             num_likes=Count('likes', distinct=True)
         ).annotate(
             num_reposts=Count('reposts', distinct=True)
         ).annotate(
             is_liked=Count('likes', filter=Q(likes__user=self.request.user))
-        ).filter(user=self.request.user)
+        ).annotate(
+            is_watched=Count('reviews', filter=Q(reviews__user=self.request.user))
+        ).annotate(
+            num_reviews=Count('reviews', distinct=True)
+        )
         return queryset
 
 class CommentCustomViewset(PermissionSerializerExcludeListViewset):
@@ -77,14 +80,11 @@ class CommentCustomViewset(PermissionSerializerExcludeListViewset):
     }
 
 
-class LikesCustomViewset(PermissionSerializerCreateViewset):
+class LikesCustomViewset(PermissionCreateViewset):
     '''Создание и удаление лайков'''
     queryset = Like.objects.all()
     model = Like
-    serializer_class = LikeCreateSerializer
-    serializer_class_by_action = {
-        'remove': LikeRemoveSerializer,
-    }
+    serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated, IsNotLiked]
     permission_classes_by_action = {
         'remove': [permissions.IsAuthenticated, ],
@@ -92,8 +92,8 @@ class LikesCustomViewset(PermissionSerializerCreateViewset):
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):
-        user = request.user
         try:
+            user = request.data['user']
             post_id = int(request.data['post_id'])
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
