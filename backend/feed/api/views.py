@@ -1,7 +1,7 @@
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django.db.models import Count, Q, Min
+from django.db.models import Count, Q, Min, Subquery, OuterRef
 from django.shortcuts import get_object_or_404
 
 from .service import (
@@ -41,13 +41,13 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
     }
 
     def get_queryset(self):
-        queryset = Post.objects.all().annotate(
-            num_likes=Count('likes')
+        queryset = Post.objects.annotate(
+            num_likes=Count('likes', distinct=True)
         ).annotate(
-            num_reposts=Count('reposts')
+            num_reposts=Count('reposts', distinct=True)
         ).annotate(
             is_liked=Count('likes', filter=Q(likes__user=self.request.user))
-        )
+        ).filter(user=self.request.user)
         return queryset
 
 class CommentCustomViewset(PermissionSerializerExcludeListViewset):

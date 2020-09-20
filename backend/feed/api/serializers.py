@@ -4,7 +4,12 @@ from django.shortcuts import get_object_or_404
 
 from feed.models import Post, Like, RePost, Comment
 from backend.service import LowContactSerializer
-from .service import BaseFeedSerializer, LowReadContactSerializer, AbstractPostSerializer, post_create
+from .service import (
+    BaseFeedSerializer, 
+    LowReadContactSerializer, 
+    AbstractPostSerializer, 
+    post_create
+)
 from contact.models import Contact
 from .exceptions import BadRequestError
 
@@ -74,12 +79,18 @@ class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
             raise BadRequestError('You need either image or text.')
         return comment
 
-class PostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
-    '''Сериализация поста'''
+class BasePostSerialier(AbstractPostSerializer, serializers.ModelSerializer):
+    '''Базовый класс сриализации постов и репостов'''
     num_reposts = serializers.IntegerField(read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
     is_liked = serializers.BooleanField(read_only=True)
-    
+
+    class Meta:
+        model = Post
+        fields = '__all__'
+
+class PostSerializer(BasePostSerialier):
+    '''Сериализация поста'''
     class Meta:
         model = Post
         exclude = ['parent']
@@ -87,27 +98,12 @@ class PostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     def create(self, validated_data):
         return post_create(self, validated_data)
 
-class PostListSerializer(AbstractPostSerializer, serializers.ModelSerializer):
+class PostListSerializer(BasePostSerialier):
     '''Сериализация списка постов'''
     parent = ShortPostSerializer(read_only=True)
-    num_reposts = serializers.IntegerField(read_only=True)
-    comments = CommentSerializer(many=True, read_only=True)
-    is_liked = serializers.BooleanField(read_only=True)
     
-    class Meta:
-        model = Post
-        fields = '__all__'
-
-class RePostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
+class RePostSerializer(BasePostSerialier):
     '''Сериализация репоста'''
-    num_reposts = serializers.IntegerField(read_only=True)
-    comments = CommentSerializer(many=True, read_only=True)
-    is_liked = serializers.BooleanField(read_only=True)
-    
-    class Meta:
-        model = Post
-        fields = '__all__'
-
     def create(self, validated_data):
         return post_create(self, validated_data, False)
 
