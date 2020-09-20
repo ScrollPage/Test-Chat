@@ -19,7 +19,7 @@ class AbstractPost(models.Model):
 class Comment(AbstractPost):
     '''Комментарий куда угодно'''
     parent = models.ForeignKey(
-        Contact, 
+        'self', 
         verbose_name = 'Родитель', 
         on_delete = models.SET_NULL, 
         null = True, 

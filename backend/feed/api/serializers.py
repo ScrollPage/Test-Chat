@@ -45,9 +45,16 @@ class UpdateCommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['text', 'image']
 
+class CommentParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
+    '''Родитель комментария'''
+    class Meta:
+        model = Comment
+        fields = ['user', 'timestamp']
+
 class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     '''Сериализация коммента к посту'''
     post_id = serializers.IntegerField(write_only=True, required=True)
+    parent = CommentParentSerializer(read_only=True)
 
     class Meta:
         model = Comment
