@@ -82,4 +82,7 @@ const StyledUserAvatar = styled.div`
       margin-top: 10px;
     }
   }
+  @media (max-width: 900px) {
+    margin-right: 0px;
+  }
 `;

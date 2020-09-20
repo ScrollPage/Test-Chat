@@ -26,7 +26,6 @@ const StyledUserInfo = styled.div`
     background-color: #f4f4f4;
     display: flex;
     justify-content: center;
-    /* align-items: center; */
     padding: 20px;
     flex-direction: column;
   }
@@ -40,6 +39,6 @@ const StyledUserInfo = styled.div`
     border: 1px solid #1890ff;
   }
   @media (max-width: 900px) {
-    margin: 20px 20px 0 0;
+    margin-top: 20px;
   }
 `;
