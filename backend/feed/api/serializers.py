@@ -94,7 +94,7 @@ class PostListSerializer(BasePostSerialzier):
     is_watched = serializers.BooleanField(read_only=True)
     num_reviews = serializers.IntegerField(read_only=True)
     
-class RePostSerializer(BasePostSerialzier):
+class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
     '''Сериализация репоста'''
     def create(self, validated_data):
         return post_create(self, validated_data, False)
