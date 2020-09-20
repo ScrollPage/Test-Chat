@@ -24,7 +24,7 @@ class Comment(AbstractPost):
         on_delete = models.SET_NULL, 
         null = True, 
         blank = True,
-        related_name = 'child'
+        related_name = 'children'
     )
 
     class Meta:
@@ -39,7 +39,7 @@ class Post(AbstractPost):
         on_delete = models.SET_NULL, 
         null = True, 
         blank = True,
-        related_name = 'child'
+        related_name = 'children'
     )
     comments = models.ManyToManyField(Comment)
 

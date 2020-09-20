@@ -45,16 +45,39 @@ class UpdateCommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['text', 'image']
 
-class CommentParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
-    '''Родитель комментария'''
+class RecursivePostSerialzier(serializers.Serializer):
+    '''Рекурсивный вывод родителей'''
+
+    def to_representation(self, value):
+        serializer = PostParentSerializer(value, context=self.context)
+        return serializer.data
+
+class PostParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
+    '''Вывод родителя поста'''
+    parent = RecursivePostSerialzier(read_only=True)
     class Meta:
-        model = Comment
-        fields = ['user', 'timestamp']
+        model = Post
+        fields = ['id', 'user', 'parent', 'text', 'image', 'timestamp']
+
+class RecursiveCommentSerialzier(serializers.Serializer):
+    '''Рекурсивный вывод детей'''
+
+    def to_representation(self, value):
+        serializer = CommentParentSerializer(value, context=self.context)
+        return serializer.data
+
+class CommentParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
+    '''Вывод родителя поста'''
+    children = RecursiveCommentSerialzier(many=True, read_only=True)
+    class Meta:
+        model = Post
+        fields = ['id', 'user', 'children', 'text', 'image', 'timestamp']
+
 
 class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     '''Сериализация коммента к посту'''
     post_id = serializers.IntegerField(write_only=True, required=True)
-    parent = CommentParentSerializer(read_only=True)
+    children = CommentParentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Comment
@@ -107,7 +130,7 @@ class PostSerializer(BasePostSerialier):
 
 class PostListSerializer(BasePostSerialier):
     '''Сериализация списка постов'''
-    parent = ShortPostSerializer(read_only=True)
+    parent = RecursivePostSerialzier(read_only=True)
     
 class RePostSerializer(BasePostSerialier):
     '''Сериализация репоста'''
