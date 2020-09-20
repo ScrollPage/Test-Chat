@@ -104,7 +104,6 @@ class RePostMechanicsCustomViewset(CreateViewset):
         parent = serializer.validated_data.get('parent', None)
         if not parent:
             raise BadRequestError('You need a parent.')
-        # post = get_object_or_404(Post, id=parent)
         try:
             RePost.objects.filter(post_id=parent).get(user=user)
         except RePost.DoesNotExist:

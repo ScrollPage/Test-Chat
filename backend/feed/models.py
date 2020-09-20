@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from contact.models import Contact
 
@@ -7,6 +8,7 @@ class AbstractPost(models.Model):
     user = models.ForeignKey(Contact, on_delete=models.DO_NOTHING)
     text = models.TextField(max_length=1000, blank=True, default='')
     image = models.ImageField(upload_to='user_posts/%Y/%m/%d', blank=True, null=True)
+    timestamp = models.DateTimeField(default=timezone.now())
 
     def __str__(self):
         return str(self.id)
