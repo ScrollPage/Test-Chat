@@ -51,7 +51,7 @@ class Like(models.Model):
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes', null=True)
 
     def __str__(self):
-        return f'{self.user} {self.post_id}'
+        return f'{self.user} user likes {self.post_id} post'
 
     class Meta:
         verbose_name = 'Лайк'
@@ -63,7 +63,7 @@ class RePost(models.Model):
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='reposts', null=True)
 
     def __str__(self):
-        return f'{self.user} {self.post_id}'
+        return f'{self.user} user reposts {self.post_id} post'
 
     class Meta:
         verbose_name = 'Репост'

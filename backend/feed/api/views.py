@@ -18,19 +18,21 @@ from .serializers import (
     UpdateCommentSerializer,
     LikeCreateSerializer,
     LikeRemoveSerializer,
+    RePostSerializer,
+    PostListSerializer,
 )
 from .permissions import IsCurrentUser, IsNotLiked
-from .exceptions import BadRequestError
+from .exceptions import BadRequestError, NotFoundError
 
 class PostsCustomViewset(PermisisonSerializerModelViewset):
     '''Все про посты'''
     model = Post
-    serializer_class = PostSerializer
+    serializer_class = PostListSerializer
     serializer_class_by_action = {
         'update': UpdatePostSerializer,
         'partial_update': UpdatePostSerializer,
+        'create': PostSerializer,
     }
-
     permission_classes = [permissions.IsAuthenticated, ]
     permission_classes_by_action = {
         'update': [IsCurrentUser, ],
@@ -94,20 +96,16 @@ class LikesCustomViewset(PermissionSerializerCreateViewset):
 class RePostMechanicsCustomViewset(CreateViewset):
     '''Создание репоста'''
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    serializer_class = RePostSerializer
     permission_classes = [permissions.IsAuthenticated, ]
             
     def perform_create(self, serializer):
-        print('asdasdasd')
         user = self.request.user
-        parent = serializer.validated_data['parent']
-        if not bool(parent):
-            raise BadRequestError('You need parent.')
-        parent = parent['id']
         try:
-            post = Post.objects.get(id=parent)
-        except Post.DoesNotExist:
-            raise BadRequestError('No such post already')
+            parent = serializer.validated_data['parent'].id
+        except AttributeError:
+            raise BadRequestError('You need a parent.')
+        post = get_object_or_404(Post, id=parent).id
         try:
             RePost.objects.filter(post_id=parent).get(user=user)
         except RePost.DoesNotExist:

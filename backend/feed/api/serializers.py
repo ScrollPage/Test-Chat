@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 
 from feed.models import Post, Like, RePost, Comment
 from backend.service import LowContactSerializer
-from .service import BaseFeedSerializer, LowReadContactSerializer, AbstractPostSerializer
+from .service import BaseFeedSerializer, LowReadContactSerializer, AbstractPostSerializer, post_create
 from contact.models import Contact
 from .exceptions import BadRequestError
 
@@ -76,7 +76,30 @@ class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
 
 class PostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     '''Сериализация поста'''
-    parent = ShortPostSerializer(required=False)
+    num_reposts = serializers.IntegerField(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
+    is_liked = serializers.BooleanField(read_only=True)
+    
+    class Meta:
+        model = Post
+        exclude = ['parent']
+
+    def create(self, validated_data):
+        return post_create(self, validated_data)
+
+class PostListSerializer(AbstractPostSerializer, serializers.ModelSerializer):
+    '''Сериализация списка постов'''
+    parent = ShortPostSerializer(read_only=True)
+    num_reposts = serializers.IntegerField(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
+    is_liked = serializers.BooleanField(read_only=True)
+    
+    class Meta:
+        model = Post
+        fields = '__all__'
+
+class RePostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
+    '''Сериализация репоста'''
     num_reposts = serializers.IntegerField(read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
     is_liked = serializers.BooleanField(read_only=True)
@@ -86,27 +109,7 @@ class PostSerializer(AbstractPostSerializer, serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        text = validated_data.get('text', None)
-        image = validated_data.get('image', None)
-        if text or image:
-            try:
-                slug = validated_data.get('user', None)['slug']
-            except KeyError:
-                slug = None
-            try:
-                parent = validated_data.get('parent', None)['id']
-                parent = Post.objects.get(id=parent)
-            except KeyError:
-                parent = None
-            post = Post.objects.create(
-                text=text,
-                image=image,
-                user=get_object_or_404(Contact, slug=slug),
-                parent=parent
-            )
-        else:
-            raise BadRequestError('You need either image or text.')
-        return post
+        return post_create(self, validated_data, False)
 
 class LikeCreateSerializer(serializers.ModelSerializer):
     '''Сериализация лайка'''
