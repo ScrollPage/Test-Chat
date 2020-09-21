@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'community', 
     'contact',
     'feed',
+    'notifications',
     'score',
 ]
 
