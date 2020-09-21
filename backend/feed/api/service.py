@@ -16,7 +16,10 @@ from contact.models import Contact
 class UsersPostsListMixin(mixins.ListModelMixin):
     '''Посты только текущего пользователя'''
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset().filter(user=request.user)
+        id = request.query_params.get('id', None)
+        if not id:
+            raise BadRequestError('You need to input a query parameter id in your request.')
+        queryset = self.get_queryset().filter(user__id=id)
 
         page = self.paginate_queryset(queryset)
         if page is not None:

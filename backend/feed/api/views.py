@@ -51,7 +51,7 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
         return Reponse(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
-        queryset = Post.objects.filter(user=self.request.user).annotate(
+        queryset = Post.objects.all().annotate(
             num_likes=Count('likes', distinct=True)
         ).annotate(
             num_reposts=Count('reposts', distinct=True)
