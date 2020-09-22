@@ -42,9 +42,10 @@ class FriendActionsSerializer(serializers.Serializer):
 
 class AddRequestSerializer(serializers.ModelSerializer):
     '''Создает запрос на добавление'''
+    timestamp = serializers.DateTimeField(read_only=True)
     class Meta:
         model = AddRequest
-        exclude = ['id', 'timestamp']
+        exclude = ['id']
 
     def create(self, validated_data):
         receiver = validated_data.get('receiver', None)

@@ -20,5 +20,5 @@ def send_like_notification(owner, liker, post):
     pusher.trigger(
         f'notifications_{owner.id}', 
         'new_like', 
-        {'liker': liker.id, 'post_id': liker.id, 'name': liker.get_full_name()}
+        {'liker': liker.id, 'post': post.id, 'name': liker.get_full_name()}
     )
