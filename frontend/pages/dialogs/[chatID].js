@@ -99,8 +99,7 @@ export default function Chat() {
             <Loading />
           ) : messages.length === 0 ? (
             <p className="not-messages">У вас нет сообщений</p>
-          ) : (
-            renderMessages(messages)}
+          ) : renderMessages(messages)}
           <div
             style={{
               float: 'left',

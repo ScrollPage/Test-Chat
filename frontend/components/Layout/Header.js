@@ -9,7 +9,6 @@ import { UserOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Avatar } from 'antd';
 import { logout } from '@/store/actions/auth';
 import Container from '@/styles/Container';
-import Search from '@/components/UI/Search';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -55,7 +54,6 @@ export default Header;
 
 const StyledHeader = styled.div`
   background: #1890ff;
-  /* background: purple; */
   z-index: 2;
   position: fixed;
   width: 100%;

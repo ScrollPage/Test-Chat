@@ -19,7 +19,7 @@ const SearchDialog = () => {
       <div>
         <Input
           placeholder="Поиск"
-          onChange={e => dispatch(addSearch(e.target.value))}
+          onChange={e => dispatch(setSearch(e.target.value))}
           value={search}
         />
       </div>

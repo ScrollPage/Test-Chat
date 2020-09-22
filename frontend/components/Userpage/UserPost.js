@@ -29,12 +29,14 @@ const UserPost = ({ post }) => {
           <small>только что</small>
         </div>
       </div>
-      <div className="user-post__body">
-        <div>{post.text}</div>
-        <div>
-          <img src={post.image} alt="" />
+      {post.image && (
+        <div className="user-post__body">
+          <div>{post.text}</div>
+          <div>
+            <img src={post.image} alt="" />
+          </div>
         </div>
-      </div>
+      )}
       <div className="user-post__footer">
         <div>
           <Like

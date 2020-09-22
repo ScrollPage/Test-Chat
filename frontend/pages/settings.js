@@ -7,7 +7,6 @@ import PrivateLayout from '@/components/Layout/PrivateLayout';
 
 export default function Settings() {
   const dispatch = useDispatch();
-
   return (
     <PrivateLayout>
       <StyledSettings>

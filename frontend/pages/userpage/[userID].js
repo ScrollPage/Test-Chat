@@ -17,7 +17,7 @@ export default function Teams({ user, userId, posts }) {
 
   const data = swr(`/api/v1/contact/${userId}/`, user);
 
-  const newPosts = swr('/api/v1/post/', posts);
+  const newPosts = swr(`/api/v1/post/?id=${userId}`, posts);
 
   return (
     <PrivateLayout>
@@ -60,7 +60,7 @@ export const getServerSideProps = async ctx => {
     });
 
   await axios
-    .get(`/api/v1/post/`)
+    .get(`/api/v1/post/?id=${userId}`)
     .then(response => {
       posts = response?.data;
     })

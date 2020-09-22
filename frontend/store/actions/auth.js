@@ -158,6 +158,7 @@ export const checkAuthTimeout = expirationTime => dispatch =>
   setTimeout(() => dispatch(logout()), expirationTime * 1000);
 
 export const logout = () => dispatch => {
+  Router.push({ pathname: '/' }, undefined, { shallow: true });
   if (Router.query.chatID !== undefined) {
     WebSocketInstance.disconnect();
   }
@@ -169,7 +170,6 @@ export const logout = () => dispatch => {
   Cookie.remove('slug');
   Cookie.remove('userId');
   Cookie.remove('email');
-  Router.push({ pathname: '/' }, undefined, { shallow: true });
   dispatch(show('Вы успешно вышли!', 'success'));
   return { type: types.AUTH_LOGOUT };
 };
