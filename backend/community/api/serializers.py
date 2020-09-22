@@ -5,6 +5,7 @@ from chat.models import Chat
 from contact.models import Contact
 from backend.service import ContactSerializer, LowContactSerializer
 from community.models import AddRequest
+from backend.settings import pusher_client as pusher
 
 class ContactFriendsSerializer(serializers.ModelSerializer):
     '''Менее развернутый контакт'''
@@ -45,4 +46,5 @@ class AddRequestSerializer(serializers.ModelSerializer):
         exclude = ['id', 'timestamp']
 
     def create(self, validated_data):
+        pusher.trigger('notifications', 'friend_add', {'message': "Leshina mat' shluxa"})
         return super().create(validated_data)

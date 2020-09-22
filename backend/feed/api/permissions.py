@@ -21,5 +21,5 @@ class IsNotLiked(BasePermission):
             except view.model.DoesNotExist:
                 return True
         else:
-            raise BadRequestError('You need post id and to add like.')
+            raise BadRequestError('You need post id and user to add like.')
         return False
