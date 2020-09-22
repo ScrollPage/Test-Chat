@@ -1,12 +1,19 @@
-import { useContext } from 'react';
-import PrivateLayout from '@/components/Layout/PrivateLayout';
-import { UserOutlined, MailOutlined, PhoneOutlined, TeamOutlined } from '@ant-design/icons';
+import cookies from 'next-cookies';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Form, Input, Button } from 'antd';
+
+import { useDispatch } from 'react-redux';
+
 import styled from 'styled-components';
-import cookies from 'next-cookies';
-import { AuthContext } from '@/context/auth/AuthContext';
+import {
+  UserOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  TeamOutlined
+} from '@ant-design/icons';
+import { Form, Input, Button } from 'antd';
+import { authChange } from '@/store/actions/auth';
+import PrivateLayout from '@/components/Layout/PrivateLayout';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -28,38 +35,52 @@ const validationSchema = Yup.object().shape({
 
 const errorMessege = (touched, messege) => {
   if (!touched) {
-    return
+    return;
   }
   if (messege) {
-    return messege
+    return messege;
   }
 };
 
-export default function Change({email, firstName, lastName, phoneNumber}) {
-
-  const { authChange } = useContext(AuthContext);
+export default function Change({ email, firstName, lastName, phoneNumber }) {
+  const dispatch = useDispatch();
 
   const initialValues = {
-    email: email,
-    firstName: firstName,
-    lastName: lastName,
-    phoneNumber: phoneNumber, 
-  }
+    email,
+    firstName,
+    lastName,
+    phoneNumber
+  };
 
   const formik = useFormik({
-    initialValues: initialValues,
+    initialValues,
     validationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      authChange(values.email, values.firstName, values.lastName, values.phoneNumber);
+      dispatch(
+        authChange(
+          values.email,
+          values.firstName,
+          values.lastName,
+          values.phoneNumber
+        )
+      );
       setSubmitting(true);
       setTimeout(() => {
         resetForm();
         setSubmitting(false);
-      }, 500)
+      }, 500);
     }
   });
 
-  const { handleSubmit, handleChange, handleBlur, isSubmitting, errors, touched, values } = formik;
+  const {
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    isSubmitting,
+    errors,
+    touched,
+    values
+  } = formik;
 
   return (
     <PrivateLayout>
@@ -72,7 +93,7 @@ export default function Change({email, firstName, lastName, phoneNumber}) {
             name="email"
             hasFeedback
             help={errorMessege(touched.email, errors.email)}
-            validateStatus={errors.email ? "error" : "success"}
+            validateStatus={errors.email ? 'error' : 'success'}
             initialValue={email}
           >
             <Input
@@ -89,7 +110,7 @@ export default function Change({email, firstName, lastName, phoneNumber}) {
             name="firstName"
             hasFeedback
             help={errorMessege(touched.firstName, errors.firstName)}
-            validateStatus={errors.firstName ? "error" : "success"}
+            validateStatus={errors.firstName ? 'error' : 'success'}
             initialValue={firstName}
           >
             <Input
@@ -106,7 +127,7 @@ export default function Change({email, firstName, lastName, phoneNumber}) {
             name="lastName"
             hasFeedback
             help={errorMessege(touched.lastName, errors.lastName)}
-            validateStatus={errors.lastName ? "error" : "success"}
+            validateStatus={errors.lastName ? 'error' : 'success'}
             initialValue={lastName}
           >
             <Input
@@ -123,7 +144,7 @@ export default function Change({email, firstName, lastName, phoneNumber}) {
             name="phoneNumber"
             hasFeedback
             help={errorMessege(touched.phoneNumber, errors.phoneNumber)}
-            validateStatus={errors.phoneNumber ? "error" : "success"}
+            validateStatus={errors.phoneNumber ? 'error' : 'success'}
             initialValue={phoneNumber}
           >
             <Input
@@ -144,24 +165,24 @@ export default function Change({email, firstName, lastName, phoneNumber}) {
         </Form>
       </StyledRegister>
     </PrivateLayout>
-  )
+  );
 }
 
-export const getServerSideProps = async (ctx) => {
-
+export const getServerSideProps = async ctx => {
   const email = cookies(ctx)?.email || null;
-  const firstName = cookies(ctx)?.firstName || null; 
-  const lastName = cookies(ctx)?.lastName || null; 
-  const phoneNumber = cookies(ctx)?.phoneNumber || null; 
+  const firstName = cookies(ctx)?.firstName || null;
+  const lastName = cookies(ctx)?.lastName || null;
+  const phoneNumber = cookies(ctx)?.phoneNumber || null;
 
-  return { props: { 
-    email: email,
-    firstName: firstName,
-    lastName: lastName,
-    phoneNumber: phoneNumber
-  }};
-
-}
+  return {
+    props: {
+      email,
+      firstName,
+      lastName,
+      phoneNumber
+    }
+  };
+};
 
 const StyledRegister = styled.div`
   margin: 50px auto;

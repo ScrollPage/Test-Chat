@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
@@ -23,6 +25,7 @@
     "js-cookie": "^2.2.1",
     "next": "9.5.2",
     "next-cookies": "^2.0.3",
+    "next-redux-wrapper": "^6.0.2",
     "nprogress": "^0.2.0",
     "randomcolor": "^0.6.2",
     "react": "16.13.1",
@@ -31,6 +34,7 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "scroll-into-view-if-needed": "^2.2.25",
     "store": "^2.0.12",
@@ -39,5 +43,19 @@
     "swr": "^0.3.1",
     "use-react-router": "^1.0.7",
     "yup": "^0.29.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "^9.0.0",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "^18.0.0",
+    "eslint-config-nextjs": "^1.0.6",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-html": "^5.0.3",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react": "^7.14.2",
+    "eslint-plugin-react-hooks": "^1.4.0",
+    "prettier": "^1.16.4"
   }
 }

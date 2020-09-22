@@ -1,22 +1,30 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import Cookie from 'js-cookie';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import WebSocketInstance from '@/websocket';
+
+import { authCheckState } from '@/store/actions/auth';
+import { setMessages, addMessage } from '@/store/actions/message';
+
 import Header from './Header';
 import Navbar from './Navbar';
 import Container from '@/styles/Container';
-import WebSocketInstance from '@/websocket';
-import { MessageContext } from '@/context/message/MessageContext';
-import { AuthContext } from '@/context/auth/AuthContext';
-import Cookie from 'js-cookie';
 
-const PrivateLayout = ({children}) => {
+const PrivateLayout = ({ children }) => {
+  const dispatch = useDispatch();
 
-  const { setMessages, addMessage } = useContext(MessageContext);
+  const setMessagesHandler = messages => {
+    dispatch(setMessages(messages));
+  };
 
-  const { authCheckState } = useContext(AuthContext);
+  const addMessageHandler = message => {
+    dispatch(addMessage(message));
+  };
 
   useEffect(() => {
-    authCheckState();
-    WebSocketInstance.addCallbacks(setMessages, addMessage);
+    dispatch(authCheckState());
+    WebSocketInstance.addCallbacks(setMessagesHandler, addMessageHandler);
   }, []);
 
   return (
@@ -25,14 +33,12 @@ const PrivateLayout = ({children}) => {
       <StyledMain>
         <Container>
           <Navbar />
-          <div className="private-layout__main">
-            {children}
-          </div>
+          <div className="private-layout__main">{children}</div>
         </Container>
       </StyledMain>
     </>
   );
-}
+};
 
 export default PrivateLayout;
 
@@ -45,7 +51,7 @@ const StyledMain = styled.div`
     padding-top: 70px;
   }
   .private-layout__main {
-    margin-left: 220px;
+    margin-left: 180px;
     @media (max-width: 575.98px) {
       margin-left: 55px;
     }

@@ -1,13 +1,21 @@
-import { useContext } from 'react';
-import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, TeamOutlined } from '@ant-design/icons';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Form, Input, Button } from 'antd';
+import Link from 'next/link';
+
+import { useDispatch } from 'react-redux';
+
 import styled from 'styled-components';
+import {
+  UserOutlined,
+  LockOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  TeamOutlined
+} from '@ant-design/icons';
+import { Form, Input, Button } from 'antd';
+import { authSignup } from '@/store/actions/auth';
 import VisitorLayout from '@/components/Layout/VisitorLayout';
-import { useRouter } from 'next/router';
-import { AuthContext } from '@/context/auth/AuthContext';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -33,21 +41,20 @@ const validationSchema = Yup.object().shape({
     .required('Введите пароль'),
   confirmPassword: Yup.string()
     .required('Введите пароль')
-    .oneOf([Yup.ref("password"), null], 'Пароли должны совпадать')
+    .oneOf([Yup.ref('password'), null], 'Пароли должны совпадать')
 });
 
 const errorMessege = (touched, messege) => {
   if (!touched) {
-    return
+    return;
   }
   if (messege) {
-    return messege
+    return messege;
   }
 };
 
 export default function Register() {
-
-  const { authSignup } = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   const { push } = useRouter();
 
@@ -56,23 +63,39 @@ export default function Register() {
       email: '',
       firstName: '',
       lastName: '',
-      phoneNumber: '', 
+      phoneNumber: '',
       password: '',
-      confirmPassword: '',
+      confirmPassword: ''
     },
     validationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      authSignup(values.email, values.firstName, values.lastName, values.phoneNumber, values.password);
+      dispatch(
+        authSignup(
+          values.email,
+          values.firstName,
+          values.lastName,
+          values.phoneNumber,
+          values.password
+        )
+      );
       setSubmitting(true);
       setTimeout(() => {
         resetForm();
         setSubmitting(false);
         push({ pathname: '/' }, undefined, { shallow: true });
-      }, 500)
+      }, 500);
     }
   });
 
-  const { handleSubmit, handleChange, handleBlur, isSubmitting, errors, touched, values } = formik;
+  const {
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    isSubmitting,
+    errors,
+    touched,
+    values
+  } = formik;
 
   return (
     <VisitorLayout>
@@ -86,7 +109,9 @@ export default function Register() {
             name="email"
             hasFeedback
             help={errorMessege(touched.email, errors.email)}
-            validateStatus={!touched.email ? null : errors.email ? "error" : "success"}
+            validateStatus={
+              !touched.email ? null : errors.email ? 'error' : 'success'
+            }
           >
             <Input
               id="reg__email"
@@ -102,7 +127,9 @@ export default function Register() {
             name="firstName"
             hasFeedback
             help={errorMessege(touched.firstName, errors.firstName)}
-            validateStatus={!touched.firstName ? null : errors.firstName ? "error" : "success"}
+            validateStatus={
+              !touched.firstName ? null : errors.firstName ? 'error' : 'success'
+            }
           >
             <Input
               id="firstName"
@@ -118,7 +145,9 @@ export default function Register() {
             name="lastName"
             hasFeedback
             help={errorMessege(touched.lastName, errors.lastName)}
-            validateStatus={!touched.lastName ? null : errors.lastName ? "error" : "success"}
+            validateStatus={
+              !touched.lastName ? null : errors.lastName ? 'error' : 'success'
+            }
           >
             <Input
               id="lastName"
@@ -134,7 +163,13 @@ export default function Register() {
             name="phoneNumber"
             hasFeedback
             help={errorMessege(touched.phoneNumber, errors.phoneNumber)}
-            validateStatus={!touched.phoneNumber ? null : errors.phoneNumber ? "error" : "success"}
+            validateStatus={
+              !touched.phoneNumber
+                ? null
+                : errors.phoneNumber
+                ? 'error'
+                : 'success'
+            }
           >
             <Input
               id="phoneNumber"
@@ -150,7 +185,9 @@ export default function Register() {
             name="password"
             hasFeedback
             help={errorMessege(touched.password, errors.password)}
-            validateStatus={!touched.password ? null : errors.password ? "error" : "success"}
+            validateStatus={
+              !touched.password ? null : errors.password ? 'error' : 'success'
+            }
           >
             <Input.Password
               id="reg__password"
@@ -166,7 +203,13 @@ export default function Register() {
             name="confirmPassword"
             hasFeedback
             help={errorMessege(touched.confirmPassword, errors.confirmPassword)}
-            validateStatus={!touched.confirmPassword ? null : errors.confirmPassword ? "error" : "success"}
+            validateStatus={
+              !touched.confirmPassword
+                ? null
+                : errors.confirmPassword
+                ? 'error'
+                : 'success'
+            }
           >
             <Input.Password
               id="reg__confirmPassword"
@@ -184,7 +227,11 @@ export default function Register() {
             </Button>
           </Form.Item>
         </Form>
-        <Link href='/'><a><p>Войти</p></a></Link>
+        <Link href="/">
+          <a>
+            <p>Войти</p>
+          </a>
+        </Link>
       </StyledRegister>
     </VisitorLayout>
   );
@@ -199,10 +246,11 @@ const StyledRegister = styled.div`
   }
   width: 100%;
   max-width: 400px;
-  padding: 30px 50px ;
+  padding: 30px 50px;
   border-radius: 1rem;
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-  h3, p {
+  h3,
+  p {
     text-align: center;
   }
   p {

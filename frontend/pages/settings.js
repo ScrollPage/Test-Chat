@@ -1,23 +1,19 @@
-import PrivateLayout from '@/components/Layout/PrivateLayout';
-import { AuthContext } from '@/context/auth/AuthContext';
-import { Button } from 'antd';
-import { useContext } from 'react';
+import { useDispatch } from 'react-redux';
+
 import styled from 'styled-components';
+import { Button } from 'antd';
+import { logout } from '@/store/actions/auth';
+import PrivateLayout from '@/components/Layout/PrivateLayout';
 
 export default function Settings() {
-
-  const { logout } = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   return (
     <PrivateLayout>
       <StyledSettings>
+        <div>Settings</div>
         <div>
-          Settings
-      </div>
-        <div>
-          <Button onClick={() => logout()}>
-            Выйти из аккаунта
-        </Button>
+          <Button onClick={() => dispatch(logout())}>Выйти из аккаунта</Button>
         </div>
       </StyledSettings>
     </PrivateLayout>

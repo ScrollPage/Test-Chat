@@ -6,45 +6,48 @@ import Link from 'next/link';
 import Like from '@/components/UI/Like';
 
 const UserPost = ({ post }) => {
-
-  const [numLikes, setNumLikes]= useState(post.num_likes);
+  const [numLikes, setNumLikes] = useState(post.num_likes);
 
   return (
     <StyledUserPost>
       <div className="user-post__header">
         <div>
-          <Link href='/userpage/[userID]' as={`/userpage/${post.user.id}`}>
+          <Link href="/userpage/[userID]" as={`/userpage/${post.user.id}`}>
             <a>
               <Avatar style={{ marginRight: '15px' }} icon={<UserOutlined />} />
             </a>
           </Link>
         </div>
         <div>
-          <Link href='/userpage/[userID]' as={`/userpage/${post.user.id}`}>
+          <Link href="/userpage/[userID]" as={`/userpage/${post.user.id}`}>
             <a>
-              <p>{post.user.first_name} {post.user.last_name}</p>
+              <p>
+                {post.user.first_name} {post.user.last_name}
+              </p>
             </a>
           </Link>
           <small>только что</small>
         </div>
       </div>
       <div className="user-post__body">
-        <div>
-          {post.text}
-        </div>
+        <div>{post.text}</div>
         <div>
           <img src={post.image} alt="" />
         </div>
       </div>
       <div className="user-post__footer">
         <div>
-          <Like isLiked={post.is_liked} postId={post.id} setNumLikes={setNumLikes}/>
+          <Like
+            isLiked={post.is_liked}
+            postId={post.id}
+            setNumLikes={setNumLikes}
+          />
           <h2>{numLikes}</h2>
         </div>
       </div>
     </StyledUserPost>
   );
-}
+};
 
 export default UserPost;
 

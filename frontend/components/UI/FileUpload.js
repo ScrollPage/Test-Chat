@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Upload, message } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
-const FileUpload = ({imageUrl, setImageUrl}) => {
-
+const FileUpload = ({ imageUrl, setImageUrl }) => {
   const [loading, setLoading] = useState(false);
 
   function getBase64(img, callback) {
@@ -33,8 +32,7 @@ const FileUpload = ({imageUrl, setImageUrl}) => {
       getBase64(info.file.originFileObj, imageUrl => {
         setImageUrl(imageUrl);
         setLoading(false);
-      }
-      );
+      });
     }
   };
 
@@ -54,9 +52,13 @@ const FileUpload = ({imageUrl, setImageUrl}) => {
       beforeUpload={beforeUpload}
       onChange={handleChange}
     >
-      {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+      {imageUrl ? (
+        <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
+      ) : (
+        uploadButton
+      )}
     </Upload>
   );
-}
+};
 
 export default FileUpload;

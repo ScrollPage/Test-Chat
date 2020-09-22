@@ -1,22 +1,16 @@
-import PrivateLayout from '@/components/Layout/PrivateLayout';
-import Search from '@/components/UI/Search';
-import styled from 'styled-components';
 import axios from 'axios';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
+
+import styled from 'styled-components';
+import PrivateLayout from '@/components/Layout/PrivateLayout';
+import Search from '@/components/UI/Search';
 import Friend from '@/components/Friends/Friend';
-import { SearchContext } from '@/context/search/SearchContext';
-import { useContext } from 'react';
 
-export default function News() {
+export default function GlobalSearch() {
+  const { data } = useSWR(`/api/v1/people/`);
 
-  const { search } = useContext(SearchContext);
-
-  const { data } = useSWR(`/api/v1/people/?query_name=${search}`);
-
-  console.log(data);
-
-  const renderPeople = (people) => (
+  const renderPeople = people =>
     people.map(man => (
       <Friend
         key={`people__key__${man.id}`}
@@ -24,8 +18,7 @@ export default function News() {
         userId={man.id}
         chatId={man.chat_id}
       />
-    ))
-  );
+    ));
 
   return (
     <PrivateLayout>
@@ -37,12 +30,11 @@ export default function News() {
   );
 }
 
-export const getServerSideProps = async (ctx) => {
-
+export const getServerSideProps = async ctx => {
   const token = cookies(ctx)?.token || null;
 
   axios.defaults.headers = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
     Authorization: `Token ${token}`
   };
 
@@ -50,23 +42,20 @@ export const getServerSideProps = async (ctx) => {
 
   await axios
     .get(`/api/v1/people/`)
-    .then((response) => {
+    .then(response => {
       people = response?.data;
     })
-    .catch((error) => {
+    .catch(error => {
       console.log(error);
     });
   return {
     props: {
-      people: people
+      people
     }
   };
-}
+};
 
 const StyledGlobalSearch = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
-
-

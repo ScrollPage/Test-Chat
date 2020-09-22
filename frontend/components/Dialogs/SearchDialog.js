@@ -10,13 +10,11 @@ const SearchDialog = () => {
         <SearchOutlined />
       </div>
       <div>
-        <Input
-          placeholder="Поиск"
-        />
+        <Input placeholder="Поиск" />
       </div>
     </StyledSearchDialog>
   );
-}
+};
 
 export default SearchDialog;
 

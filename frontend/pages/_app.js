@@ -9,20 +9,17 @@ import NProgress from 'nprogress';
 import { createGlobalStyle } from 'styled-components';
 import { normalize } from 'styled-normalize';
 
-import { AlertState } from '@/context/alert/AlertState';
-import { AuthState } from '@/context/auth/AuthState';
-import { MessageState } from '@/context/message/MessageState';
-import { SearchState } from '@/context/search/SearchState';
-import { FriendState } from '@/context/friend/FriendState';
-
+import { createWrapper } from 'next-redux-wrapper';
+import { Provider } from 'react-redux';
 import Cookie from 'js-cookie';
+import store from '@/store/store';
 
 import Alert from '@/components/Layout/Alert';
 
 axios.defaults.baseURL = 'http://localhost:8000';
 
 axios.defaults.headers = {
-  "Content-Type": "application/json",
+  'Content-Type': 'application/json',
   Authorization: `Token ${Cookie.get('token')}`
 };
 
@@ -30,11 +27,11 @@ NProgress.configure({
   showSpinner: false,
   trickleRate: 0.1,
   trickleSpeed: 300
-})
+});
 
-Router.events.on('routeChangeStart', () => NProgress.start())
-Router.events.on('routeChangeComplete', () => NProgress.done())
-Router.events.on('routeChangeError', () => NProgress.done())
+Router.events.on('routeChangeStart', () => NProgress.start());
+Router.events.on('routeChangeComplete', () => NProgress.done());
+Router.events.on('routeChangeError', () => NProgress.done());
 
 const MyApp = ({ Component, pageProps }) => {
   return (
@@ -50,30 +47,21 @@ const MyApp = ({ Component, pageProps }) => {
       </Head>
       <>
         <GlobalStyle />
-        <SWRConfig
-          value={{ fetcher: (url) => axios(url).then(r => r.data) }}
-        >
-          <AlertState>
-            <AuthState>
-              <MessageState>
-                <FriendState>
-                  <SearchState>
-                    <>
-                      <Alert />
-                      <Component {...pageProps} />
-                    </>
-                  </SearchState>
-                </FriendState>
-              </MessageState>
-            </AuthState>
-          </AlertState>
+        <SWRConfig value={{ fetcher: url => axios(url).then(r => r.data) }}>
+          <Provider store={store}>
+            <Alert />
+            <Component {...pageProps} />
+          </Provider>
         </SWRConfig>
       </>
     </>
   );
-}
+};
 
-export default MyApp;
+const makestore = () => store;
+const wrapper = createWrapper(makestore);
+
+export default wrapper.withRedux(MyApp);
 
 const GlobalStyle = createGlobalStyle`
   ${normalize}

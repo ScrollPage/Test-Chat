@@ -1,17 +1,20 @@
-import VisitorLayout from '@/components/Layout/PrivateLayout';
-import { useContext, useEffect } from 'react';
-import { AuthContext } from '@/context/auth/AuthContext';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+
+import { authActivate } from '@/store/actions/auth';
+import { useDispatch } from 'react-redux';
+
+import VisitorLayout from '@/components/Layout/PrivateLayout';
 
 export default function Activation() {
 
-  const { query, push } = useRouter();
+  const dispatch = useDispatch();
 
-  const { authActivate } = useContext(AuthContext);
+  const { query, push } = useRouter();
 
   useEffect(() => {
     if (query.token !== undefined && query.token !== null) {
-      authActivate(query.token);
+      dispatch(authActivate(query.token));
       setTimeout(() => {
         push({ pathname: '/' }, undefined, { shallow: true });
       }, 5000)

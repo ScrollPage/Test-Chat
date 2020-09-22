@@ -1,19 +1,19 @@
-import { useContext } from 'react';
+import { useRouter } from 'next/router';
+import { useFormik } from 'formik';
+import Link from 'next/link';
+import * as Yup from 'yup';
+
+import { useDispatch } from 'react-redux';
+
 import styled from 'styled-components';
 import { Form, Input, Button } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import Link from 'next/link';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { authLogin } from '@/store/actions/auth';
 import VisitorLayout from '@/components/Layout/VisitorLayout';
-import { useRouter } from 'next/router';
-import { AuthContext } from '@/context/auth/AuthContext';
 
 const validationSchema = Yup.object().shape({
-  email: Yup.string()
-    .required('Введите логин'),
-  password: Yup.string()
-    .required('Введите пароль')
+  email: Yup.string().required('Введите логин'),
+  password: Yup.string().required('Введите пароль')
 });
 
 const errorMessege = (touched, messege) => {
@@ -26,28 +26,35 @@ const errorMessege = (touched, messege) => {
 };
 
 export default function Login() {
-
-  const { authLogin } = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   const { push } = useRouter();
 
   const formik = useFormik({
     initialValues: {
       email: '',
-      password: '',
+      password: ''
     },
     validationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      authLogin(values.email, values.password);
+      dispatch(authLogin(values.email, values.password));
       setSubmitting(true);
       setTimeout(() => {
         resetForm();
         setSubmitting(false);
-      }, 500)
+      }, 500);
     }
   });
 
-  const { handleSubmit, handleChange, handleBlur, isSubmitting, errors, touched, values } = formik;
+  const {
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    isSubmitting,
+    errors,
+    touched,
+    values
+  } = formik;
 
   return (
     <VisitorLayout>
@@ -61,7 +68,9 @@ export default function Login() {
             name="email"
             hasFeedback
             help={errorMessege(touched.email, errors.email)}
-            validateStatus={!touched.email ? null : errors.email ? "error" : "success"}
+            validateStatus={
+              !touched.email ? null : errors.email ? 'error' : 'success'
+            }
           >
             <Input
               id="email"
@@ -78,7 +87,9 @@ export default function Login() {
             name="password"
             hasFeedback
             help={errorMessege(touched.password, errors.password)}
-            validateStatus={!touched.password ? null : errors.password ? "error" : "success"}
+            validateStatus={
+              !touched.password ? null : errors.password ? 'error' : 'success'
+            }
           >
             <Input.Password
               id="log__password"
@@ -91,13 +102,22 @@ export default function Login() {
               onBlur={handleBlur}
             />
           </Form.Item>
-          <Form.Item >
-            <Button type="primary" htmlType="submit" size="large" disabled={isSubmitting}>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              size="large"
+              disabled={isSubmitting}
+            >
               Войти в аккаунт
             </Button>
           </Form.Item>
         </Form>
-        <Link href='/register'><a><p>Зарегистрироваться</p></a></Link>
+        <Link href="/register">
+          <a>
+            <p>Зарегистрироваться</p>
+          </a>
+        </Link>
       </StyledLogin>
     </VisitorLayout>
   );
@@ -109,16 +129,17 @@ const StyledLogin = styled.div`
   }
   .ant-btn {
     width: 100%;
-  }    
+  }
   width: 100%;
   max-width: 400px;
-  padding: 50px ;
+  padding: 50px;
   border-radius: 1rem;
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-  h3, p {
-    text-align: center;
-  }   
+  h3,
   p {
-    opacity: 0.8;  
+    text-align: center;
+  }
+  p {
+    opacity: 0.8;
   }
 `;
