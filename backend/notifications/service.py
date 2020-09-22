@@ -1,7 +1,7 @@
 from backend.settings import pusher_client as pusher
 
 def send_message_notifications(chat, sender):
-    for user in chat.participant.all():
+    for user in chat.participants.all():
         if user != sender:
             pusher.trigger(
                 f'notifications{user.id}', 
