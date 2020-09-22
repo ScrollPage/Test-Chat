@@ -5,15 +5,22 @@ def send_message_notifications(chat, sender):
         if user != sender:
             pusher.trigger(
                 f'notifications_{user.id}', 
-                'message_send', 
+                'new_message', 
                 {'sender': sender.id, 'chat_id': chat.id, 'name': sender.get_full_name()}
             )
 
 def send_addrequest_notification(sender, receiver):
     pusher.trigger(
         f'notifications_{receiver.id}', 
-        'friend_add', 
+        'new_request', 
         {'sender': sender.id, 'name': sender.get_full_name()}
+    )
+
+def new_friend_notification(sender, receiver):
+    pusher.trigger(
+        f'notifications_{sender.id}', 
+        'new_friend', 
+        {'sender': receiver.id, 'name': receiver.get_full_name()}
     )
 
 def send_like_notification(owner, liker, post):

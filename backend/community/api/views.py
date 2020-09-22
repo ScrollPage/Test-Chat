@@ -29,6 +29,7 @@ from .service import (
 from contact.models import Contact
 from chat.models import Chat
 from community.models import AddRequest
+from notifications.service import new_friend_notification
 
 class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
     '''Обзор, обновление и удаление контакта'''
@@ -121,6 +122,7 @@ class FriendPermissionViewset(ModelViewSetPermission):
         receiver_contact.friends.add(sender_contact)
         sender_contact.save()
         receiver_contact.save()
+        new_friend_notification(sender_contact, receiver_contact)
         return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
