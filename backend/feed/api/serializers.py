@@ -104,3 +104,10 @@ class LikeSerializer(serializers.ModelSerializer, UserValidationSerializer):
     class Meta:
         model = Like
         fields = '__all__'
+
+    # def validate(self, attrs):
+    #     user = self.context['request'].user
+    #     post_id = self.context['request'].data.get('post_id', None)
+    #     if user and post_id:
+    #         return super().validate(attrs)
+    #     raise BadRequestError('You need user and post id.')

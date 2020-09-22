@@ -92,12 +92,12 @@ class LikesCustomViewset(PermissionCreateViewset):
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):
-        try:
-            user = request.data['user']
-            post_id = int(request.data['post_id'])
-        except ValueError:
+        user = request.data.get('user', None)
+        post_id = request.data.get('post_id', None)
+        if not user or not post_id:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        like = Like.objects.filter(Q(user=user)&Q(post_id=post_id)).first()    
+        post_id = int(post_id)
+        like = Like.objects.filter(Q(user=user)&Q(post_id=post_id)).first()
         try:
             like.delete()
         except AttributeError:
