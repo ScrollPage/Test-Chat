@@ -24,9 +24,6 @@ def new_friend_notification(sender, receiver):
     )
 
 def send_like_notification(owner, liker, post_id):
-    # print(owner)
-    # print(post_id)
-    # print(liker)
     pusher.trigger(
         f'notifications{owner.id}', 
         'new_like', 
