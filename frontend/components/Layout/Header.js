@@ -1,64 +1,59 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
+import Cookie from 'js-cookie';
+import Link from 'next/link';
+
+import { useDispatch } from 'react-redux';
+
 import styled from 'styled-components';
 import { UserOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Avatar } from 'antd';
-import Link from 'next/link';
+import { logout } from '@/store/actions/auth';
 import Container from '@/styles/Container';
-import { AuthContext } from '@/context/auth/AuthContext';
-import Search from '@/components/UI/Search';
-import Cookie from 'js-cookie';
 
 const Header = () => {
-
-  const { logout } = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   const [menuOpen, setMenuOpen] = useState(false);
 
   const logoutHandler = () => {
-    logout();
-  }
-  
+    dispatch(logout());
+  };
+
   return (
     <StyledHeader>
       <Container>
         <StyledHeaderInner>
-          <div>
-            Scroll Chat
-          </div>
-          <StyledAvatar
-            onClick={() => setMenuOpen(state => !state)}
-          >
-            <Avatar style={{ backgroundColor: 'lightblue', marginRight: '15px' }} icon={<UserOutlined />} />
+          <div>Scroll Chat</div>
+          <StyledAvatar onClick={() => setMenuOpen(state => !state)}>
+            <Avatar
+              style={{ backgroundColor: 'lightblue', marginRight: '15px' }}
+              icon={<UserOutlined />}
+            />
             <p>{`${Cookie.get('firstName')} ${Cookie.get('lastName')}`}</p>
             <div className="styled-avatar__arrow">
               {menuOpen ? <UpOutlined /> : <DownOutlined />}
             </div>
-            {menuOpen
-              ? <StyledAvatarMenu>
+            {menuOpen ? (
+              <StyledAvatarMenu>
                 <div>
                   <Link href="/settings">
-                    <a>
-                      Настройки
-                    </a>
+                    <a>Настройки</a>
                   </Link>
                 </div>
-                <div onClick={logoutHandler}>
-                  Выйти
-                </div>
+                <div onClick={logoutHandler}>Выйти</div>
               </StyledAvatarMenu>
-              : null}
+            ) : null}
           </StyledAvatar>
         </StyledHeaderInner>
       </Container>
     </StyledHeader>
   );
-}
+};
 
 export default Header;
 
 const StyledHeader = styled.div`
   background: #1890ff;
-  /* background: purple; */
   z-index: 2;
   position: fixed;
   width: 100%;

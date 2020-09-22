@@ -1,24 +1,29 @@
-import React, { useContext, useEffect } from 'react';
-import { AlertContext } from '../../context/alert/AlertContext';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import { Alert as AntdAlert } from 'antd';
-const Alert = () => {
+import React, { useEffect } from 'react';
 
-  const { alert, hide } = useContext(AlertContext)
+import { useDispatch, useSelector } from 'react-redux';
+
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { Alert as AntdAlert } from 'antd';
+import { hide } from '@/store/actions/alert';
+
+const Alert = () => {
+  const text = useSelector(store => store.alert.text);
+  const type = useSelector(store => store.alert.typeOf);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setTimeout(() => {
-      hide()
-    }, 3000)
-    //eslint-disable-next-line
-  }, [alert])
+      dispatch(hide());
+    }, 3000);
+    // eslint-disable-next-line
+  }, [text]);
 
   const hideHandler = () => {
-    hide();
-  }
+    dispatch(hide());
+  };
 
-  if (!alert) return null
+  if (!text) return null;
 
   return (
     <StyledAlert
@@ -27,15 +32,10 @@ const Alert = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 1 }}
     >
-      <AntdAlert
-        message={alert.text}
-        type={alert.type}
-        closable
-        onClose={hideHandler}
-      />
+      <AntdAlert message={text} type={type} closable onClose={hideHandler} />
     </StyledAlert>
   );
-}
+};
 
 export default Alert;
 

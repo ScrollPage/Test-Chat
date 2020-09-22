@@ -3,27 +3,24 @@ import { Input, Button } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-const ChatInput = ({sendMessage, messageChange, message}) => {
+const ChatInput = ({ sendMessage, messageChange, message }) => {
   return (
     <StyledChatInput>
       <form onSubmit={sendMessage}>
         <StyledChatInputInner>
           <div>
-            <Input 
-              onChange={messageChange}
-              value={message}
-            />
+            <Input onChange={messageChange} value={message} />
           </div>
           <div>
-            <Button
-              htmlType="submit"
-            ><SendOutlined /></Button>
+            <Button htmlType="submit">
+              <SendOutlined />
+            </Button>
           </div>
         </StyledChatInputInner>
       </form>
     </StyledChatInput>
   );
-}
+};
 
 export default ChatInput;
 

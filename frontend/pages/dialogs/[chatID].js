@@ -1,24 +1,27 @@
-import { useState, useEffect, useRef, useContext } from 'react';
-import PrivateLayout from '@/components/Layout/PrivateLayout';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
+import Cookie from 'js-cookie';
+
+import { setLoading } from '@/store/actions/message';
+import { useDispatch, useSelector } from 'react-redux';
+
 import styled from 'styled-components';
+import WebSocketInstance from '@/websocket';
 import ChatItem from '@/components/Chat/ChatItem';
 import ChatInput from '@/components/Chat/ChatInput';
 import ChatHeader from '@/components/Chat/ChatHeader';
-import WebSocketInstance from '@/websocket';
-import { useRouter } from 'next/router';
-import { AuthContext } from '@/context/auth/AuthContext';
-import { MessageContext } from '@/context/message/MessageContext';
 import Loading from '@/components/UI/Loading';
+import PrivateLayout from '@/components/Layout/PrivateLayout';
 
 export default function Chat() {
+  const dispatch = useDispatch();
+
+  const { messages, loading } = useSelector(state => state.message);
 
   const { query } = useRouter();
 
-  const { userId } = useContext(AuthContext);
-  const { messages, loading, setLoading} = useContext(MessageContext);
-
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
   let messagesEnd = useRef();
 
@@ -27,54 +30,53 @@ export default function Chat() {
   }, [messages]);
 
   useEffect(() => {
-    setLoading();
+    dispatch(setLoading());
     initialiseChat();
     return () => {
       WebSocketInstance.disconnect();
-    }
+    };
   }, [query.chatID]);
 
   const initialiseChat = () => {
     waitForSocketConnection(() => {
-      WebSocketInstance.fetchMessages(userId, query.chatID);
+      WebSocketInstance.fetchMessages(Cookie.get('userId'), query.chatID);
     });
     WebSocketInstance.connect(query.chatID);
-  }
+  };
 
-  const waitForSocketConnection = (callback) => {
-    setTimeout(
-      function () {
-        if (WebSocketInstance.state() === 1) {
-          console.log("Connection is made")
-          callback();
-          return;
-        } else {
-          console.log("wait for connection...")
-          waitForSocketConnection(callback);
-        }
-      }, 100);
-  }
+  const waitForSocketConnection = callback => {
+    setTimeout(function() {
+      if (WebSocketInstance.state() === 1) {
+        console.log('Connection is made');
+        callback();
+        return;
+      } else {
+        console.log('wait for connection...');
+        waitForSocketConnection(callback);
+      }
+    }, 100);
+  };
 
-  const messageChangeHandler = (e) => {
+  const messageChangeHandler = e => {
     setMessage(e.target.value);
-  }
+  };
 
-  const sendMessageHandler = (e) => {
+  const sendMessageHandler = e => {
     e.preventDefault();
     if (message.trim() !== '') {
       const messageObject = {
-        from: userId,
+        from: Cookie.get('userId'),
         content: message,
         chatId: query.chatID
       };
       WebSocketInstance.newChatMessage(messageObject);
-      setMessage("");
+      setMessage('');
     }
-  }
+  };
 
   const scrollToBottom = () => {
-    messagesEnd.scrollIntoViewIfNeeded({ behavior: "smooth" });
-  }
+    messagesEnd.scrollIntoViewIfNeeded({ behavior: 'smooth' });
+  };
 
   const renderMessages = () => {
     return messages.map(message => (
@@ -83,32 +85,37 @@ export default function Chat() {
         name={`${message.first_name} ${message.last_name}`}
         time={message.timestamp}
         message={message.content}
-        isUsername={message.author === userId ? true : false}
+        isUsername={message.author === Cookie.get('userId')}
       />
     ));
-  }
+  };
 
   return (
     <PrivateLayout>
       <StyledChat>
         <ChatHeader />
         <StyledChatInner>
-          {loading
-            ? <Loading />
-            : messages.length === 0
-            ? <p className="not-messages">У вас нет сообщений</p>
-            : renderMessages(messages)
-          }
-          <div style={{ float: "left", clear: "both", position: "absolute", bottom: '-50px', left: '0' }}
-            ref={el => messagesEnd = el}>
-          </div>
+          {loading ? (
+            <Loading />
+          ) : messages.length === 0 ? (
+            <p className="not-messages">У вас нет сообщений</p>
+          ) : renderMessages(messages)}
+          <div
+            style={{
+              float: 'left',
+              clear: 'both',
+              position: 'absolute',
+              bottom: '-50px',
+              left: '0'
+            }}
+            ref={el => (messagesEnd = el)}
+          />
         </StyledChatInner>
         <ChatInput
           sendMessage={sendMessageHandler}
           messageChange={messageChangeHandler}
           message={message}
         />
-
       </StyledChat>
     </PrivateLayout>
   );
@@ -122,7 +129,7 @@ const StyledChat = styled.div`
   overflow-y: scroll;
   &::-webkit-scrollbar {
     width: 1em;
-    background-color: #F5F5F5;
+    background-color: #f5f5f5;
     @media (max-width: 575.98px) {
       width: 0px;
     }

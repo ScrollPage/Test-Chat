@@ -1,18 +1,15 @@
-import PrivateLayout from '@/components/Layout/PrivateLayout';
-import SearchDialog from '@/components/Dialogs/SearchDialog';
-import Friend from '@/components/Friends/Friend';
 import styled from 'styled-components';
 import axios from 'axios';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
+import Friend from '@/components/Friends/Friend';
+import SearchDialog from '@/components/Dialogs/SearchDialog';
+import PrivateLayout from '@/components/Layout/PrivateLayout';
 
-export default function Friends({friends}) {
+export default function Friends({ friends }) {
+  const { data } = useSWR(`/api/v1/friends/`, { initialData: friends });
 
-  const { data } = useSWR(`/api/v1/friends/`, { initialData: friends});
-
-  console.log(data);
-
-  const renderFriends = (friends) => (
+  const renderFriends = friends =>
     friends.map(friend => (
       <Friend
         key={`friend__key__${friend.id}`}
@@ -20,26 +17,32 @@ export default function Friends({friends}) {
         userId={friend.id}
         chatId={friend.chat_id}
       />
-    ))
-  );
+    ));
 
   return (
     <PrivateLayout>
       <SearchDialog />
       <StyledFriends>
-        {data !== null ? data.length === 0 ? <p>У вас нет друзей</p> : renderFriends(data) : <h4>У вас нет друзей</h4>}
+        {data !== null ? (
+          data.length === 0 ? (
+            <p>У вас нет друзей</p>
+          ) : (
+            renderFriends(data)
+          )
+        ) : (
+          <h4>У вас нет друзей</h4>
+        )}
       </StyledFriends>
     </PrivateLayout>
   );
 }
 
-export const getServerSideProps = async (ctx) => {
-
-  // const userId = cookies(ctx)?.userId || null; 
-  const token = cookies(ctx)?.token || null; 
+export const getServerSideProps = async ctx => {
+  // const userId = cookies(ctx)?.userId || null;
+  const token = cookies(ctx)?.token || null;
 
   axios.defaults.headers = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
     Authorization: `Token ${token}`
   };
 
@@ -47,16 +50,18 @@ export const getServerSideProps = async (ctx) => {
 
   await axios
     .get(`/api/v1/friends/`)
-    .then((response) => {
+    .then(response => {
       friends = response?.data;
     })
-    .catch((error) => {
+    .catch(error => {
       console.log(error);
     });
-  return { props: { 
-    friends: friends
-  }};
-}
+  return {
+    props: {
+      friends
+    }
+  };
+};
 
 const StyledFriends = styled.div`
   height: 100%;
@@ -64,6 +69,6 @@ const StyledFriends = styled.div`
   display: flex;
   flex-direction: column;
   h4 {
-    margin-top: 10px; 
+    margin-top: 10px;
   }
 `;

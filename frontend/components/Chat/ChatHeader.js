@@ -19,11 +19,14 @@ const ChatHeader = () => {
       </Link>
       <div>Название</div>
       <div>
-        <Avatar style={{ backgroundColor: '#87d068', marginRight: '15px' }} icon={<UserOutlined />} />
+        <Avatar
+          style={{ backgroundColor: '#87d068', marginRight: '15px' }}
+          icon={<UserOutlined />}
+        />
       </div>
     </StyledChatHeader>
   );
-}
+};
 
 export default ChatHeader;
 

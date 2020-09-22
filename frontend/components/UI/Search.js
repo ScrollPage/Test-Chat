@@ -1,12 +1,15 @@
-import React, { useContext } from 'react';
+import React from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
+
+import styled from 'styled-components';
 import { Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import styled from 'styled-components';
-import { SearchContext } from '@/context/search/SearchContext';
+import { setSearch } from '@/store/actions/search';
 
 const SearchDialog = () => {
-
-  const {search, addSearch} = useContext(SearchContext);
+  const dispatch = useDispatch();
+  const search = useSelector(state => state.search.search);
 
   return (
     <StyledSearch>
@@ -16,13 +19,13 @@ const SearchDialog = () => {
       <div>
         <Input
           placeholder="Поиск"
-          onChange={(e) => addSearch(e.target.value)}
+          onChange={e => dispatch(setSearch(e.target.value))}
           value={search}
         />
       </div>
     </StyledSearch>
   );
-}
+};
 
 export default SearchDialog;
 
@@ -32,7 +35,7 @@ const StyledSearch = styled.div`
   align-items: center;
   position: sticky;
   top: 60px;
-  z-index: 1; 
+  z-index: 1;
   /* max-width: 200px; */
   padding: 20px 0;
   background: #fff;

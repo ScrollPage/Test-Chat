@@ -16,7 +16,7 @@ const UserInfo = ({ data }) => {
       </div>
     </StyledUserInfo>
   );
-}
+};
 
 export default UserInfo;
 
@@ -29,7 +29,8 @@ const StyledUserInfo = styled.div`
     padding: 20px;
     flex-direction: column;
   }
-  ul, li {
+  ul,
+  li {
     list-style: none;
     padding: 0;
   }

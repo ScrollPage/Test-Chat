@@ -4,7 +4,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 const Loading = () => {
-  const antIcon = <LoadingOutlined style={{ fontSize: 30 }} spin />
+  const antIcon = <LoadingOutlined style={{ fontSize: 30 }} spin />;
 
   return (
     <StyledLoading>
@@ -12,8 +12,8 @@ const Loading = () => {
         <Spin indicator={antIcon} />
       </div>
     </StyledLoading>
-  )
-}
+  );
+};
 
 export default Loading;
 
@@ -29,6 +29,3 @@ const StyledLoading = styled.div`
     margin-left: -15px;
   }
 `;
-
-
-

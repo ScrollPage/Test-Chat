@@ -2,12 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 const VisitorLayout = ({ children }) => {
-  return (
-    <StyledMain>
-      {children}
-    </StyledMain>
-  );
-}
+  return <StyledMain>{children}</StyledMain>;
+};
 
 export default VisitorLayout;
 

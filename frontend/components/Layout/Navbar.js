@@ -1,5 +1,13 @@
 import React from 'react';
-import { MailOutlined, SettingOutlined, CommentOutlined, HomeOutlined, UserOutlined, TeamOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+  MailOutlined,
+  SettingOutlined,
+  CommentOutlined,
+  HomeOutlined,
+  UserOutlined,
+  TeamOutlined,
+  SearchOutlined
+} from '@ant-design/icons';
 import Link from 'next/link';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
@@ -11,54 +19,51 @@ const navitems = [
   { key: 'friends', name: 'Друзья' },
   { key: 'teams', name: 'Сообщества' },
   { key: 'settings', name: 'Настройки' }
-]
+];
 
-const renderIcons = (key) => {
+const renderIcons = key => {
   if (key === 'news') return <MailOutlined />;
   if (key === 'dialogs') return <CommentOutlined />;
   if (key === 'friends') return <UserOutlined />;
   if (key === 'teams') return <TeamOutlined />;
   if (key === 'settings') return <SettingOutlined />;
-}
+};
 
 const ActiveLink = ({ children, ...props }) => {
-  const router = useRouter()
-  const child = React.Children.only(children)
+  const router = useRouter();
+  const child = React.Children.only(children);
   return (
     <Link {...props}>
       {React.cloneElement(child, { active: router.pathname === props.href })}
     </Link>
-  )
-}
+  );
+};
 
-const renderNavItems = (navitems) => {
-
+const renderNavItems = navitems => {
   return (
     <>
-      <ActiveLink
-        key={'global-search'}
-        href='/global-search' 
-      >
+      <ActiveLink key="global-search" href="/global-search">
         <NavLink>
-          <div><SearchOutlined /></div>
+          <div>
+            <SearchOutlined />
+          </div>
           <div>Новые друзья...</div>
         </NavLink>
       </ActiveLink>
       <ActiveLink
-        key={'my_page'}
-        href='/userpage/[userID]' 
+        key="my_page"
+        href="/userpage/[userID]"
         as={`/userpage/${Cookie.get('userId')}`}
       >
         <NavLink>
-          <div><HomeOutlined /></div>
+          <div>
+            <HomeOutlined />
+          </div>
           <div>Моя страница</div>
         </NavLink>
       </ActiveLink>
       {navitems.map(navitem => (
-        <ActiveLink
-          key={navitem.key}
-          href={`/${navitem.key}`}
-        >
+        <ActiveLink key={navitem.key} href={`/${navitem.key}`}>
           <NavLink>
             <div>{renderIcons(navitem.key)}</div>
             <div>{navitem.name}</div>
@@ -66,24 +71,19 @@ const renderNavItems = (navitems) => {
         </ActiveLink>
       ))}
     </>
-  )
-}
+  );
+};
 
 const Navbar = () => {
-
-  return (
-    <StyledNavbar>
-      {renderNavItems(navitems)}
-    </StyledNavbar>
-  );
-}
+  return <StyledNavbar>{renderNavItems(navitems)}</StyledNavbar>;
+};
 
 export default Navbar;
 
 const NavLink = styled.a`
-  color: ${({ active }) => active ? '#1890ff' : 'black'}; 
+  color: ${({ active }) => (active ? '#1890ff' : 'black')};
   display: flex;
-  padding: 20px;
+  padding: 20px 20px 20px 0;
   opacity: 0.6;
   @media (max-width: 575.98px) {
     padding-left: 5px;
@@ -104,7 +104,7 @@ const NavLink = styled.a`
 `;
 
 const StyledNavbar = styled.div`
-  width: 200px;
+  width: 160px;
   position: fixed;
   height: 100%;
   border-right: 1px solid #f0f0f0;
