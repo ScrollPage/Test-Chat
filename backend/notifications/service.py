@@ -23,9 +23,12 @@ def new_friend_notification(sender, receiver):
         {'sender': receiver.id, 'name': receiver.get_full_name()}
     )
 
-def send_like_notification(owner, liker, post):
+def send_like_notification(owner, liker, post_id):
+    # print(owner)
+    # print(post_id)
+    # print(liker)
     pusher.trigger(
         f'notifications{owner.id}', 
         'new_like', 
-        {'liker': liker.id, 'post': post.id, 'name': liker.get_full_name()}
+        {'liker': liker.id, 'post': post_id, 'name': liker.get_full_name()}
     )

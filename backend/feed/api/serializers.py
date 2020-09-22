@@ -108,7 +108,6 @@ class LikeSerializer(serializers.ModelSerializer, UserValidationSerializer):
 
     def create(self, validated_data):
         user = validated_data.get('user', None)
-        post_id = validated_data.get('post_id', None)
-        post = get_object_or_404(Post, id=post_id)
+        post = validated_data.get('post_id', None)
         send_like_notification(post.user, user, post.id)
         return super().create(validated_data)
