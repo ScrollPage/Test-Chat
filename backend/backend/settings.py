@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+import pusher
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,6 +44,9 @@ INSTALLED_APPS = [
     'community', 
     'contact',
     'feed',
+    'notifications',
+    'parties',
+    'score',
 ]
 
 MIDDLEWARE = [
@@ -210,7 +214,16 @@ DJOSER = {
 
 #Media
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 #User model
 AUTH_USER_MODEL = 'contact.Contact'
+
+# Pusher
+pusher_client = pusher.Pusher(
+  app_id='1076696',
+  key='3beceac9a6f0281fb76b',
+  secret='b85d8d10de1931ecebe4',
+  cluster='eu',
+  ssl=True
+)

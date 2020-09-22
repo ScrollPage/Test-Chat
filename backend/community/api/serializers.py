@@ -45,14 +45,4 @@ class AddRequestSerializer(serializers.ModelSerializer):
         exclude = ['id', 'timestamp']
 
     def create(self, validated_data):
-        data = self.data
-        sender_id = data.get('sender', None)
-        receiver_id = data.get('receiver', None)
-        sender_contact = get_object_or_404(Contact, id=sender_id)
-        receiver_contact = get_object_or_404(Contact, id=receiver_id)
-        add_request = AddRequest.objects.create(
-            sender = sender_contact,
-            receiver = receiver_contact
-        )
-        print(add_request.id)
-        return add_request
+        return super().create(validated_data)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from contact.models import Contact
+from .exceptions import ForbiddenError
 
 class PermissionMixin:
     '''Mixin permission для action'''
@@ -29,3 +30,12 @@ class LowContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = ['id', 'first_name', 'last_name', 'slug', 'avatar',]
+
+class UserValidationSerializer(serializers.Serializer):
+    '''Проверка соответствия пользователей'''
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        if attrs['user'] !=  user:
+            raise ForbiddenError('You are the wrong user.')
+        return attrs
