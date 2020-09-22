@@ -5,7 +5,8 @@ from chat.models import Chat
 from contact.models import Contact
 from backend.service import ContactSerializer, LowContactSerializer
 from community.models import AddRequest
-from backend.settings import pusher_client as pusher
+from notifications.service import send_addrequest_notification
+from feed.api.exceptions import BadRequestError
 
 class ContactFriendsSerializer(serializers.ModelSerializer):
     '''Менее развернутый контакт'''
@@ -46,5 +47,9 @@ class AddRequestSerializer(serializers.ModelSerializer):
         exclude = ['id', 'timestamp']
 
     def create(self, validated_data):
-        pusher.trigger('notifications', 'friend_add', {'message': "Leshina mat' shluxa"})
-        return super().create(validated_data)
+        receiver = validated_data.get('receiver', None)
+        sender = validated_data.get('sender', None)
+        if sender and receiver:
+            send_addrequest_notification(sender, receiver)
+            return super().create(validated_data)
+        raise BadRequestError('You need sender and receiver.')

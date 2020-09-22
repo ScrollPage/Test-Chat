@@ -14,6 +14,7 @@ from .service import (
 from contact.models import Contact
 from .exceptions import BadRequestError
 from backend.service import UserValidationSerializer
+from notifications.service import send_like_notification
 
 
 class UpdatePostSerializer(serializers.ModelSerializer):
@@ -105,6 +106,9 @@ class LikeSerializer(serializers.ModelSerializer, UserValidationSerializer):
         model = Like
         fields = '__all__'
 
+    def create(self, validated_data):
+        # post_id = validated_data.get('post_id', None)
+        return super().create(validated_data)
     # def validate(self, attrs):
     #     user = self.context['request'].user
     #     post_id = self.context['request'].data.get('post_id', None)

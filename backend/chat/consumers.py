@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import Message
 from .service import get_last_10_messages, get_current_chat
 from contact.models import Contact
+from notifications.service import send_message_notifications
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -30,6 +31,7 @@ class ChatConsumer(WebsocketConsumer):
             'command': 'new_message',
             'message': self.message_to_json(message)
         }
+        send_message_notifications(current_chat, user_contact)
         return self.send_chat_message(content)
 
     def messages_to_json(self, messages):

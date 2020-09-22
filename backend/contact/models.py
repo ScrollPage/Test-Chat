@@ -95,6 +95,9 @@ class Contact(AbstractBaseUser, PermissionsMixin):
         except ValueError:
             return None
 
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
     class Meta:
         verbose_name = 'Контакт'
         verbose_name_plural = 'Контакты'
