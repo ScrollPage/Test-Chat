@@ -19,14 +19,14 @@ import Alert from '@/components/Layout/Alert';
 axios.defaults.baseURL = 'http://localhost:8000';
 
 axios.defaults.headers = {
-  'Content-Type': 'application/json',
-  Authorization: `Token ${Cookie.get('token')}`
+    'Content-Type': 'application/json',
+    Authorization: `Token ${Cookie.get('token')}`,
 };
 
 NProgress.configure({
-  showSpinner: false,
-  trickleRate: 0.1,
-  trickleSpeed: 300
+    showSpinner: false,
+    trickleRate: 0.1,
+    trickleSpeed: 300,
 });
 
 Router.events.on('routeChangeStart', () => NProgress.start());
@@ -34,28 +34,30 @@ Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 const MyApp = ({ Component, pageProps }) => {
-  return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-      <style dangerouslySetInnerHTML={{ __html: nprogress }} />
-      <Head>
-        <title>My page</title>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
-        />
-      </Head>
-      <>
-        <GlobalStyle />
-        <SWRConfig value={{ fetcher: url => axios(url).then(r => r.data) }}>
-          <Provider store={store}>
-            <Alert />
-            <Component {...pageProps} />
-          </Provider>
-        </SWRConfig>
-      </>
-    </>
-  );
+    return (
+        <>
+            <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
+            <style dangerouslySetInnerHTML={{ __html: nprogress }} />
+            <Head>
+                <title>My page</title>
+                <meta
+                    name="viewport"
+                    content="minimum-scale=1, initial-scale=1, width=device-width"
+                />
+            </Head>
+            <>
+                <GlobalStyle />
+                <SWRConfig
+                    value={{ fetcher: url => axios(url).then(r => r.data) }}
+                >
+                    <Provider store={store}>
+                        <Alert />
+                        <Component {...pageProps} />
+                    </Provider>
+                </SWRConfig>
+            </>
+        </>
+    );
 };
 
 const makestore = () => store;

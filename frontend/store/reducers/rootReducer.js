@@ -5,8 +5,8 @@ import { messageReducer } from './message';
 import { searchReducer } from './search';
 
 export default combineReducers({
-  alert: alertReducer,
-  auth: authReducer,
-  message: messageReducer,
-  search: searchReducer
+    alert: alertReducer,
+    auth: authReducer,
+    message: messageReducer,
+    search: searchReducer,
 });

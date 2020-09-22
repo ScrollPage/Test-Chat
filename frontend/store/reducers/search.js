@@ -1,15 +1,15 @@
 import * as types from '../types';
 
 const initialState = {
-  search: ''
+    search: '',
 };
 
 const handlers = {
-  [types.SET_SEARCH]: (state, { search }) => ({ ...state, search }),
-  DEFAULT: state => state
+    [types.SET_SEARCH]: (state, { search }) => ({ ...state, search }),
+    DEFAULT: state => state,
 };
 
 export const searchReducer = (state = initialState, action) => {
-  const handler = handlers[action.type] || handlers.DEFAULT;
-  return handler(state, action);
+    const handler = handlers[action.type] || handlers.DEFAULT;
+    return handler(state, action);
 };

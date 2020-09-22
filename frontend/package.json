@@ -27,6 +27,7 @@
     "next-cookies": "^2.0.3",
     "next-redux-wrapper": "^6.0.2",
     "nprogress": "^0.2.0",
+    "pusher-js": "^7.0.0",
     "randomcolor": "^0.6.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",

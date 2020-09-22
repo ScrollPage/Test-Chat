@@ -10,92 +10,96 @@ import UserFriends from '@/components/Userpage/UserFriends';
 import UserPosts from '@/components/Userpage/UserPosts';
 
 export default function Teams({ user, userId, posts }) {
-  const swr = (url, iniitalData) => {
-    const { data } = useSWR(url, { initialData: iniitalData });
-    return data;
-  };
+    const swr = (url, iniitalData) => {
+        const { data } = useSWR(url, { initialData: iniitalData });
+        return data;
+    };
 
-  const data = swr(`/api/v1/contact/${userId}/`, user);
+    const data = swr(`/api/v1/contact/${userId}/`, user);
 
-  const newPosts = swr(`/api/v1/post/?id=${userId}`, posts);
+    const newPosts = swr(`/api/v1/post/?id=${userId}`, posts);
 
-  return (
-    <PrivateLayout>
-      <StyledUser>
-        <div>
-          <UserAvatar data={data} userId={userId} chatId={data.chat_id} />
-          <div className="user-avatar__friends">
-            <h4>Друзья: {`(${data.num_friends})`}</h4>
-            <UserFriends friends={data.friends} />
-          </div>
-        </div>
-        <div className="user-info">
-          <UserInfo data={data} />
-          <UserPosts posts={newPosts} />
-        </div>
-      </StyledUser>
-    </PrivateLayout>
-  );
+    return (
+        <PrivateLayout>
+            <StyledUser>
+                <div>
+                    <UserAvatar
+                        data={data}
+                        userId={userId}
+                        chatId={data.chat_id}
+                    />
+                    <div className="user-avatar__friends">
+                        <h4>Друзья: {`(${data.num_friends})`}</h4>
+                        <UserFriends friends={data.friends} />
+                    </div>
+                </div>
+                <div className="user-info">
+                    <UserInfo data={data} />
+                    <UserPosts posts={newPosts} />
+                </div>
+            </StyledUser>
+        </PrivateLayout>
+    );
 }
 
 export const getServerSideProps = async ctx => {
-  const userId = ctx.params.userID;
-  const token = cookies(ctx)?.token || null;
+    const userId = ctx.params.userID;
+    const token = cookies(ctx)?.token || null;
 
-  axios.defaults.headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Token ${token}`
-  };
+    axios.defaults.headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Token ${token}`,
+    };
 
-  let user = null;
-  let posts = [];
+    let user = null;
+    let posts = [];
 
-  await axios
-    .get(`/api/v1/contact/${userId}/`)
-    .then(response => {
-      user = response?.data;
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    await axios
+        .get(`/api/v1/contact/${userId}/`)
+        .then(response => {
+            user = response?.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
 
-  await axios
-    .get(`/api/v1/post/?id=${userId}`)
-    .then(response => {
-      posts = response?.data;
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    await axios
+        .get(`/api/v1/post/?id=${userId}`)
+        .then(response => {
+            posts = response?.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
 
-  return {
-    props: {
-      user,
-      userId,
-      posts
-    }
-  };
+    return {
+        props: {
+            user,
+            userId,
+            posts,
+        },
+    };
 };
 
 const StyledUser = styled.div`
-  margin-top: 10px;
-  display: flex;
-  .user-avatar__friends {
-    background-color: #f4f4f4;
+    margin-top: 10px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-right: 20px;
-    margin-top: 20px;
-    padding: 10px;
-    @media (max-width: 900px) {
-      margin-right: 0px;
+    .user-avatar__friends {
+        background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-right: 20px;
+        margin-top: 20px;
+        padding: 10px;
+        @media (max-width: 900px) {
+            margin-right: 0px;
+        }
     }
-  }
-  .user-info {
-    flex: 1;
-  }
-  @media (max-width: 900px) {
-    flex-direction: column;
-  }
+    .user-info {
+        flex: 1;
+    }
+    @media (max-width: 900px) {
+        flex-direction: column;
+    }
 `;

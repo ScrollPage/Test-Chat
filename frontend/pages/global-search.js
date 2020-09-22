@@ -7,8 +7,8 @@ import PrivateLayout from '@/components/Layout/PrivateLayout';
 import Search from '@/components/UI/Search';
 import Friend from '@/components/Friends/Friend';
 
-export default function GlobalSearch() {
-  const { data } = useSWR(`/api/v1/people/`);
+export default function GlobalSearch({ people }) {
+  const { data } = useSWR(`/api/v1/people/`, { initialData: people });
 
   const renderPeople = people =>
     people.map(man => (
@@ -24,7 +24,15 @@ export default function GlobalSearch() {
     <PrivateLayout>
       <StyledGlobalSearch>
         <Search />
-        {data && renderPeople(data)}
+        {data ? (
+          data.length === 0 ? (
+            <h4>Нет людей по данному запросу</h4>
+          ) : (
+              renderPeople(data)
+            )
+        ) : (
+            <h4>Загрузка</h4>
+          )}
       </StyledGlobalSearch>
     </PrivateLayout>
   );
@@ -35,10 +43,18 @@ export const getServerSideProps = async ctx => {
 
   axios.defaults.headers = {
     'Content-Type': 'application/json',
-    Authorization: `Token ${token}`
+    Authorization: `Token ${token}`,
   };
 
-  let people = null;
+  if (!ctx?.req) {
+    return {
+      props: {
+        people: [],
+      },
+    };
+  }
+
+  let people = [];
 
   await axios
     .get(`/api/v1/people/`)
@@ -50,12 +66,12 @@ export const getServerSideProps = async ctx => {
     });
   return {
     props: {
-      people
-    }
+      people,
+    },
   };
 };
 
 const StyledGlobalSearch = styled.div`
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 `;
