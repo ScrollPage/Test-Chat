@@ -111,9 +111,3 @@ class LikeSerializer(serializers.ModelSerializer, UserValidationSerializer):
         post = validated_data.get('post_id', None)
         send_like_notification(post.user, user, post.id)
         return super().create(validated_data)
-    # def validate(self, attrs):
-    #     user = self.context['request'].user
-    #     post_id = self.context['request'].data.get('post_id', None)
-    #     if user and post_id:
-    #         return super().validate(attrs)
-    #     raise BadRequestError('You need user and post id.')
