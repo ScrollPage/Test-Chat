@@ -8,42 +8,47 @@ import { Alert as AntdAlert } from 'antd';
 import { hide } from '@/store/actions/alert';
 
 const Alert = () => {
-  const text = useSelector(store => store.alert.text);
-  const type = useSelector(store => store.alert.typeOf);
-  const dispatch = useDispatch();
+    const text = useSelector(store => store.alert.text);
+    const type = useSelector(store => store.alert.typeOf);
+    const dispatch = useDispatch();
 
-  useEffect(() => {
-    setTimeout(() => {
-      dispatch(hide());
-    }, 3000);
-    // eslint-disable-next-line
+    useEffect(() => {
+        setTimeout(() => {
+            dispatch(hide());
+        }, 3000);
+        // eslint-disable-next-line
   }, [text]);
 
-  const hideHandler = () => {
-    dispatch(hide());
-  };
+    const hideHandler = () => {
+        dispatch(hide());
+    };
 
-  if (!text) return null;
+    if (!text) return null;
 
-  return (
-    <StyledAlert
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 1 }}
-    >
-      <AntdAlert message={text} type={type} closable onClose={hideHandler} />
-    </StyledAlert>
-  );
+    return (
+        <StyledAlert
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+        >
+            <AntdAlert
+                message={text}
+                type={type}
+                closable
+                onClose={hideHandler}
+            />
+        </StyledAlert>
+    );
 };
 
 export default Alert;
 
 const StyledAlert = styled(motion.div)`
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 100;
-  display: flex;
-  justify-content: center;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
 `;
