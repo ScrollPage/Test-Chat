@@ -3,11 +3,18 @@ from django.shortcuts import get_object_or_404
 
 from .exceptions import BadRequestError
 
-class IsCurrentUser(BasePermission):
-    '''Тот ли пользователь?'''
-    def has_permission(self, request, view):
-        model = get_object_or_404(view.model, pk=view.kwargs['pk'])
-        return bool(request.user==model.user)
+class IsRightUser(BasePermission):
+    '''Создатель ли?'''
+    def has_object_permission(self, request, view, obj):
+        return request.user==obj.user
+
+class IsRightOwnerOrUser(BasePermission):
+    '''Создатель или владелец?'''
+    def has_object_permission(self, request, view, obj):
+        return any([
+            request.user==obj.user,
+            request.user==obj.owner,
+        ])
 
 class IsNotLiked(BasePermission):
     '''Нет ли лайка?'''

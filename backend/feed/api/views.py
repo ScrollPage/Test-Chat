@@ -21,7 +21,7 @@ from .serializers import (
     PostListSerializer,
     CreateCommentSerializer,
 )
-from .permissions import IsCurrentUser, IsNotLiked
+from .permissions import IsRightUser, IsRightOwnerOrUser, IsNotLiked
 from .exceptions import BadRequestError, NotFoundError
 
 class PostsCustomViewset(PermisisonSerializerModelViewset):
@@ -35,9 +35,9 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
     }
     permission_classes = [permissions.IsAuthenticated, ]
     permission_classes_by_action = {
-        'update': [IsCurrentUser, ],
-        'partial_update': [IsCurrentUser, ],
-        'destroy': [IsCurrentUser, ],
+        'update': [permissions.IsAuthenticated, IsRightUser, ],
+        'partial_update': [permissions.IsAuthenticated, IsRightUser, ],
+        'destroy': [permissions.IsAuthenticated, IsRightOwnerOrUser, ],
     }
 
     def get_queryset(self):
@@ -56,17 +56,16 @@ class CommentCustomViewset(PermissionSerializerExcludeListViewset):
     }
     permission_classes = [permissions.IsAuthenticated, ]
     permission_classes_by_action = {
-        'update': [IsCurrentUser, ],
-        'partial_update': [IsCurrentUser, ]
+        'update': [permissions.IsAuthenticated, IsRightUser, ],
+        'partial_update': [permissions.IsAuthenticated, IsRightUser, ]
     }
-
 
 class LikesCustomViewset(PermissionCreateViewset):
     '''Создание и удаление лайков'''
     queryset = Like.objects.all()
     model = Like
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsNotLiked]
+    permission_classes = [permissions.IsAuthenticated, IsNotLiked, ]
     permission_classes_by_action = {
         'remove': [permissions.IsAuthenticated, ],
     }
@@ -106,11 +105,13 @@ class RePostMechanicsCustomViewset(CreateViewset):
 class ContactFeedView(generics.ListAPIView):
     '''Новости конкретного конатка'''
     serializer_class = PostListSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Post.objects.filter(user__in=[friend for friend in user.friends.all()])
+        queryset = Post.objects.filter(
+            owner__in=[friend for friend in user.friends.all()]
+        ).exclude(user=self.request.user)
         queryset = queryset.order_by('-timestamp')
         queryset = post_annotations(self, queryset)
         return queryset
