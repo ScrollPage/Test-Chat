@@ -9,6 +9,7 @@ from .service import (
     LowReadContactSerializer, 
     AbstractPostSerializer, 
     LowReadContactSerializer,
+    RepresentationUsernameAdd
 )
 from contact.models import Contact
 from .exceptions import BadRequestError
@@ -38,9 +39,10 @@ class PostParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     '''Вывод родителя поста'''
     parent = RecursivePostSerialzier(read_only=True)
     user = LowReadContactSerializer(read_only=True)
+    owner = LowReadContactSerializer(read_only=True)
     class Meta:
         model = Post
-        fields = ['id', 'user', 'parent', 'text', 'image', 'timestamp']
+        fields = ['id', 'user', 'owner', 'parent', 'text', 'image', 'timestamp']
 
 class RecursiveCommentSerialzier(serializers.Serializer):
     '''Рекурсивный вывод детей'''
@@ -54,7 +56,11 @@ class FilterCommentSerializer(serializers.ListSerializer):
         data = data.filter(parent = None)
         return super().to_representation(data)
 
-class CreateCommentSerializer(AbstractPostSerializer, serializers.ModelSerializer, UserValidationSerializer):
+class CreateCommentSerializer(AbstractPostSerializer, 
+                              serializers.ModelSerializer, 
+                              UserValidationSerializer, 
+                              RepresentationUsernameAdd
+                            ):
     '''Сериализатор создания комментария'''
 
     class Meta:
@@ -91,11 +97,11 @@ class BasePostSerialzier(AbstractPostSerializer, serializers.ModelSerializer, Us
         model = Post
         fields = '__all__'
 
-class PostSerializer(BasePostSerialzier):
+class PostSerializer(BasePostSerialzier, RepresentationUsernameAdd):
     '''Сериализация поста'''
     class Meta:
         model = Post
-        exclude = ['parent']
+        exclude = ['parent']    
 
     def validate(self, attrs):
         data = self.context['request'].data
@@ -103,22 +109,24 @@ class PostSerializer(BasePostSerialzier):
             return super().validate(attrs)
         raise BadRequestError('You need either image or text.')
 
+
 class PostListSerializer(BasePostSerialzier):
     '''Сериализация списка постов'''
     user = LowReadContactSerializer(read_only=True)
+    owner = LowReadContactSerializer(read_only=True)
     parent = RecursivePostSerialzier(read_only=True)
     is_watched = serializers.BooleanField(read_only=True)
     num_reviews = serializers.IntegerField(read_only=True)
     
-class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
+class RePostSerializer(BasePostSerialzier, UserValidationSerializer, RepresentationUsernameAdd):
     '''Сериализация репоста'''
 
     def validate(self, attrs):
-        data = self.context['request']
+        data = self.context['request'].data
         if data.get('parent', None):
-            return super().validate()
+            return super().validate(attrs)
         else:
-            return BadRequestError('You need a parent.')
+            raise BadRequestError('You need a parent.')
 
 class LikeSerializer(serializers.ModelSerializer, UserValidationSerializer):
     '''Сериализация лайка'''

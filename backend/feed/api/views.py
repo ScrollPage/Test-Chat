@@ -1,7 +1,6 @@
-from rest_framework import permissions, status
+from rest_framework import permissions, status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django.db.models import Count, Q, Min, Subquery, OuterRef
 from django.shortcuts import get_object_or_404
 
 from .service import (
@@ -9,6 +8,7 @@ from .service import (
     PermissionSerializerExcludeListViewset,
     PermissionCreateViewset,
     CreateViewset,
+    post_annotations,
 )
 from feed.models import Post, Comment, Like, RePost
 from .serializers import (
@@ -41,18 +41,8 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
     }
 
     def get_queryset(self):
-        queryset = Post.objects.all().annotate(
-            num_likes=Count('likes', distinct=True)
-        ).annotate(
-            num_reposts=Count('reposts', distinct=True)
-        ).annotate(
-            is_liked=Count('likes', filter=Q(likes__user=self.request.user))
-        ).annotate(
-            is_watched=Count('reviews', filter=Q(reviews__user=self.request.user))
-        ).annotate(
-            num_reviews=Count('reviews', distinct=True)
-        )
-        return queryset
+        queryset = Post.objects.all()
+        return post_annotations(self, queryset)
 
 class CommentCustomViewset(PermissionSerializerExcludeListViewset):
     '''Все про комменты, кроме метода list'''
@@ -112,3 +102,15 @@ class RePostMechanicsCustomViewset(CreateViewset):
                 user=user
             )
         super().perform_create(serializer)
+
+class ContactFeedView(generics.ListAPIView):
+    '''Новости конкретного конатка'''
+    serializer_class = PostListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Post.objects.filter(user__in=[friend for friend in user.friends.all()])
+        queryset = queryset.order_by('-timestamp')
+        queryset = post_annotations(self, queryset)
+        return queryset

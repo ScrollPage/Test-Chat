@@ -2,6 +2,8 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins, serializers
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.db.models import Count, Q, Min, Subquery, OuterRef
+from collections import OrderedDict
 
 from backend.service import (
     PermissionMixin, 
@@ -81,3 +83,24 @@ class AbstractPostSerializer(serializers.Serializer):
     '''Базовый сериализатор для поста и коммента'''
     num_likes = serializers.IntegerField(read_only=True)
     timestamp = serializers.DateTimeField(read_only=True)
+
+def post_annotations(self, queryset):
+    return queryset.annotate(
+            num_likes=Count('likes', distinct=True)
+        ).annotate(
+            num_reposts=Count('reposts', distinct=True)
+        ).annotate(
+            is_liked=Count('likes', filter=Q(likes__user=self.request.user))
+        ).annotate(
+            is_watched=Count('reviews', filter=Q(reviews__user=self.request.user))
+        ).annotate(
+            num_reviews=Count('reviews', distinct=True)
+        )
+
+class RepresentationUsernameAdd(serializers.Serializer):
+    '''Добавляет в вывод user_name'''
+
+    def to_representation(self, instance):
+        extra = OrderedDict([('user_name', instance.user.get_full_name())])
+        base = super().to_representation(instance)
+        return OrderedDict(list(extra.items()) + list(base.items()))
