@@ -16,20 +16,6 @@ class AbstractPost(models.Model):
     class Meta:
         abstract = True
 
-class Comment(AbstractPost):
-    '''Комментарий куда угодно'''
-    parent = models.ForeignKey(
-        'self', 
-        verbose_name = 'Родитель', 
-        on_delete = models.SET_NULL, 
-        null = True, 
-        blank = True,
-        related_name = 'children'
-    )
-
-    class Meta:
-        verbose_name = 'Комментарий'
-        verbose_name_plural = 'Комментарии'
 
 class Post(AbstractPost):
     '''Обычный пост на стенку или коммент к другому посту'''
@@ -41,11 +27,26 @@ class Post(AbstractPost):
         blank = True,
         related_name = 'children'
     )
-    comments = models.ManyToManyField(Comment)
 
     class Meta:
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
+
+class Comment(AbstractPost):
+    '''Комментарий куда угодно'''
+    parent = models.ForeignKey(
+        'self', 
+        verbose_name = 'Родитель', 
+        on_delete = models.SET_NULL, 
+        null = True, 
+        blank = True,
+        related_name = 'children'
+    )
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
 
 class Like(models.Model):
     '''Стандартный лайк'''

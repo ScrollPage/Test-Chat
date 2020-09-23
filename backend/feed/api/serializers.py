@@ -3,17 +3,15 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
 from feed.models import Post, Like, RePost, Comment
-from backend.service import LowContactSerializer
+from backend.service import LowContactSerializer, UserValidationSerializer
 from .service import (
     BaseFeedSerializer, 
     LowReadContactSerializer, 
     AbstractPostSerializer, 
-    post_create,
-    LowReadContactSerializer
+    LowReadContactSerializer,
 )
 from contact.models import Contact
 from .exceptions import BadRequestError
-from backend.service import UserValidationSerializer
 from notifications.service import send_like_notification
 
 
@@ -47,27 +45,41 @@ class PostParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
 class RecursiveCommentSerialzier(serializers.Serializer):
     '''Рекурсивный вывод детей'''
     def to_representation(self, value):
-        serializer = CommentchildSerializer(value, context=self.context)
+        serializer = CommentSerializer(value, context=self.context)
         return serializer.data
 
-class CommentChildSerializer(AbstractPostSerializer, serializers.ModelSerializer):
-    '''Вывод детей комментария'''
-    children = RecursiveCommentSerialzier(many=True, read_only=True)
-    class Meta:
-        model = Post
-        fields = ['id', 'user', 'children', 'text', 'image', 'timestamp']
+class FilterCommentSerializer(serializers.ListSerializer):
+    '''Фильтр комментариев, только с parent'''
+    def to_representation(self, data):
+        data = data.filter(parent = None)
+        return super().to_representation(data)
 
-class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer, UserValidationSerializer):
-    '''Сериализация коммента к посту'''
-    post_id = serializers.IntegerField(write_only=True, required=True)
-    children = CommentChildSerializer(many=True, read_only=True)
+class CreateCommentSerializer(AbstractPostSerializer, serializers.ModelSerializer, UserValidationSerializer):
+    '''Сериализатор создания комментария'''
 
     class Meta:
         model = Comment
         fields = '__all__'
 
-    def create(self, validated_data):
-        return comment_create(self, validated_data)
+    def validate(self, attrs):
+        data = self.context['request'].data
+        if data.get('text', None) or data.get('image', None):
+            if data.get('post_id', None):  
+                return super().validate(attrs)
+            else:
+                raise BadRequestError('You need post id.')
+        else:
+            raise BadRequestError('You need either image or text.')
+
+class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
+    '''Сериализация коммента к посту'''
+    user = LowReadContactSerializer(read_only=True)
+    children = RecursiveCommentSerialzier(many=True, read_only=True)
+
+    class Meta:
+        list_serializer_class = FilterCommentSerializer
+        model = Comment
+        fields = '__all__'
 
 class BasePostSerialzier(AbstractPostSerializer, serializers.ModelSerializer, UserValidationSerializer):
     '''Базовый класс сeриализации постов и репостов'''
@@ -85,8 +97,11 @@ class PostSerializer(BasePostSerialzier):
         model = Post
         exclude = ['parent']
 
-    def create(self, validated_data):
-        return post_create(self, validated_data)
+    def validate(self, attrs):
+        data = self.context['request'].data
+        if data.get('text', None) or data.get('image', None):
+            return super().validate(attrs)
+        raise BadRequestError('You need either image or text.')
 
 class PostListSerializer(BasePostSerialzier):
     '''Сериализация списка постов'''
@@ -97,8 +112,13 @@ class PostListSerializer(BasePostSerialzier):
     
 class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
     '''Сериализация репоста'''
-    def create(self, validated_data):
-        return post_create(self, validated_data, False)
+
+    def validate(self, attrs):
+        data = self.context['request']
+        if data.get('parent', None):
+            return super().validate()
+        else:
+            return BadRequestError('You need a parent.')
 
 class LikeSerializer(serializers.ModelSerializer, UserValidationSerializer):
     '''Сериализация лайка'''
