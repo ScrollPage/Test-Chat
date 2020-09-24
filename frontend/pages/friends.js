@@ -5,8 +5,9 @@ import useSWR from 'swr';
 import Friend from '@/components/Friends/Friend';
 import SearchDialog from '@/components/Dialogs/SearchDialog';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
+import { getUserFromServer } from '@/utils/index.js';
 
-export default function Friends({ friends }) {
+export default function Friends({ friends, user }) {
     const { data } = useSWR(`/api/v1/friends/`, { initialData: friends });
 
     const renderFriends = friends =>
@@ -20,7 +21,7 @@ export default function Friends({ friends }) {
         ));
 
     return (
-        <PrivateLayout>
+        <PrivateLayout user={user}>
             <SearchDialog />
             <StyledFriends>
                 {data ? (
@@ -66,6 +67,7 @@ export const getServerSideProps = async ctx => {
     return {
         props: {
             friends,
+            user: getUserFromServer(ctx)
         },
     };
 };

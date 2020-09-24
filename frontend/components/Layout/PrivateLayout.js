@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import Cookie from 'js-cookie';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WebSocketInstance from '@/websocket';
@@ -13,7 +12,8 @@ import Header from './Header';
 import Navbar from './Navbar';
 import Container from '@/styles/Container';
 
-const PrivateLayout = ({ children }) => {
+const PrivateLayout = ({ children, user }) => {
+
     const dispatch = useDispatch();
 
     const setMessagesHandler = messages => {
@@ -29,15 +29,12 @@ const PrivateLayout = ({ children }) => {
         WebSocketInstance.addCallbacks(setMessagesHandler, addMessageHandler);
     }, []);
 
-    const userId = Cookie.get('userId');
-
     useEffect(() => {
-        // if (userId !== undefined && userId !== null) {
         const pusher = new Pusher('3beceac9a6f0281fb76b', {
             cluster: 'eu',
             encrypted: true
         });
-        const channel = pusher.subscribe(`notifications${userId}`);
+        const channel = pusher.subscribe(`notifications${user?.userId}`);
         channel.bind('new_request', function (data) {
             show(`${data.name} хочет добавить вас в друзья`, 'success');
             alert(`${data.name} хочет добавить вас в друзья`);
@@ -57,12 +54,12 @@ const PrivateLayout = ({ children }) => {
         return () => {
             pusher.disconnect();
         }
-        // }
-    }, [userId])
+
+    }, [user])
 
     return (
         <>
-            <Header />
+            <Header user={user} />
             <StyledMain>
                 <Container>
                     <Navbar />

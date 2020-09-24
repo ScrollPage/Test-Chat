@@ -14,7 +14,7 @@ import { Provider } from 'react-redux';
 import Cookie from 'js-cookie';
 import store from '@/store/store';
 
-import Alert from '@/components/Layout/Alert';
+import Alert from '@/components/UI/Alert';
 
 axios.defaults.baseURL = 'http://localhost:8000';
 
@@ -48,7 +48,7 @@ const MyApp = ({ Component, pageProps }) => {
             <>
                 <GlobalStyle />
                 <SWRConfig
-                    value={{ fetcher: url => axios(url).then(r => r.data) }}
+                    value={{ dedupingInterval: 5000, fetcher: url => axios(url).then(r => r.data) }}
                 >
                     <Provider store={store}>
                         <Alert />

@@ -1,13 +1,13 @@
 import axios from 'axios';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
-
+import { getUserFromServer } from '@/utils/index.js';
 import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import Search from '@/components/UI/Search';
 import Friend from '@/components/Friends/Friend';
 
-export default function GlobalSearch({ people }) {
+export default function GlobalSearch({ people, user }) {
   const { data } = useSWR(`/api/v1/people/`, { initialData: people });
 
   const renderPeople = people =>
@@ -21,7 +21,7 @@ export default function GlobalSearch({ people }) {
     ));
 
   return (
-    <PrivateLayout>
+    <PrivateLayout user={user}>
       <StyledGlobalSearch>
         <Search />
         {data ? (
@@ -67,6 +67,7 @@ export const getServerSideProps = async ctx => {
   return {
     props: {
       people,
+      user: getUserFromServer(ctx)
     },
   };
 };

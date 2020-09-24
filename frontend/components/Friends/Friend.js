@@ -5,9 +5,8 @@ import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
-import { Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
 import { createChat } from '@/store/actions/friend';
+import LinkAvatar from '@/components/UI/LinkAvatar';
 
 const Friend = ({ userId, name, chatId }) => {
     const dispatch = useDispatch();
@@ -25,15 +24,13 @@ const Friend = ({ userId, name, chatId }) => {
     return (
         <StyledFriend>
             <div>
-                <Link href="/userpage/[userID]" as={`/userpage/${userId}`}>
-                    <a>
-                        <Avatar
-                            style={{ backgroundColor: '#87d068' }}
-                            size={80}
-                            icon={<UserOutlined />}
-                        />
-                    </a>
-                </Link>
+                <LinkAvatar
+                    href="/userpage/[userID]" 
+                    as={`/userpage/${userId}`}
+                    // style={{ marginRight: '15px' }}
+                    isUsername={false}
+                    size={80}
+                />
             </div>
             <div>
                 <Link href="/userpage/[userID]" as={`/userpage/${userId}`}>
@@ -68,6 +65,7 @@ const StyledFriend = styled.div`
             h4 {
                 font-weight: bold;
                 opacity: 0.8;
+                margin-top: 0;
             }
         }
     }

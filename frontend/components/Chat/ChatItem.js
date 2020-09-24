@@ -1,7 +1,6 @@
 import React from 'react';
-import { Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import LinkAvatar from '@/components/UI/LinkAvatar';
 
 const renderTimestamp = timestamp => {
     let prefix = '';
@@ -22,13 +21,15 @@ const renderTimestamp = timestamp => {
     return prefix;
 };
 
-const ChatItem = ({ name, time, message, isUsername }) => {
+const ChatItem = ({ name, time, message, isUsername, messageUserId }) => {
     return (
         <StyledChatItem isUsername={isUsername}>
             <div>
-                <Avatar
+                <LinkAvatar
+                    href="/userpage/[userID]" 
+                    as={`/userpage/${messageUserId}`}
                     style={{ marginRight: '15px' }}
-                    icon={<UserOutlined />}
+                    isUsername={isUsername}
                 />
             </div>
             <div className="chat-item__inner">
@@ -51,12 +52,6 @@ const StyledChatItem = styled.div`
     display: flex;
     padding: 10px;
     align-items: flex-start;
-    > div {
-        .ant-avatar {
-            background-color: ${props =>
-                props.isUsername ? 'lightblue' : '#87d068'};
-        }
-    }
     .chat-item__inner {
         display: flex;
         flex-direction: column;

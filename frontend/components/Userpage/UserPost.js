@@ -1,59 +1,85 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import Like from '@/components/UI/Like';
+import Repost from '@/components/UI/Repost';
+import LinkAvatar from '@/components/UI/LinkAvatar';
 
-const UserPost = ({ post }) => {
-    const [numLikes, setNumLikes] = useState(post.num_likes);
-
+const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDeletePostHandler }) => {
     return (
         <StyledUserPost>
+            {post.user.id == user.userId && (
+                <div
+                    className="user-post__close"
+                    onClick={() => setIsDeletePostHandler(post.id)}
+                >
+                    <CloseOutlined />
+                </div>
+            )}
             <div className="user-post__header">
                 <div>
-                    <Link
+                    <LinkAvatar
                         href="/userpage/[userID]"
                         as={`/userpage/${post.user.id}`}
-                    >
-                        <a>
-                            <Avatar
-                                style={{ marginRight: '15px' }}
-                                icon={<UserOutlined />}
-                            />
-                        </a>
-                    </Link>
+                        style={{ marginRight: '15px' }}
+                        isUsername={post.user.id == user.userId}
+                    />
                 </div>
                 <div>
-                    <Link
-                        href="/userpage/[userID]"
-                        as={`/userpage/${post.user.id}`}
-                    >
-                        <a>
-                            <p>
-                                {post.user.first_name} {post.user.last_name}
-                            </p>
-                        </a>
-                    </Link>
+                    <p>{post.user.first_name} {post.user.last_name}</p>
                     <small>только что</small>
                 </div>
             </div>
-            {post.image && (
-                <div className="user-post__body">
+            <div className="user-post__body">
+                {post.text && (
                     <div>{post.text}</div>
-                    <div>
-                        <img src={post.image} alt="" />
+                )}
+                {post.image && (<div>
+                    <img src={post.image} alt="" />
+                </div>)}
+            </div>
+            {post.parent && (
+                <>
+                    <hr />
+                    <div className="user-post__header">
+                        <div>
+                            <LinkAvatar
+                                href="/userpage/[userID]"
+                                as={`/userpage/${post.parent.user.id}`}
+                                style={{ marginRight: '15px' }}
+                                isUsername={post.parent.user.id == user.userId}
+                            />
+                        </div>
+                        <div>
+                            <p>{post.parent.user.first_name} {post.parent.user.last_name}</p>
+                            <small>только что</small>
+                        </div>
                     </div>
-                </div>
+                    <div className="user-post__body">
+                        {post.parent.text && (
+                            <div>{post.parent.text}</div>
+                        )}
+                        {post.parent.image && (<div>
+                            <img src={post.parent.image} alt="" />
+                        </div>)}
+                    </div>
+                </>
             )}
             <div className="user-post__footer">
                 <div>
                     <Like
-                        isLiked={post.is_liked}
+                        isTap={post.is_liked}
                         postId={post.id}
-                        setNumLikes={setNumLikes}
+                        // setNumLikes={setNumLikes}
+                        likeMutate={likeMutate}
+                        index={index}
                     />
-                    <h2>{numLikes}</h2>
+                    <h2>{post.num_likes}</h2>
+                </div>
+                <div>
+                    <Repost setIsOpenHandler={setIsOpenHandler} post={post} />
+                    <h2>{post.num_reposts}</h2>
                 </div>
             </div>
         </StyledUserPost>
@@ -68,6 +94,19 @@ const StyledUserPost = styled.div`
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
+    position: relative;
+    .user-post__close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+    }
+    hr {
+        width: 100%;
+        background-color: #1890ff;
+        border: 1px solid #1890ff;
+        margin: 30px 0;
+    }
     .user-post__header {
         display: flex;
         justify-content: flex-start;
@@ -95,7 +134,7 @@ const StyledUserPost = styled.div`
         }
     }
     .user-post__body {
-        margin-top: 12px;
+        /* margin-top: 12px; */
         display: flex;
         flex-direction: column;
         > div {
@@ -109,13 +148,12 @@ const StyledUserPost = styled.div`
     }
     .user-post__footer {
         margin-top: 20px;
+        display: flex;
         > div {
-            &:first-of-type {
-                display: flex;
-                align-items: center;
-                h2 {
-                    margin-bottom: 4px;
-                }
+            display: flex;
+            align-items: center;
+            h2 {
+                margin-bottom: 4px;
             }
         }
     }

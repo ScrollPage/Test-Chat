@@ -1,96 +1,140 @@
 import React, { useState } from 'react';
-
-import { useDispatch } from 'react-redux';
-
-import styled from 'styled-components';
-import { Input, Button } from 'antd';
-import { addPost } from '@/store/actions/post';
-import FileUpload from '@/components/UI/FileUpload';
 import UserPost from './UserPost';
+import PostCreate from './PostCreate';
+import Modal from '@/components/Modal/Modal';
+import { addLike, removeLike } from '@/store/actions/post';
+import { addPost, rePost, deletePost } from '@/store/actions/post';
+import { useDispatch } from 'react-redux';
+import { mutate, trigger } from 'swr';
+import DeletePostModal from '@/components/Modal/DeletePostModal';
 
-const UserPosts = ({ posts }) => {
+const UserPosts = ({ posts, pageUserId, user }) => {
     const dispatch = useDispatch();
 
-    const [newPost, setNewPost] = useState('');
-    const [imageUrl, setImageUrl] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [parent, setParent] = useState(null);
 
-    const handleSubmit = event => {
-        event.preventDefault();
-        console.log(imageUrl);
-        console.log(newPost);
-        dispatch(addPost(newPost, imageUrl));
-    };
+    const [isDeletePost, setIsDeletePost] = useState(false);
+    const [deletePostId, setDeletePostId] = useState(null);
+
+    const setIsOpenHandler = (parent) => {
+        setIsDeletePost(false);
+        setIsOpen(true);
+        setParent(parent);
+    }
+
+    const setIsDeletePostHandler = (postId) => {
+        setIsDeletePost(true);
+        setIsOpen(true);
+        setDeletePostId(postId);
+    }
+
+    const likeMutate = (index, postId) => {
+        const url = `/api/v1/post/?id=${pageUserId}`;
+        let newPosts = [...posts];
+        if (posts[index].is_liked) {
+            newPosts[index] = { ...posts[index], is_liked: false, num_likes: posts[index].num_likes - 1 };
+            mutate(url, newPosts, false);
+            dispatch(removeLike(postId));
+        } else {
+            newPosts[index] = { ...posts[index], is_liked: true, num_likes: posts[index].num_likes + 1 };
+            mutate(url, newPosts, false);
+            dispatch(addLike(postId));
+        }
+    }
+
+    const addPostMutate = (isRepost, newPost, imageUrl) => {
+        const url = `/api/v1/post/?id=${pageUserId}`;
+        if (newPost.trim() !== '' || imageUrl) {
+            let newPosts;
+            let addNewPost = {
+                id: 0,
+                image: imageUrl,
+                is_liked: false,
+                is_watched: false,
+                num_likes: 0,
+                num_reposts: 0,
+                num_reviews: 0,
+                parent: null,
+                text: newPost,
+                user: {
+                    id: user.userId,
+                    first_name: user.firstName,
+                    last_name: user.lastName
+                }
+            }
+            if (isRepost) {
+                if (parent.user.id == user.userId) {
+                    addNewPost.parent = {
+                        id: parent.id,
+                        text: parent.text,
+                        image: parent.image,
+                        user: {
+                            id: parent.user.id,
+                            first_name: parent.user.first_name,
+                            last_name: parent.user.last_name
+                        }
+                    }
+                    newPosts = [...posts, addNewPost];
+                    mutate(url, newPosts, false);
+                }
+                dispatch(rePost(newPost, imageUrl, parent.id));
+                setIsOpen(false);
+            } else {
+                newPosts = [...posts, addNewPost];
+                mutate(url, newPosts);
+                dispatch(addPost(newPost, imageUrl));
+                trigger(url);
+            }
+        }
+    }
+
+    const deletePostMutate = () => {
+        setIsOpen(false);
+        const url = `/api/v1/post/?id=${pageUserId}`;
+        mutate(url, posts.filter(post => post.id !== deletePostId), false);
+        dispatch(deletePost(deletePostId));
+    }
 
     const renderPosts = posts => {
         return posts.map((post, index) => (
-            <UserPost key={`post__key__${index}`} post={post} />
+            <UserPost
+                key={`post__key__${index}`}
+                index={index}
+                post={post}
+                setIsOpenHandler={setIsOpenHandler}
+                likeMutate={likeMutate}
+                user={user}
+                setIsDeletePostHandler={setIsDeletePostHandler}
+            />
         ));
     };
 
     return (
         <>
-            <StyledPostCreate>
-                <form onSubmit={handleSubmit}>
-                    <StyledTopPost>
-                        <div>
-                            <Input.TextArea
-                                id="create_post"
-                                name="create_post"
-                                size="large"
-                                placeholder="Что у вас нового?"
-                                value={newPost}
-                                onChange={e => setNewPost(e.target.value)}
-                                autoSize={{ minRows: 4, maxRows: 4 }}
-                            />
-                        </div>
-                        <div>
-                            <FileUpload
-                                imageUrl={imageUrl}
-                                setImageUrl={setImageUrl}
-                            />
-                        </div>
-                    </StyledTopPost>
-                    <Button htmlType="submit" style={{ width: '100%' }}>
-                        Опубликовать пост
-                    </Button>
-                </form>
-            </StyledPostCreate>
-            <StyledUserPosts>
+            <Modal
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+            >
+                {isDeletePost ? (
+                    <DeletePostModal deletePostMutate={deletePostMutate} />
+                ) : (
+                        <PostCreate
+                            addPostMutate={addPostMutate}
+                            isRepost={true}
+                        />
+                    )}
+            </Modal>
+            <PostCreate
+                addPostMutate={addPostMutate}
+                isRepost={false}
+            />
+            <div style={{ marginTop: '20px' }}>
                 {posts.length === 0 ? <h2>Нет постов</h2> : renderPosts(posts)}
-            </StyledUserPosts>
+            </div>
         </>
     );
 };
 
 export default UserPosts;
 
-const StyledPostCreate = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    margin-top: 20px;
-    padding: 20px;
-    padding-bottom: 12px !important;
-    background-color: #f4f4f4;
-`;
-
-const StyledUserPosts = styled.div`
-    margin-top: 20px;
-`;
-
-const StyledTopPost = styled.div`
-    flex: 1;
-    display: flex;
-    > div {
-        &:first-of-type {
-            margin-right: 20px;
-            flex: 1;
-        }
-        &:last-of-type {
-            .ant-upload.ant-upload-select-picture-card {
-                height: 98px;
-                width: 98px;
-            }
-        }
-    }
-`;

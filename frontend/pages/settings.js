@@ -1,14 +1,14 @@
 import { useDispatch } from 'react-redux';
-
+import { getUserFromServer } from '@/utils/index.js';
 import styled from 'styled-components';
 import { Button } from 'antd';
 import { logout } from '@/store/actions/auth';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 
-export default function Settings() {
+export default function Settings({user}) {
     const dispatch = useDispatch();
     return (
-        <PrivateLayout>
+        <PrivateLayout user={user}>
             <StyledSettings>
                 <div>Settings</div>
                 <div>
@@ -19,6 +19,14 @@ export default function Settings() {
             </StyledSettings>
         </PrivateLayout>
     );
+}
+
+export const getServerSideProps = async ctx => {
+    return {
+        props: {
+            user: getUserFromServer(ctx)
+        }
+    }
 }
 
 const StyledSettings = styled.div`

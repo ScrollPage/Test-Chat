@@ -1,30 +1,11 @@
 import React, { useState } from 'react';
-
-import { useDispatch } from 'react-redux';
-
 import styled from 'styled-components';
 import { HeartOutlined, HeartTwoTone } from '@ant-design/icons';
-import { addLike, removeLike } from '@/store/actions/post';
 
-const Like = ({ isLiked, postId, setNumLikes }) => {
-    const dispatch = useDispatch();
-
-    const [like, setLike] = useState(isLiked);
-
-    const setLikeHandler = () => {
-        setLike(e => !e);
-        if (like) {
-            dispatch(removeLike(postId));
-            setNumLikes(e => e - 1);
-        } else {
-            dispatch(addLike(postId));
-            setNumLikes(e => e + 1);
-        }
-    };
-
+const Like = ({ isTap, postId, likeMutate, index}) => {
     return (
-        <StyledLike onClick={() => setLikeHandler()}>
-            {like ? (
+        <StyledLike onClick={() => likeMutate(index, postId)}>
+            {isTap ? (
                 <HeartTwoTone
                     twoToneColor="#eb2f96"
                     style={{ fontSize: '23px' }}

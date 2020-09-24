@@ -8,5 +8,5 @@ export default combineReducers({
     alert: alertReducer,
     auth: authReducer,
     message: messageReducer,
-    search: searchReducer,
+    search: searchReducer
 });
