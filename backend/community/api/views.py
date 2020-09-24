@@ -18,8 +18,8 @@ from .permissions import (
     IsFriends,
     OneOfUsers,
     IsSender,
+    IsRightUser,
 )
-from backend.permissions import IsRightUser
 from .service import (
     RetrieveUpdateDestroyPermissionViewset,
     ListCreatePermissionViewset,

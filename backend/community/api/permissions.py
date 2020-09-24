@@ -4,14 +4,12 @@ from django.shortcuts import get_object_or_404
 from contact.models import Contact
 from community.models import AddRequest
 
-class IsCurrentUser(BasePermission):
-    '''Тот ли пользователь?'''
-    def has_permission(self, request, view):
-        contact = get_object_or_404(Contact, pk=view.kwargs['pk'])
-        return any([
-            (request.user.slug==contact.slug),
-            (request.user.is_superuser)
-        ])
+from rest_framework.permissions import BasePermission
+
+class IsRightUser(BasePermission):
+    '''Создатель ли?'''
+    def has_object_permission(self, request, view, obj):
+        return request.user==obj
 
 class NotCurrentAndNotFriends(BasePermission):
     '''Не тот же самый, и не друг ли уже?'''

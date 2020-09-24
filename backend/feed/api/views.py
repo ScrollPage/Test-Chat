@@ -21,9 +21,9 @@ from .serializers import (
     PostListSerializer,
     CreateCommentSerializer,
 )
-from backend.permissions import IsRightUser
-from .permissions import IsRightOwnerOrUser, IsNotLiked
+from .permissions import IsRightOwnerOrUser, IsNotLiked, IsRightUser
 from .exceptions import BadRequestError, NotFoundError
+from notifications.service import send_repost_notification
 
 class PostsCustomViewset(PermisisonSerializerModelViewset):
     '''Все про посты'''
@@ -101,6 +101,7 @@ class RePostMechanicsCustomViewset(CreateViewset):
                 post_id=parent,
                 user=user
             )
+            send_repost_notification(parent.user, user, parent)
         super().perform_create(serializer)
 
 class ContactFeedView(generics.ListAPIView):
