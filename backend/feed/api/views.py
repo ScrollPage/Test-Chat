@@ -21,7 +21,8 @@ from .serializers import (
     PostListSerializer,
     CreateCommentSerializer,
 )
-from .permissions import IsRightUser, IsRightOwnerOrUser, IsNotLiked
+from backend.permissions import IsRightUser
+from .permissions import IsRightOwnerOrUser, IsNotLiked
 from .exceptions import BadRequestError, NotFoundError
 
 class PostsCustomViewset(PermisisonSerializerModelViewset):

@@ -12,7 +12,6 @@ from .serializers import (
     ContactFriendsSerializer,
 )
 from .permissions import (
-    IsCurrentUser, 
     NotCurrentAndNotFriends, 
     IsNotSent,
     IsReceiver,
@@ -20,6 +19,7 @@ from .permissions import (
     OneOfUsers,
     IsSender,
 )
+from backend.permissions import IsRightUser
 from .service import (
     RetrieveUpdateDestroyPermissionViewset,
     ListCreatePermissionViewset,
@@ -34,7 +34,7 @@ from notifications.service import new_friend_notification
 class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
     '''Обзор, обновление и удаление контакта'''
     serializer_class = ContactDetailSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCurrentUser, ]
+    permission_classes = [permissions.IsAuthenticated, IsRightUser, ]
     permission_classes_by_action = {
         'retrieve': [permissions.IsAuthenticated, ]
     }
