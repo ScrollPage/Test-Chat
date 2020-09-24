@@ -153,4 +153,5 @@ def increase_counter(sender, instance=None, created=False, **kwargs):
             counter = ContactCounter.objects.get(id=1)
         except ContactCounter.DoesNotExist:
             counter = ContactCounter.objects.create()
-        counter.update(counter=models.F('counter') + 1)
+        counter.counter += 1
+        counetr.save()
