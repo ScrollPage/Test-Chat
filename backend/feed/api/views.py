@@ -1,7 +1,6 @@
-from rest_framework import permissions, status
+from rest_framework import permissions, status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django.db.models import Count, Q, Min, Subquery, OuterRef
 from django.shortcuts import get_object_or_404
 
 from .service import (
@@ -9,6 +8,7 @@ from .service import (
     PermissionSerializerExcludeListViewset,
     PermissionCreateViewset,
     CreateViewset,
+    post_annotations,
 )
 from feed.models import Post, Comment, Like, RePost
 from .serializers import (
@@ -19,8 +19,10 @@ from .serializers import (
     LikeSerializer,
     RePostSerializer,
     PostListSerializer,
+    CreateCommentSerializer,
 )
-from .permissions import IsCurrentUser, IsNotLiked
+from backend.permissions import IsRightUser
+from .permissions import IsRightOwnerOrUser, IsNotLiked
 from .exceptions import BadRequestError, NotFoundError
 
 class PostsCustomViewset(PermisisonSerializerModelViewset):
@@ -34,35 +36,14 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
     }
     permission_classes = [permissions.IsAuthenticated, ]
     permission_classes_by_action = {
-        'update': [IsCurrentUser, ],
-        'partial_update': [IsCurrentUser, ],
-        'destroy': [IsCurrentUser, ],
+        'update': [permissions.IsAuthenticated, IsRightUser, ],
+        'partial_update': [permissions.IsAuthenticated, IsRightUser, ],
+        'destroy': [permissions.IsAuthenticated, IsRightOwnerOrUser, ],
     }
 
-    def destroy(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        post = get_object_or_404(Post, id=pk)
-        for comment in post.comments.all():
-            try:
-                comment.delete()
-            except AttributeError:
-                pass
-        post.delete()
-        return Reponse(status=status.HTTP_204_NO_CONTENT)
-
     def get_queryset(self):
-        queryset = Post.objects.all().annotate(
-            num_likes=Count('likes', distinct=True)
-        ).annotate(
-            num_reposts=Count('reposts', distinct=True)
-        ).annotate(
-            is_liked=Count('likes', filter=Q(likes__user=self.request.user))
-        ).annotate(
-            is_watched=Count('reviews', filter=Q(reviews__user=self.request.user))
-        ).annotate(
-            num_reviews=Count('reviews', distinct=True)
-        )
-        return queryset
+        queryset = Post.objects.all()
+        return post_annotations(self, queryset)
 
 class CommentCustomViewset(PermissionSerializerExcludeListViewset):
     '''Все про комменты, кроме метода list'''
@@ -72,20 +53,20 @@ class CommentCustomViewset(PermissionSerializerExcludeListViewset):
     serializer_class_by_action = {
         'update': UpdateCommentSerializer,
         'partial_update': UpdateCommentSerializer,
+        'create': CreateCommentSerializer,
     }
     permission_classes = [permissions.IsAuthenticated, ]
     permission_classes_by_action = {
-        'update': [IsCurrentUser, ],
-        'partial_update': [IsCurrentUser, ]
+        'update': [permissions.IsAuthenticated, IsRightUser, ],
+        'partial_update': [permissions.IsAuthenticated, IsRightUser, ]
     }
-
 
 class LikesCustomViewset(PermissionCreateViewset):
     '''Создание и удаление лайков'''
     queryset = Like.objects.all()
     model = Like
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsNotLiked]
+    permission_classes = [permissions.IsAuthenticated, IsNotLiked, ]
     permission_classes_by_action = {
         'remove': [permissions.IsAuthenticated, ],
     }
@@ -113,8 +94,6 @@ class RePostMechanicsCustomViewset(CreateViewset):
     def perform_create(self, serializer):
         user = self.request.user
         parent = serializer.validated_data.get('parent', None)
-        if not parent:
-            raise BadRequestError('You need a parent.')
         try:
             RePost.objects.filter(post_id=parent).get(user=user)
         except RePost.DoesNotExist:
@@ -123,3 +102,17 @@ class RePostMechanicsCustomViewset(CreateViewset):
                 user=user
             )
         super().perform_create(serializer)
+
+class ContactFeedView(generics.ListAPIView):
+    '''Новости конкретного конатка'''
+    serializer_class = PostListSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Post.objects.filter(
+            owner__in=[friend for friend in user.friends.all()]
+        ).exclude(user=self.request.user)
+        queryset = queryset.order_by('-timestamp')
+        queryset = post_annotations(self, queryset)
+        return queryset

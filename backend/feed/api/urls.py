@@ -6,11 +6,12 @@ from .views import (
     PostsCustomViewset, 
     CommentCustomViewset, 
     LikesCustomViewset, 
-    RePostMechanicsCustomViewset
+    RePostMechanicsCustomViewset,
+    ContactFeedView,
 )
 
 urlpatterns = [
-    
+    path('feed/', ContactFeedView.as_view(), name='feed')
 ]
 
 like_add = LikesCustomViewset.as_view({

@@ -2,6 +2,8 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins, serializers
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.db.models import Count, Q, Min, Subquery, OuterRef
+from collections import OrderedDict
 
 from backend.service import (
     PermissionMixin, 
@@ -19,7 +21,7 @@ class UsersPostsListMixin(mixins.ListModelMixin):
         id = request.query_params.get('id', None)
         if not id:
             raise BadRequestError('You need to input a query parameter id in your request.')
-        queryset = self.get_queryset().filter(user__id=id)
+        queryset = self.get_queryset().filter(owner__id=id)
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -82,46 +84,23 @@ class AbstractPostSerializer(serializers.Serializer):
     num_likes = serializers.IntegerField(read_only=True)
     timestamp = serializers.DateTimeField(read_only=True)
 
-def post_create(self,validated_data, is_post=True):
-    '''
-    is_post = True - создание поста
-    is_post = False - создание репоста
-    '''
-    text = validated_data.get('text', None)
-    image = validated_data.get('image', None)
-    if text or image:
-        user = validated_data.get('user', None)
-        if is_post:
-            parent = None
-        else:
-            parent = validated_data.get('parent', None)
-        post = Post.objects.create(**validated_data)
-    else:
-        raise BadRequestError('You need either image or text.')
-    return post
-
-def comment_create(self, validated_data):
-    text = validated_data.pop('text', None)
-    image = validated_data.pop('image', None)
-    if text or image:
-        try:
-            slug = validated_data.pop('user', None)['slug']
-        except KeyError:
-            slug = None
-        parent = validated_data.pop('parent', None)
-        comment = Comment.objects.create(
-            text=text,
-            image=image,
-            user=get_object_or_404(Contact, slug=slug),
-            parent=parent
+def post_annotations(self, queryset):
+    return queryset.annotate(
+            num_likes=Count('likes', distinct=True)
+        ).annotate(
+            num_reposts=Count('reposts', distinct=True)
+        ).annotate(
+            is_liked=Count('likes', filter=Q(likes__user=self.request.user))
+        ).annotate(
+            is_watched=Count('reviews', filter=Q(reviews__user=self.request.user))
+        ).annotate(
+            num_reviews=Count('reviews', distinct=True)
         )
-        post_id = validated_data.get('post_id', None)
-        if post_id:
-            post = get_object_or_404(Post, id=post_id)
-            post.comments.add(comment)
-            post.save()
-        else:
-            BadRequestError('You need post id.')
-    else:
-        raise BadRequestError('You need either image or text.')
-    return comment
+
+class RepresentationUsernameAdd(serializers.Serializer):
+    '''Добавляет в вывод user_name'''
+
+    def to_representation(self, instance):
+        extra = OrderedDict([('user_name', instance.user.get_full_name())])
+        base = super().to_representation(instance)
+        return OrderedDict(list(extra.items()) + list(base.items()))
