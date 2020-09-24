@@ -1,6 +1,5 @@
 import React from 'react';
 import { Avatar } from 'antd';
-import randomcolor from 'randomcolor';
 
 const UserFriends = ({ friends }) => {
     return (
@@ -11,7 +10,7 @@ const UserFriends = ({ friends }) => {
             {friends.map(friend => (
                 <Avatar
                     key={`{user-friend__key__${friend.id}}`}
-                    style={{ backgroundColor: `${randomcolor()}` }}
+                    style={{ backgroundColor: 'red' }}
                 />
             ))}
         </Avatar.Group>

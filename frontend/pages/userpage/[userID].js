@@ -1,7 +1,7 @@
 import axios from 'axios';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
-
+import { getUserFromServer } from '@/utils/index.js';
 import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import UserInfo from '@/components/Userpage/UserInfo';
@@ -9,24 +9,21 @@ import UserAvatar from '@/components/Userpage/UserAvatar';
 import UserFriends from '@/components/Userpage/UserFriends';
 import UserPosts from '@/components/Userpage/UserPosts';
 
-export default function Teams({ user, userId, posts }) {
-    const swr = (url, iniitalData) => {
-        const { data } = useSWR(url, { initialData: iniitalData });
-        return data;
-    };
+export default function Teams({ contact, pageUserId, posts, user }) {
 
-    const data = swr(`/api/v1/contact/${userId}/`, user);
+    const { data } = useSWR(`/api/v1/contact/${pageUserId}/`, { initialData: contact });
 
-    const newPosts = swr(`/api/v1/post/?id=${userId}`, posts);
+    const { data: newPosts } = useSWR(`/api/v1/post/?id=${pageUserId}`, { initialData: posts });
 
     return (
-        <PrivateLayout>
+        <PrivateLayout user={user}>
             <StyledUser>
                 <div>
                     <UserAvatar
                         data={data}
-                        userId={userId}
+                        pageUserId={pageUserId}
                         chatId={data.chat_id}
+                        user={user}
                     />
                     <div className="user-avatar__friends">
                         <h4>Друзья: {`(${data.num_friends})`}</h4>
@@ -35,7 +32,7 @@ export default function Teams({ user, userId, posts }) {
                 </div>
                 <div className="user-info">
                     <UserInfo data={data} />
-                    <UserPosts posts={newPosts} />
+                    <UserPosts posts={newPosts} pageUserId={pageUserId} user={user}/>
                 </div>
             </StyledUser>
         </PrivateLayout>
@@ -43,7 +40,7 @@ export default function Teams({ user, userId, posts }) {
 }
 
 export const getServerSideProps = async ctx => {
-    const userId = ctx.params.userID;
+    const pageUserId = ctx.params.userID;
     const token = cookies(ctx)?.token || null;
 
     axios.defaults.headers = {
@@ -51,20 +48,20 @@ export const getServerSideProps = async ctx => {
         Authorization: `Token ${token}`,
     };
 
-    let user = null;
+    let contact = null;
     let posts = [];
 
     await axios
-        .get(`/api/v1/contact/${userId}/`)
+        .get(`/api/v1/contact/${pageUserId}/`)
         .then(response => {
-            user = response?.data;
+            contact = response?.data;
         })
         .catch(error => {
             console.log(error);
         });
 
     await axios
-        .get(`/api/v1/post/?id=${userId}`)
+        .get(`/api/v1/post/?id=${pageUserId}`)
         .then(response => {
             posts = response?.data;
         })
@@ -74,9 +71,10 @@ export const getServerSideProps = async ctx => {
 
     return {
         props: {
-            user,
-            userId,
+            contact,
+            pageUserId,
             posts,
+            user: getUserFromServer(ctx)
         },
     };
 };

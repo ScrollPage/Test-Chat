@@ -4,21 +4,32 @@ import { Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 
-const Dialog = ({ chatID, name }) => {
+const Dialog = ({ chatID, name, dialogUserId }) => {
     return (
-        <Link href="/dialogs/[chatID]" as={`/dialogs/${chatID}`}>
-            <a>
-                <StyledDialog>
-                    <div>
-                        <Avatar
-                            style={{ backgroundColor: '#87d068' }}
-                            icon={<UserOutlined />}
-                        />
-                    </div>
+        <StyledDialog>
+            {dialogUserId
+                ? (<Link href="/userpage/[userID]" as={`/userpage/${dialogUserId}`}>
+                    <a>
+                        <div>
+                            <Avatar
+                                style={{ backgroundColor: '#87d068' }}
+                                icon={<UserOutlined />}
+                            />
+                        </div>
+                    </a>
+                </Link>)
+                : (<div>
+                    <Avatar
+                        style={{ backgroundColor: '#1890ff' }}
+                        icon={<UserOutlined />}
+                    />
+                </div>)}
+            <Link href="/dialogs/[chatID]" as={`/dialogs/${chatID}`}>
+                <a>
                     <div>{name}</div>
-                </StyledDialog>
-            </a>
-        </Link>
+                </a>
+            </Link>
+        </StyledDialog>
     );
 };
 

@@ -24,6 +24,7 @@ export default UserInfo;
 
 const StyledUserInfo = styled.div`
     flex: 1;
+    margin-bottom: 20px;
     > div {
         background-color: #f4f4f4;
         display: flex;

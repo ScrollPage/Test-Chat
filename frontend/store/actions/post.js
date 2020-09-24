@@ -1,12 +1,11 @@
 import axios from 'axios';
 import Cookie from 'js-cookie';
-import Router from 'next/router';
 import { show } from './alert';
 
 export const addPost = (text, imageUrl) => async dispatch => {
     await axios
         .post('/api/v1/post/', {
-            slug: Cookie.get('slug'),
+            user: Cookie.get('userId'),
             text,
             image: imageUrl,
         })
@@ -15,6 +14,33 @@ export const addPost = (text, imageUrl) => async dispatch => {
         })
         .catch(err => {
             dispatch(show('Ошибка в добавлении поста!', 'warning'));
+        });
+};
+
+export const deletePost = (postId) => async dispatch => {
+    await axios
+        .delete(`/api/v1/post/${postId}/`)
+        .then(res => {
+            dispatch(show('Пост успешно удален!', 'success'));
+        })
+        .catch(err => {
+            dispatch(show('Ошибка в удалении поста!', 'warning'));
+        });
+};
+
+export const rePost = (text, imageUrl, parent) => async dispatch => {
+    await axios
+        .post('/api/v1/repost/', {
+            text,
+            image: imageUrl,
+            user: Cookie.get('userId'),
+            parent
+        })
+        .then(res => {
+            dispatch(show('Вы успешно репостнули пост!', 'success'));
+        })
+        .catch(err => {
+            dispatch(show('Ошибка в репосте поста!', 'warning'));
         });
 };
 

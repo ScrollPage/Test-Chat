@@ -5,29 +5,48 @@ import useSWR from 'swr';
 import SearchDialog from '@/components/Dialogs/SearchDialog';
 import Dialog from '@/components/Dialogs/Dialog';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
+import { getUserFromServer } from '@/utils/index.js';
 
-export default function Dialogs({ chats, userId }) {
-    const { data } = useSWR(`/api/v1/chat/?id=${userId}`, {
+export default function Dialogs({ chats, user }) {
+    const { data } = useSWR(`/api/v1/chat/?id=${user.userId}`, {
         initialData: chats,
     });
+
+    console.log(data);
+
+    const participant = (participant1, participant2, isId) => {
+        let partic;
+        if (participant1.id === Number(user.userId)) {
+            partic = participant2;
+        } else {
+            partic = participant1;
+        }
+        if (isId) {
+            return partic.id
+        } else {
+            return `${partic.first_name} ${partic.last_name}`
+        }
+    }
+
+    const isConversation = (people) => {
+        if (people.length === 2) {
+            return false
+        }
+        return true
+    }
 
     const renderChats = chats =>
         chats.map(chat => (
             <Dialog
                 key={`chat__key__${chat.id}`}
-                name={
-                    chat.participants.length === 2
-                        ? chat.participants[0].id === Number(userId)
-                            ? `${chat.participants[1].first_name} ${chat.participants[1].last_name}`
-                            : `${chat.participants[0].first_name} ${chat.participants[0].last_name}`
-                        : `Беседа Номер ${chat.id}`
-                }
+                name={isConversation(chat.participants) ? `Беседа №${chat.id}` : participant(chat.participants[0], chat.participants[1], false)}
                 chatID={chat.id}
+                dialogUserId={isConversation(chat.participants) ? null : participant(chat.participants[0], chat.participants[1], true)}
             />
         ));
 
     return (
-        <PrivateLayout>
+        <PrivateLayout user={user}>
             <SearchDialog />
             <StyledDialogs>
                 {data
@@ -41,9 +60,11 @@ export default function Dialogs({ chats, userId }) {
 }
 
 export const getServerSideProps = async ctx => {
-    const userId = cookies(ctx)?.userId || null;
     const token = cookies(ctx)?.token || null;
 
+    const user = getUserFromServer(ctx);
+    const { userId } = user;
+    
     axios.defaults.headers = {
         'Content-Type': 'application/json',
         Authorization: `Token ${token}`,
@@ -71,7 +92,7 @@ export const getServerSideProps = async ctx => {
     return {
         props: {
             chats,
-            userId
+            user: user
         },
     };
 };

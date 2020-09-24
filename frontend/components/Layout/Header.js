@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
-import { UserOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
-import { Avatar } from 'antd';
+import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { logout } from '@/store/actions/auth';
 import Container from '@/styles/Container';
+import LinkAvatar from '@/components/UI/LinkAvatar';
 
-const Header = () => {
+const Header = ({user}) => {
     const dispatch = useDispatch();
 
     const [menuOpen, setMenuOpen] = useState(false);
@@ -24,18 +24,20 @@ const Header = () => {
             <Container>
                 <StyledHeaderInner>
                     <div>Scroll Chat</div>
-                    <StyledAvatar onClick={() => setMenuOpen(state => !state)}>
-                        <Avatar
-                            style={{
-                                backgroundColor: 'lightblue',
-                                marginRight: '15px',
-                            }}
-                            icon={<UserOutlined />}
+                    <StyledAvatar>
+                        <LinkAvatar
+                            href="/userpage/[userID]"
+                            as={`/userpage/${user?.userId}`}
+                            style={{ marginRight: '15px' }}
+                            isUsername={true}
                         />
-                        <p>{`${Cookie.get('firstName')} ${Cookie.get(
-                            'lastName'
-                        )}`}</p>
-                        <div className="styled-avatar__arrow">
+                        <p
+                            onClick={() => setMenuOpen(state => !state)}
+                        >{`${user?.firstName} ${user?.lastName}`}</p>
+                        <div
+                            className="styled-avatar__arrow"
+                            onClick={() => setMenuOpen(state => !state)}
+                        >
                             {menuOpen ? <UpOutlined /> : <DownOutlined />}
                         </div>
                         {menuOpen ? (

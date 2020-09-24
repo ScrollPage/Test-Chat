@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
-import Cookie from 'js-cookie';
-
+import { getUserFromServer } from '@/utils/index.js';
 import { useDispatch, useSelector } from 'react-redux';
-
 import styled from 'styled-components';
 import { setLoading } from '@/store/actions/message';
 import WebSocketInstance from '@/websocket';
@@ -14,7 +12,7 @@ import ChatHeader from '@/components/Chat/ChatHeader';
 import Loading from '@/components/UI/Loading';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 
-export default function Chat() {
+export default function Chat({user}) {
     const dispatch = useDispatch();
 
     const { messages, loading } = useSelector(state => state.message);
@@ -39,7 +37,7 @@ export default function Chat() {
 
     const initialiseChat = () => {
         waitForSocketConnection(() => {
-            WebSocketInstance.fetchMessages(Cookie.get('userId'), query.chatID);
+            WebSocketInstance.fetchMessages(user.userId, query.chatID);
         });
         WebSocketInstance.connect(query.chatID);
     };
@@ -64,7 +62,7 @@ export default function Chat() {
         e.preventDefault();
         if (message.trim() !== '') {
             const messageObject = {
-                from: Cookie.get('userId'),
+                from: user.userId,
                 content: message,
                 chatId: query.chatID,
             };
@@ -78,19 +76,22 @@ export default function Chat() {
     };
 
     const renderMessages = () => {
-        return messages.map(message => (
-            <ChatItem
-                key={`${message.id}__${Math.random()}`}
-                name={`${message.first_name} ${message.last_name}`}
-                time={message.timestamp}
-                message={message.content}
-                isUsername={message.author === Cookie.get('userId')}
-            />
-        ));
+        return messages.map(message => {
+            return (
+                <ChatItem
+                    key={`${message.id}__${Math.random()}`}
+                    name={`${message.first_name} ${message.last_name}`}
+                    time={message.timestamp}
+                    message={message.content}
+                    isUsername={message.author === Number(user.userId)}
+                    messageUserId={message.author}
+                />
+            )
+        });
     };
 
     return (
-        <PrivateLayout>
+        <PrivateLayout user={user}>
             <StyledChat>
                 <ChatHeader />
                 <StyledChatInner>
@@ -116,11 +117,18 @@ export default function Chat() {
     );
 }
 
+export const getServerSideProps = async ctx => {
+    return {
+        props: {
+            user: getUserFromServer(ctx)
+        }
+    }
+}
+
 const StyledChat = styled.div`
     position: relative;
     max-height: calc(100vh - 80px);
     min-height: calc(100vh - 80px);
-    /* overflow-x: hidden; */
     overflow-y: scroll;
     &::-webkit-scrollbar {
         width: 1em;

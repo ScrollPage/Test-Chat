@@ -1,7 +1,7 @@
 import cookies from 'next-cookies';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
+import { getUserFromServer } from '@/utils/index.js';
 import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
@@ -42,8 +42,10 @@ const errorMessege = (touched, messege) => {
     }
 };
 
-export default function Change({ email, firstName, lastName, phoneNumber }) {
+export default function Change({ email, user, phoneNumber }) {
     const dispatch = useDispatch();
+
+    const { firstName, lastName } = user;
 
     const initialValues = {
         email,
@@ -83,8 +85,8 @@ export default function Change({ email, firstName, lastName, phoneNumber }) {
     } = formik;
 
     return (
-        <PrivateLayout>
-            <StyledRegister>
+        <PrivateLayout user={user}>
+            <StyledChange>
                 <div className="change__top">
                     <h3>Сменить данные</h3>
                 </div>
@@ -172,28 +174,25 @@ export default function Change({ email, firstName, lastName, phoneNumber }) {
                         </Button>
                     </Form.Item>
                 </Form>
-            </StyledRegister>
+            </StyledChange>
         </PrivateLayout>
     );
 }
 
 export const getServerSideProps = async ctx => {
     const email = cookies(ctx)?.email || null;
-    const firstName = cookies(ctx)?.firstName || null;
-    const lastName = cookies(ctx)?.lastName || null;
     const phoneNumber = cookies(ctx)?.phoneNumber || null;
 
     return {
         props: {
             email,
-            firstName,
-            lastName,
             phoneNumber,
+            user: getUserFromServer(ctx)
         },
     };
 };
 
-const StyledRegister = styled.div`
+const StyledChange = styled.div`
     margin: 50px auto;
     @media (max-width: 575.98px) {
         margin: 20px auto;

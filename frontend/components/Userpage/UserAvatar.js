@@ -1,7 +1,6 @@
 import React from 'react';
 import { mutate } from 'swr';
 import { useRouter } from 'next/router';
-import Cookie from 'js-cookie';
 
 import { useDispatch } from 'react-redux';
 
@@ -17,52 +16,50 @@ import {
     recieveFriend
 } from '@/store/actions/friend';
 
-const UserAvatar = ({ data, userId, chatId }) => {
+const UserAvatar = ({ data, pageUserId, chatId, user }) => {
     const dispatch = useDispatch();
 
     const { push } = useRouter();
 
     const addFriendHandler = () => {
-        mutate(`/api/v1/contact/${userId}/`, { ...data, is_sent: true }, false);
-        dispatch(addFriend(userId));
+        mutate(`/api/v1/contact/${pageUserId}/`, { ...data, is_sent: true }, false);
+        dispatch(addFriend(pageUserId));
     };
 
     const removeAddFriendHandler = () => {
         mutate(
-            `/api/v1/contact/${userId}/`,
+            `/api/v1/contact/${pageUserId}/`,
             { ...data, is_sent: false },
             false
         );
-        dispatch(removeAddFriend(userId));
+        dispatch(removeAddFriend(pageUserId));
     };
 
     const removeFriendHandler = () => {
         mutate(
-            `/api/v1/contact/${userId}/`,
+            `/api/v1/contact/${pageUserId}/`,
             { ...data, is_friend: false, is_sent: false },
             false
         );
-        dispatch(removeFriend(userId));
+        dispatch(removeFriend(pageUserId));
     };
 
     const recieveFriendHandler = () => {
         mutate(
-            `/api/v1/contact/${userId}/`,
+            `/api/v1/contact/${pageUserId}/`,
             { ...data, is_friend: true, is_sent: false, is_sent_to_you: false },
             false
         );
-        dispatch(recieveFriend(userId));
+        dispatch(recieveFriend(pageUserId));
     }
 
     const chatIsNull = () => {
         if (chatId === null) {
-            dispatch(createChat(userId));
+            dispatch(createChat(pageUserId));
         } else {
             push('/dialogs/[chatID]', `/dialogs/${chatId}`, { shallow: true });
         }
     };
-
-    console.log(data);
 
     return (
         <StyledUserAvatar>
@@ -73,7 +70,7 @@ const UserAvatar = ({ data, userId, chatId }) => {
                     shape="square"
                     icon={<UserOutlined />}
                 />
-                {Cookie.get('userId') !== userId && (
+                {user.userId !== pageUserId && (
                     <Button
                         onClick={chatIsNull}
                         type="primary"
@@ -82,7 +79,7 @@ const UserAvatar = ({ data, userId, chatId }) => {
                         Написать сообщение
                     </Button>
                 )}
-                {Cookie.get('userId') !== userId ? (
+                {user.userId !== pageUserId ? (
                     data.is_friend ? (
                         <Button
                             onClick={() => removeFriendHandler()}
