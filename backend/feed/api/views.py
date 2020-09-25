@@ -96,7 +96,10 @@ class RePostMechanicsCustomViewset(CreateViewset):
         user = self.request.user
         parent = serializer.validated_data.get('parent', None)
         try:
-            RePost.objects.filter(post_id=parent).get(user=user)
+            RePost.objects.get(
+                post_id=parent, 
+                user=user
+            )
         except RePost.DoesNotExist:
             RePost.objects.create(
                 post_id=parent,
