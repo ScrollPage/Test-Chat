@@ -7,7 +7,7 @@ from .serializers import NotificationSerializer
 class NoificationsListView(generics.ListAPIView):
     '''Уведомления контакта'''
     serializer_class = NotificationSerializer
-    permission_classes = [UsersNotes, ]
+    permission_classes = [UsersNotes]
 
     def get_queryset(self):
         pk = self.kwargs['pk']

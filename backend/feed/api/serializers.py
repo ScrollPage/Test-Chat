@@ -95,7 +95,7 @@ class PostSerializer(BasePostSerialzier):
     '''Сериализация поста'''
     class Meta:
         model = Post
-        exclude = ['parent']    
+        exclude = ['parent', 'group_owner']    
 
     def validate(self, attrs):
         data = self.context['request'].data
@@ -110,6 +110,7 @@ class PostListSerializer(BasePostSerialzier):
     parent = RecursivePostSerialzier(read_only=True)
     is_watched = serializers.BooleanField(read_only=True)
     num_reviews = serializers.IntegerField(read_only=True)
+
     
 class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
     '''Сериализация репоста'''

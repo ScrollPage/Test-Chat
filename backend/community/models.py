@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from contact.models import Contact
-# from parties.models import Party
+from parties.models import Party
 
 class AddRequest(models.Model):
     sender = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name = 'invited', null=True)
@@ -20,6 +20,7 @@ class AddRequest(models.Model):
 class Page(models.Model):
     '''Страница пользователя'''
     friends = models.ManyToManyField(Contact, blank=True)
+    parties = models.ManyToManyField(Party, blank=True, related_name='members')
     user = models.OneToOneField(Contact, related_name='my_page', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -46,7 +47,7 @@ class UserInfo(models.Model):
 
 @receiver(post_save, sender=Contact)
 def user_instances_create(sender, instance=None, created=False, **kwargs):
-    '''Создает страницу пользователя'''
+    '''Создает страницу пользователя и информацию о нем'''
     if created:
         UserInfo.objects.create(user=instance)
         Page.objects.create(user=instance)

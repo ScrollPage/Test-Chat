@@ -1,7 +1,6 @@
 from django.db import models
 
 from contact.models import Contact
-from feed.models import Post
 
 class Party(models.Model):
     '''Стандартная группа'''
@@ -10,12 +9,10 @@ class Party(models.Model):
     name = models.CharField(max_length=50)
     slug = models.CharField(max_length=20)
     info = models.TextField()
-    posts = models.ManyToManyField(Post)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    members = models.ManyToManyField(Contact, related_name='communities')
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return f'group {self.name}'
 
     class Meta:
         verbose_name = 'Группа'

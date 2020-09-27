@@ -35,11 +35,11 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
         'partial_update': UpdatePostSerializer,
         'create': PostSerializer,
     }
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated]
     permission_classes_by_action = {
-        'update': [permissions.IsAuthenticated, IsRightUser, ],
-        'partial_update': [permissions.IsAuthenticated, IsRightUser, ],
-        'destroy': [permissions.IsAuthenticated, IsRightOwnerOrUser, ],
+        'update': [permissions.IsAuthenticated, IsRightUser],
+        'partial_update': [permissions.IsAuthenticated, IsRightUser],
+        'destroy': [permissions.IsAuthenticated, IsRightOwnerOrUser],
     }
 
     def get_queryset(self):
@@ -56,10 +56,10 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
         'partial_update': UpdateCommentSerializer,
         'create': CreateCommentSerializer,
     }
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated]
     permission_classes_by_action = {
-        'update': [permissions.IsAuthenticated, IsRightUser, ],
-        'partial_update': [permissions.IsAuthenticated, IsRightUser, ]
+        'update': [permissions.IsAuthenticated, IsRightUser],
+        'partial_update': [permissions.IsAuthenticated, IsRightUser],
     }
 
     def get_queryset(self):
@@ -75,9 +75,9 @@ class LikesCustomViewset(PermissionCreateViewset):
     queryset = Like.objects.all()
     model = Like
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsNotLiked, ]
+    permission_classes = [permissions.IsAuthenticated, IsNotLiked]
     permission_classes_by_action = {
-        'remove': [permissions.IsAuthenticated, ],
+        'remove': [permissions.IsAuthenticated],
     }
 
     @action(detail=False, methods=['post'])
@@ -98,7 +98,7 @@ class RePostMechanicsCustomViewset(CreateViewset):
     '''Создание репоста'''
     queryset = Post.objects.all()
     serializer_class = RePostSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated]
             
     def perform_create(self, serializer):
         user = self.request.user
@@ -119,7 +119,7 @@ class RePostMechanicsCustomViewset(CreateViewset):
 class ContactFeedView(generics.ListAPIView):
     '''Новости конкретного конатка'''
     serializer_class = PostListSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user

@@ -13,8 +13,8 @@ class ChatModelPermissionViewSet(PermissionModelCustomViewSet):
     serializer_class = ChatCreateSerializer
     permission_classes = [permissions.IsAuthenticated]
     permission_classes_by_action = {
-        'list': [permissions.IsAuthenticated, IsOwner, ],
-        'retrieve': [permissions.IsAuthenticated, IsOwner, ],
+        'list': [permissions.IsAuthenticated, IsOwner],
+        'retrieve': [permissions.IsAuthenticated, IsOwner],
     }
     serializer_class_by_action = {
         'list': ChatOverviewSerializer,

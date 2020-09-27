@@ -53,12 +53,12 @@ def filter_by_query_name(query_name, queryset):
 
 def friend_manipulation(sender_id, receiver_id, add=True):
     try:
-        sender_contact = Contact.objects.prefetch_related(
+        sender_contact = Contact.objects.get(id=sender_id).prefetch_related(
             Prefetch('my_page', to_attr='sender_page')
-        ).get(id=sender_id)
-        receiver_contact = Contact.objects.prefetch_related(
+        )
+        receiver_contact = Contact.objects.get(id=receiver_id).prefetch_related(
             Prefetch('my_page', to_attr='receiver_page')
-        ).get(id=receiver_id)
+        )
     except Contact.DoesNotExist:
         raise BadRequestError('User not found.')
     if add:

@@ -13,12 +13,12 @@ class RegistrationView(generics.CreateAPIView):
     '''Создание пользователя'''
     queryset = Contact.objects.all()
     serializer_class = CreateContactSerializer
-    permission_classes = [permissions.AllowAny, ]
+    permission_classes = [permissions.AllowAny]
 
 class ContactActivationView(generics.GenericAPIView):
     '''Подтверждение аккаунта пользователя'''
     serializer_class = TokenSerializer
-    permission_classes = [permissions.AllowAny, ]
+    permission_classes = [permissions.AllowAny,]
 
     def post(self, request):
         token = request.data['token']
