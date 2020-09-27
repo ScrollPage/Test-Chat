@@ -18,7 +18,7 @@ class AbstractPost(models.Model):
 
 
 class Post(AbstractPost):
-    '''Обычный пост на стенку'''
+    '''Обычный пост на стенку или коммент к другому посту'''
     parent = models.ForeignKey(
         'self', 
         verbose_name = 'Родитель', 
@@ -61,7 +61,7 @@ class Like(models.Model):
         verbose_name_plural = 'Лайки'
 
 class RePost(models.Model):
-    '''Стандартный репост'''
+    '''Стндартный репост'''
     user = models.ForeignKey(Contact, on_delete=models.CASCADE)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='reposts', null=True)
 
