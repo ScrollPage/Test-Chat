@@ -60,7 +60,6 @@ class ContactManager(BaseUserManager):
         user.is_active = True
 
         user.save(using = self._db)
-
         return user
 
 class Contact(AbstractBaseUser, PermissionsMixin):
@@ -77,10 +76,7 @@ class Contact(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     avatar = models.ImageField(upload_to='user_avatars/%Y/%m/%d', blank=True)
     is_active = models.BooleanField(default=False)
-    status = models.CharField(max_length=100, default='', blank=True)
-    friends = models.ManyToManyField('self', blank=True)
     
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number', 'slug']
 
@@ -133,6 +129,17 @@ class ContactCounter(models.Model):
         verbose_name_plural = 'Счетчики пользователей'
 
 @receiver(post_save, sender=Contact)
+def increase_counter(sender, instance=None, created=False, **kwargs):
+    '''Увеличние счетчика'''
+    if created:
+        try:
+            counter = ContactCounter.objects.get(id=1)
+        except ContactCounter.DoesNotExist:
+            counter = ContactCounter.objects.create()
+        counter.counter += 1
+        counter.save()
+
+@receiver(post_save, sender=Contact)
 def send_conf_mail(sender, instance=None, created=False, **kwargs):
     '''Отправляет письмо с подтверждением'''
     if created:
@@ -148,14 +155,3 @@ def send_conf_mail(sender, instance=None, created=False, **kwargs):
                 [instance.email, ], 
                 fail_silently=False
             )
-
-@receiver(post_save, sender=Contact)
-def increase_counter(sender, instance=None, created=False, **kwargs):
-    '''Увеличние счетчика'''
-    if created:
-        try:
-            counter = ContactCounter.objects.get(id=1)
-        except ContactCounter.DoesNotExist:
-            counter = ContactCounter.objects.create()
-        counter.counter += 1
-        counter.save()

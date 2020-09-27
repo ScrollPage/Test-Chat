@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from contact.models import Contact
 
@@ -22,6 +23,7 @@ class Notice(models.Model):
     sender = models.ForeignKey(Contact, on_delete=models.CASCADE)
     event = models.CharField(max_length=10, choices=CHOICES)
     seen = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.sender} sends to {self.receiver}. event: {self.event}'

@@ -5,8 +5,8 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
 from .service import (
-    PermisisonSerializerModelViewset, 
-    PermissionSerializerExcludeListViewset,
+    PermisisonSerializerPostModelViewset, 
+    PermissionSerializerCommentModelViewset,
     PermissionCreateViewset,
     CreateViewset,
     post_annotations,
@@ -26,7 +26,7 @@ from .permissions import IsRightOwnerOrUser, IsNotLiked, IsRightUser
 from .exceptions import BadRequestError, NotFoundError
 from notifications.service import send_repost_notification
 
-class PostsCustomViewset(PermisisonSerializerModelViewset):
+class PostsCustomViewset(PermisisonSerializerPostModelViewset):
     '''Все про посты'''
     model = Post
     serializer_class = PostListSerializer
@@ -46,7 +46,7 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
         queryset = Post.objects.all()
         return post_annotations(self, queryset)
 
-class CommentCustomViewset(PermissionSerializerExcludeListViewset):
+class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     '''Все про комменты, кроме метода list'''
     queryset = Comment.objects.all()
     model = Comment
@@ -61,6 +61,14 @@ class CommentCustomViewset(PermissionSerializerExcludeListViewset):
         'update': [permissions.IsAuthenticated, IsRightUser, ],
         'partial_update': [permissions.IsAuthenticated, IsRightUser, ]
     }
+
+    def get_queryset(self):
+        if self.action == 'list':
+            post_id = self.request.query_params.get('post_id', None)
+            if not id:
+                raise BadRequestError('You need to input a query parameter post id in your request.')
+            return Post.objects.get(id=post_id).comments
+        return super().get_queryset()
 
 class LikesCustomViewset(PermissionCreateViewset):
     '''Создание и удаление лайков'''
