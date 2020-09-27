@@ -234,7 +234,7 @@ pusher_client = pusher.Pusher(
 
 AWS_ACCESS_KEY_ID = "AKIAX3EUZUQFIQH62JQO"
 AWS_SECRET_ACCESS_KEY = "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"
-AWS_STORAGE_BUCKET_NAME = 'scroll-chat-media'
+AWS_STORAGE_BUCKET_NAME = 'scrollchat-media'
 
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None

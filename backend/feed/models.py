@@ -13,10 +13,6 @@ class AbstractPost(models.Model):
     def __str__(self):
         return str(self.id)
 
-    def delete(self):
-        self.image.delete(save=False)
-        super().delete()
-
     class Meta:
         abstract = True
 
