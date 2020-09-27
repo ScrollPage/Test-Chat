@@ -2,7 +2,6 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
-from community.models import Page
 from feed.models import Post, Like, RePost, Comment
 from backend.service import LowContactSerializer, UserValidationSerializer
 from .service import (
@@ -10,6 +9,7 @@ from .service import (
     LowReadContactSerializer, 
     AbstractPostSerializer, 
     LowReadContactSerializer,
+    RepresentationUsernameAdd
 )
 from contact.models import Contact
 from .exceptions import BadRequestError
@@ -39,6 +39,7 @@ class PostParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     '''Вывод родителя поста'''
     parent = RecursivePostSerialzier(read_only=True)
     user = LowReadContactSerializer(read_only=True)
+    owner = LowReadContactSerializer(read_only=True)
     class Meta:
         model = Post
         fields = ['id', 'user', 'owner', 'parent', 'text', 'image', 'timestamp']
@@ -55,7 +56,11 @@ class FilterCommentSerializer(serializers.ListSerializer):
         data = data.filter(parent = None)
         return super().to_representation(data)
 
-class CreateCommentSerializer(AbstractPostSerializer, serializers.ModelSerializer, UserValidationSerializer):
+class CreateCommentSerializer(AbstractPostSerializer, 
+                              serializers.ModelSerializer, 
+                              UserValidationSerializer, 
+                              RepresentationUsernameAdd
+                            ):
     '''Сериализатор создания комментария'''
 
     class Meta:
@@ -85,13 +90,14 @@ class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
 class BasePostSerialzier(AbstractPostSerializer, serializers.ModelSerializer, UserValidationSerializer):
     '''Базовый класс сeриализации постов и репостов'''
     num_reposts = serializers.IntegerField(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
     is_liked = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Post
         fields = '__all__'
 
-class PostSerializer(BasePostSerialzier):
+class PostSerializer(BasePostSerialzier, RepresentationUsernameAdd):
     '''Сериализация поста'''
     class Meta:
         model = Post
@@ -107,11 +113,12 @@ class PostSerializer(BasePostSerialzier):
 class PostListSerializer(BasePostSerialzier):
     '''Сериализация списка постов'''
     user = LowReadContactSerializer(read_only=True)
+    owner = LowReadContactSerializer(read_only=True)
     parent = RecursivePostSerialzier(read_only=True)
     is_watched = serializers.BooleanField(read_only=True)
     num_reviews = serializers.IntegerField(read_only=True)
     
-class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
+class RePostSerializer(BasePostSerialzier, UserValidationSerializer, RepresentationUsernameAdd):
     '''Сериализация репоста'''
 
     def validate(self, attrs):
@@ -121,7 +128,7 @@ class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
         else:
             raise BadRequestError('You need a parent.')
 
-class LikeSerializer(serializers.ModelSerializer):
+class LikeSerializer(serializers.ModelSerializer, UserValidationSerializer):
     '''Сериализация лайка'''
     class Meta:
         model = Like

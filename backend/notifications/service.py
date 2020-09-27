@@ -1,8 +1,6 @@
 from backend.settings import pusher_client as pusher
-from django.shortcuts import get_object_or_404
 
 from .models import Notice
-from contact.models import Contact
 
 def create_notification(sender, receiver, event):
     '''Создание уведомления'''
@@ -37,17 +35,13 @@ def send_addrequest_notification(sender, receiver):
     )
     create_notification(sender, receiver, 2)
 
-def new_friend_notification(sender_id, receiver_id):
+def new_friend_notification(sender, receiver):
     pusher.trigger(
-        f'notifications{receiver_id}', 
+        f'notifications{sender.id}', 
         'new_friend', 
-        {'sender': sender_id, 'name': get_object_or_404(Contact, id=sender_id).get_full_name()}
+        {'sender': receiver.id, 'name': receiver.get_full_name()}
     )
-    create_notification(
-        get_object_or_404(Contact,id=receiver_id), 
-        get_object_or_404(Contact,id=sender_id), 
-        event=3,
-    )
+    create_notification(sender, receiver, 3)
 
 def send_like_notification(owner, liker, post_id):
     if owner != liker:
