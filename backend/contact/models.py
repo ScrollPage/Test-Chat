@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, pre_delete
 from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
@@ -97,6 +97,10 @@ class Contact(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
+
+    def delete(self):
+        self.avatar.delete(save=False)
+        super().delete()
 
     class Meta:
         verbose_name = 'Контакт'
