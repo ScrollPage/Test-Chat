@@ -12,6 +12,13 @@ import Header from './Header';
 import Navbar from './Navbar';
 import Container from '@/styles/Container';
 
+import { IUser } from '@/types/user';
+
+// interface IPrivateLayout {
+//     children: React.ReactNode;
+//     user: IUser;
+// } 
+
 const PrivateLayout = ({ children, user }) => {
 
     const dispatch = useDispatch();
@@ -62,7 +69,7 @@ const PrivateLayout = ({ children, user }) => {
             <Header user={user} />
             <StyledMain>
                 <Container>
-                    <Navbar />
+                    <Navbar user={user} />
                     <div className="private-layout__main">{children}</div>
                 </Container>
             </StyledMain>

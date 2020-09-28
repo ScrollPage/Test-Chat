@@ -1,7 +1,7 @@
 import axios from 'axios';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
-import { getUserFromServer } from '@/utils/index.js';
+import { getUserFromServer } from '@/utils/index';
 import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import UserInfo from '@/components/Userpage/UserInfo';
@@ -15,6 +15,8 @@ export default function Teams({ contact, pageUserId, posts, user }) {
 
     const { data: newPosts } = useSWR(`/api/v1/post/?id=${pageUserId}`, { initialData: posts });
 
+    console.log(newPosts);
+
     return (
         <PrivateLayout user={user}>
             <StyledUser>
@@ -27,7 +29,7 @@ export default function Teams({ contact, pageUserId, posts, user }) {
                     />
                     <div className="user-avatar__friends">
                         <h4>Друзья: {`(${data.num_friends})`}</h4>
-                        <UserFriends friends={data.friends} />
+                        <UserFriends friends={data.my_page.friends} />
                     </div>
                 </div>
                 <div className="user-info">

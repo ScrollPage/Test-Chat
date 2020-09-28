@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import SearchDialog from '@/components/Dialogs/SearchDialog';
 import Dialog from '@/components/Dialogs/Dialog';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
-import { getUserFromServer } from '@/utils/index.js';
+import { getUserFromServer } from '@/utils/index';
 
 export default function Dialogs({ chats, user }) {
     const { data } = useSWR(`/api/v1/chat/?id=${user.userId}`, {

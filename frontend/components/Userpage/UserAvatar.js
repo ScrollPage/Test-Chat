@@ -70,7 +70,7 @@ const UserAvatar = ({ data, pageUserId, chatId, user }) => {
                     shape="square"
                     icon={<UserOutlined />}
                 />
-                {user.userId !== pageUserId && (
+                {user.userId !== Number(pageUserId) && (
                     <Button
                         onClick={chatIsNull}
                         type="primary"
@@ -79,7 +79,7 @@ const UserAvatar = ({ data, pageUserId, chatId, user }) => {
                         Написать сообщение
                     </Button>
                 )}
-                {user.userId !== pageUserId ? (
+                {user.userId !== Number(pageUserId) ? (
                     data.is_friend ? (
                         <Button
                             onClick={() => removeFriendHandler()}

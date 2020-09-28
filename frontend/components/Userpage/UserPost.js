@@ -7,9 +7,14 @@ import Repost from '@/components/UI/Repost';
 import LinkAvatar from '@/components/UI/LinkAvatar';
 
 const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDeletePostHandler }) => {
+
+    const cropImage = (imgUrl) => {
+        return imgUrl.slice(0, imgUrl.indexOf('?'));
+    }
+
     return (
         <StyledUserPost>
-            {post.user.id == user.userId && (
+            {(post.owner == user.userId || post.user.id == user.userId) && (
                 <div
                     className="user-post__close"
                     onClick={() => setIsDeletePostHandler(post.id)}
@@ -36,7 +41,7 @@ const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDelete
                     <div>{post.text}</div>
                 )}
                 {post.image && (<div>
-                    <img src={post.image} alt="" />
+                    <img src={cropImage(post.image)} alt="" />
                 </div>)}
             </div>
             {post.parent && (
@@ -61,7 +66,7 @@ const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDelete
                             <div>{post.parent.text}</div>
                         )}
                         {post.parent.image && (<div>
-                            <img src={post.parent.image} alt="" />
+                            <img src={cropImage(post.parent.image)} alt="" />
                         </div>)}
                     </div>
                 </>
@@ -71,7 +76,6 @@ const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDelete
                     <Like
                         isTap={post.is_liked}
                         postId={post.id}
-                        // setNumLikes={setNumLikes}
                         likeMutate={likeMutate}
                         index={index}
                     />
