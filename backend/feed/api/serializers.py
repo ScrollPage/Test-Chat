@@ -92,7 +92,7 @@ class PostSerializer(BasePostSerialzier):
     '''Сериализация поста'''
     class Meta:
         model = Post
-        exclude = ['parent', 'group_owner']    
+        exclude = ['parent', 'group_owner', 'published']    
 
     def validate(self, attrs):
         data = self.context['request'].data

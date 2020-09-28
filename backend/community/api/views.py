@@ -167,7 +167,7 @@ class SearchPeopleView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        queryset = Contact.objects.all()
+        queryset = Contact.objects.exclude(id=self.request.user.id)
         query_name = self.request.query_params.get('query_name', None)
         queryset = filter_by_query_name(query_name, queryset)
         return queryset.filter(is_active=True)
