@@ -214,8 +214,8 @@ DJOSER = {
 }
 
 # Media
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 #User model
 AUTH_USER_MODEL = 'contact.Contact'
@@ -230,11 +230,18 @@ pusher_client = pusher.Pusher(
 )
 
 # AWS
+from backend import local
 
-# AWS_ACCESS_KEY_ID = "AKIAX3EUZUQFIQH62JQO"
-# AWS_SECRET_ACCESS_KEY = "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"
-# AWS_STORAGE_BUCKET_NAME = 'scroll-chat-media'
+AWS_ACCESS_KEY_ID = local.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = local.AWS_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = local.AWS_STORAGE_BUCKET_NAME
 
-# AWS_S3_FILE_OVERWRITE = False
+AWS_S3_REGION_NAME = 'eu-west-2'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+
+AWS_S3_HOST = 'eu-west-2'
+S3_USE_SIGV4 = True
+
+AWS_S3_FILE_OVERWRITE = False
 # AWS_DEFAULT_ACL = None
-# DEFAULT_FILE_STORAGE = 'backend.storage_backends.MediaStorage'
+DEFAULT_FILE_STORAGE = 'backend.storage_backends.MediaStorage'
