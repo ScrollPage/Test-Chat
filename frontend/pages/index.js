@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Form, Input, Button } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { authLogin } from '@/store/actions/auth';
+import { authLogin } from '@/store/actions/auth.ts';
 import VisitorLayout from '@/components/Layout/VisitorLayout';
 
 const validationSchema = Yup.object().shape({

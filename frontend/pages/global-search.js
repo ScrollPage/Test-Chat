@@ -1,7 +1,7 @@
 import axios from 'axios';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
-import { getUserFromServer } from '@/utils/index.js';
+import { getUserFromServer } from '@/utils/index';
 import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import Search from '@/components/UI/Search';

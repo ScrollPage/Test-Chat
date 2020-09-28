@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { HeartOutlined, HeartTwoTone } from '@ant-design/icons';
 
-const Like = ({ isTap, postId, likeMutate, index}) => {
+const Like = ({ isTap, postId, likeMutate, index }) => {
     return (
         <StyledLike onClick={() => likeMutate(index, postId)}>
             {isTap ? (
@@ -11,8 +11,8 @@ const Like = ({ isTap, postId, likeMutate, index}) => {
                     style={{ fontSize: '23px' }}
                 />
             ) : (
-                <HeartOutlined style={{ fontSize: '23px' }} />
-            )}
+                    <HeartOutlined style={{ fontSize: '23px' }} />
+                )}
         </StyledLike>
     );
 };

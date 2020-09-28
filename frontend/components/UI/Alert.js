@@ -6,10 +6,12 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { Alert as AntdAlert } from 'antd';
 import { hide } from '@/store/actions/alert';
+import { getAlertText, getAlertType } from '../../store/selectors';
 
 const Alert = () => {
-    const text = useSelector(store => store.alert.text);
-    const type = useSelector(store => store.alert.typeOf);
+    const text = useSelector(getAlertText);
+    const type = useSelector(getAlertType);
+    
     const dispatch = useDispatch();
 
     useEffect(() => {

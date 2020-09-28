@@ -7,10 +7,12 @@ const PostCreate = ({ isRepost, addPostMutate }) => {
 
   const [newPost, setNewPost] = useState('');
   const [imageUrl, setImageUrl] = useState(null);
+  const [image, setImage]  = useState(null);
 
   const handleSubmit = event => {
     event.preventDefault();
-    addPostMutate(isRepost, newPost, imageUrl);
+    console.log(imageUrl);
+    addPostMutate(isRepost, newPost, imageUrl, image);
     setNewPost('');
     setImageUrl(null);
   };
@@ -35,6 +37,7 @@ const PostCreate = ({ isRepost, addPostMutate }) => {
               <FileUpload
                 imageUrl={imageUrl}
                 setImageUrl={setImageUrl}
+                setImage={setImage}
               />
             </div>
           </StyledTopPost>

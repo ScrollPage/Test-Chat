@@ -16,7 +16,7 @@ const UserPosts = ({ posts, pageUserId, user }) => {
 
     const [isDeletePost, setIsDeletePost] = useState(false);
     const [deletePostId, setDeletePostId] = useState(null);
-
+    
     const setIsOpenHandler = (parent) => {
         setIsDeletePost(false);
         setIsOpen(true);
@@ -43,7 +43,7 @@ const UserPosts = ({ posts, pageUserId, user }) => {
         }
     }
 
-    const addPostMutate = (isRepost, newPost, imageUrl) => {
+    const addPostMutate = (isRepost, newPost, imageUrl, image) => {
         const url = `/api/v1/post/?id=${pageUserId}`;
         if (newPost.trim() !== '' || imageUrl) {
             let newPosts;
@@ -75,15 +75,16 @@ const UserPosts = ({ posts, pageUserId, user }) => {
                             last_name: parent.user.last_name
                         }
                     }
-                    newPosts = [...posts, addNewPost];
-                    mutate(url, newPosts, false);
+                    newPosts = [addNewPost, ...posts];
+                    mutate(url, newPosts);
                 }
-                dispatch(rePost(newPost, imageUrl, parent.id));
+                dispatch(rePost(newPost, image, parent.id));
                 setIsOpen(false);
+                trigger(url);
             } else {
-                newPosts = [...posts, addNewPost];
+                newPosts = [addNewPost, ...posts];
                 mutate(url, newPosts);
-                dispatch(addPost(newPost, imageUrl));
+                dispatch(addPost(newPost, image, pageUserId));
                 trigger(url);
             }
         }

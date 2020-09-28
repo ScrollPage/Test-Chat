@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
-import { getUserFromServer } from '@/utils/index.js';
+import { getUserFromServer } from '@/utils/index';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { setLoading } from '@/store/actions/message';
@@ -11,11 +11,13 @@ import ChatInput from '@/components/Chat/ChatInput';
 import ChatHeader from '@/components/Chat/ChatHeader';
 import Loading from '@/components/UI/Loading';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
+import { getMessages, getMessagesLoading } from '../../store/selectors';
 
 export default function Chat({user}) {
     const dispatch = useDispatch();
 
-    const { messages, loading } = useSelector(state => state.message);
+    const messages = useSelector(getMessages);
+    const loading = useSelector(getMessagesLoading);
 
     const { query } = useRouter();
 
