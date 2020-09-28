@@ -2,14 +2,17 @@ from rest_framework.permissions import BasePermission
 from django.shortcuts import get_object_or_404
 
 from contact.models import Contact
-from community.models import AddRequest
+from community.models import AddRequest, UserInfo
 
 from rest_framework.permissions import BasePermission
 
 class IsRightUser(BasePermission):
     '''Создатель ли?'''
     def has_object_permission(self, request, view, obj):
-        return request.user==obj
+        if type(obj) == Contact:
+            return request.user == obj
+        elif type(obj) == UserInfo:
+            return request.user == obj.user
 
 class NotCurrentAndNotFriends(BasePermission):
     '''Не тот же самый, и не друг ли уже?'''
@@ -20,12 +23,12 @@ class NotCurrentAndNotFriends(BasePermission):
             receiver_id = data['receiver']
         except KeyError:
             return True
-        sender_contact = get_object_or_404(Contact, id=sender_id)
-        receiver_contact = get_object_or_404(Contact, id=receiver_id)
+        sender_page = get_object_or_404(Contact, id=sender_id).my_page
+        receiver_page = get_object_or_404(Contact, id=receiver_id).my_page
         return all([
-            (sender_contact!=receiver_contact),
-            (receiver_contact not in sender_contact.friends.all()),
-            (sender_contact not in receiver_contact.friends.all()),
+            (sender_page!=receiver_page),
+            (receiver_page not in sender_page.friends.all()),
+            (sender_page not in receiver_page.friends.all()),
         ])
 
 class IsSender(BasePermission):
@@ -81,8 +84,8 @@ class IsFriends(BasePermission):
         receiver = get_object_or_404(Contact, id=receiver_id)
         return all([
             (request.user),
-            (receiver in sender.friends.all()),
-            (sender in receiver.friends.all())
+            (receiver in sender.my_page.friends.all()),
+            (sender in receiver.my_page.friends.all())
         ])
 
 class OneOfUsers(BasePermission):

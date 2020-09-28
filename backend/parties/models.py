@@ -4,7 +4,6 @@ from contact.models import Contact
 
 class Party(models.Model):
     '''Стандартная группа'''
-    members = models.ManyToManyField(Contact, related_name='parties')
     blacklist = models.ManyToManyField(Contact)
     image = models.ImageField(upload_to='group_avatars/%Y/%m/%d', blank=True)
     name = models.CharField(max_length=30)

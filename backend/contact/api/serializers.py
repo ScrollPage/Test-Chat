@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.db import models
 
 from contact.models import Contact, MyToken, ContactCounter
+from feed.api.exceptions import BadRequestError
 
 class CreateContactSerializer(serializers.ModelSerializer):
     '''Создание пользоватля'''
@@ -43,3 +44,8 @@ class TokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyToken
         fields = ['token']
+    
+    def validate(self, data):
+        if data.get('token', None):
+            return super().validate(data)
+        return BadRequestError('You need a token.')

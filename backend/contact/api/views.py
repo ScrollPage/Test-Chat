@@ -7,6 +7,7 @@ from django.utils import timezone
 
 from .serializers import CreateContactSerializer, TokenSerializer
 from contact.models import Contact, MyToken, ContactCounter
+from community.models import Page
 
 class RegistrationView(generics.CreateAPIView):
     '''Создание пользователя'''
@@ -20,16 +21,15 @@ class ContactActivationView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny,]
 
     def post(self, request):
-        try:
-            token = request.data['token']
-        except KeyError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        token = request.data['token']
         token = get_object_or_404(MyToken, token=token)
         user = token.user
         if token.created + timedelta(hours=2) < timezone.now():
-            del user
+            user.delete()
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             user.is_active = True
+            Page.objects.create(user=user)
             user.save()
+            token.delete()
             return Response(status=status.HTTP_200_OK)

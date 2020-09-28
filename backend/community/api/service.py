@@ -2,8 +2,11 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins
 from rest_framework.response import Response
 from django.db.models import Q
+from django.db.models import Prefetch
 
 from backend.service import PermissionMixin
+from feed.api.exceptions import BadRequestError
+from contact.models import Contact
 
 class RetrieveUpdateDestroyPermissionViewset(PermissionMixin, 
                                              GenericViewSet,
