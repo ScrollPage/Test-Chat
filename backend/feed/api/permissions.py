@@ -13,7 +13,7 @@ class IsRightOwnerOrUser(BasePermission):
     def has_object_permission(self, request, view, obj):
         return any([
             request.user==obj.user,
-            request.user.my_page==obj.owner,
+            request.user==obj.owner,
         ])
 
 class IsNotLiked(BasePermission):

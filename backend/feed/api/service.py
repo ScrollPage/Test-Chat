@@ -3,6 +3,7 @@ from rest_framework import mixins, serializers
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q, Min, Subquery, OuterRef
+from collections import OrderedDict
 
 from backend.service import (
     PermissionMixin, 
@@ -21,7 +22,7 @@ class UsersPostsListMixin(mixins.ListModelMixin):
         id = request.query_params.get('id', None)
         if not id:
             raise BadRequestError('You need to input a query parameter id in your request.')
-        queryset = self.get_queryset().filter(owner__user__id=id)
+        queryset = self.get_queryset().filter(owner__id=id)
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -77,3 +78,11 @@ def post_annotations(self, queryset):
         ).annotate(
             num_reviews=Count('reviews', distinct=True)
         )
+
+class RepresentationUsernameAdd(serializers.Serializer):
+    '''Добавляет в вывод user_name'''
+
+    def to_representation(self, instance):
+        extra = OrderedDict([('user_name', instance.user.get_full_name())])
+        base = super().to_representation(instance)
+        return OrderedDict(list(extra.items()) + list(base.items()))

@@ -10,20 +10,16 @@ class AbstractPost(models.Model):
     user = models.ForeignKey(Contact, on_delete=models.CASCADE)
     text = models.TextField(max_length=1000, blank=True, default='')
     image = models.ImageField(upload_to='user_posts/%Y/%m/%d', blank=True, null=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=timezone.now())
 
     def __str__(self):
         return str(self.id)
-
-    def delete(self):
-        self.image.delete(save=False)
-        super().delete()
 
     class Meta:
         abstract = True
 
 class Post(AbstractPost):
-    '''Обычный пост на стенку'''
+    '''Обычный пост на стенку или коммент к другому посту'''
     parent = models.ForeignKey(
         'self', 
         verbose_name = 'Родитель', 
@@ -69,7 +65,7 @@ class Like(models.Model):
         verbose_name_plural = 'Лайки'
 
 class RePost(models.Model):
-    '''Стандартный репост'''
+    '''Стндартный репост'''
     user = models.ForeignKey(Contact, on_delete=models.CASCADE)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='reposts', null=True)
 

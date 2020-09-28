@@ -213,9 +213,9 @@ DJOSER = {
     'SERIALIZERS': {},
 }
 
-# Media
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+#Media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 #User model
 AUTH_USER_MODEL = 'contact.Contact'
@@ -228,13 +228,3 @@ pusher_client = pusher.Pusher(
   cluster='eu',
   ssl=True
 )
-
-# AWS
-
-AWS_ACCESS_KEY_ID = "AKIAX3EUZUQFIQH62JQO"
-AWS_SECRET_ACCESS_KEY = "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"
-AWS_STORAGE_BUCKET_NAME = 'scroll-chat-media'
-
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-DEFAULT_FILE_STORAGE = 'backend.storage_backends.MediaStorage'

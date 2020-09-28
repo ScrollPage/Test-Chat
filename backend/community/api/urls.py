@@ -8,11 +8,9 @@ from .views import (
     FriendPermissionViewset, 
     ContactFriendsView,
     SearchPeopleView,
-    UserInfoUpdate,
 )
 
 urlpatterns = [
-    path('update_info/<int:pk>/', UserInfoUpdate.as_view(), name='update-info'),
     path('friends/', ContactFriendsView.as_view(), name='contact-friends'),
     path('people/', SearchPeopleView.as_view(), name='people'),
 ]
