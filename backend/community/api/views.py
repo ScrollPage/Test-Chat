@@ -68,7 +68,7 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
         )
         if self.request.user.id == pk:
             queryset = queryset.annotate(
-                num_notes=Count('notifications')
+                num_notes=Count('notifications', filter=Q(notifications__seen=False))
             )
         return queryset
 
@@ -143,11 +143,11 @@ class ContactFriendsView(generics.ListAPIView):
         id = self.request.query_params.get('id', None)
         if id:
             try:
-                id = int(id)
+                int(id)
             except ValueError:
-                user = self.request.user
+                user = Contact.objects.get(id=id)
             else:
-                user = get_object_or_404(Contact, id=id)
+                user = self.request.user
         else:
             user = self.request.user
         queryset = user.my_page.friends.all()
@@ -176,4 +176,4 @@ class UserInfoUpdate(generics.UpdateAPIView, generics.RetrieveAPIView):
     '''Обнвление информации о пользователе'''
     queryset = UserInfo.objects.all()
     serializer_class = UserInfoSerializer
-    permission_classes = [IsRightUser, ]
+    permission_classes = [IsRightUser]

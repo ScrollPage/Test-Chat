@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # 'rest_auth.registration',
     'rest_framework',
     'rest_framework.authtoken',
+    'storages',
     
     'chat',   
     'community', 
@@ -47,8 +48,6 @@ INSTALLED_APPS = [
     'notifications',
     'parties',
     'score',
-
-    'storages',
 ]
 
 MIDDLEWARE = [

@@ -4,14 +4,11 @@ from django.shortcuts import get_object_or_404
 
 from community.models import Page
 from feed.models import Post, Like, RePost, Comment
-from backend.service import LowContactSerializer, UserValidationSerializer
+from backend.service import LowContactSerializer, UserValidationSerializer, LowReadContactSerializer
 from .service import (
     BaseFeedSerializer, 
-    LowReadContactSerializer, 
     AbstractPostSerializer, 
-    LowReadContactSerializer,
 )
-from contact.models import Contact
 from .exceptions import BadRequestError
 from notifications.service import send_like_notification
 

@@ -44,7 +44,7 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
 
     def get_queryset(self):
         queryset = Post.objects.all()
-        return post_annotations(self, queryset)
+        return post_annotations(self, queryset).filter(published=True)
 
 class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     '''Все про комменты, кроме метода list'''
@@ -65,7 +65,7 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     def get_queryset(self):
         if self.action == 'list':
             post_id = self.request.query_params.get('post_id', None)
-            if not id:
+            if not post_id:
                 raise BadRequestError('You need to input a query parameter post id in your request.')
             return Post.objects.get(id=post_id).comments
         return super().get_queryset()

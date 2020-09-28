@@ -7,6 +7,7 @@ from backend.service import ContactSerializer, LowContactSerializer
 from community.models import AddRequest, Page, UserInfo
 from notifications.service import send_addrequest_notification
 from feed.api.exceptions import BadRequestError
+from parties.api.serializers import PartyShortSerializer
 
 class UserInfoSerializer(serializers.ModelSerializer):
     '''Сериализация информациио пользователе'''
@@ -24,6 +25,7 @@ class ContactFriendsSerializer(serializers.ModelSerializer):
 class PageSerializer(serializers.ModelSerializer):
     '''Сериализация страницы пользователя'''
     friends = ContactFriendsSerializer(many=True, read_only=True)
+    parties = PartyShortSerializer(many=True, read_only=True)
     class Meta:
         model = Page
         exclude = ['user']

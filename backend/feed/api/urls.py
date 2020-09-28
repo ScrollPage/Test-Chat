@@ -22,10 +22,10 @@ like_remove = LikesCustomViewset.as_view({
     'post': 'remove'
 })
 
-urlpatterns += [
+urlpatterns += format_suffix_patterns([
     path('like/add/', like_add, name='like-add'),
     path('like/remove/', like_remove, name='like-remove'),
-]
+])
 
 r = DefaultRouter()
 r.register(r'post', PostsCustomViewset, basename='post')

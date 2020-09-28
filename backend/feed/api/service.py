@@ -7,8 +7,9 @@ from django.db.models import Count, Q, Min, Subquery, OuterRef
 from backend.service import (
     PermissionMixin, 
     LowContactSerializer, 
-    LowContactSerializer, 
-    SerializerMixin
+    SerializerMixin,
+    PermissionMixin,
+    PermissionSerializerMixin
 )
 from .exceptions import BadRequestError
 from feed.models import Post
@@ -30,10 +31,6 @@ class UsersPostsListMixin(mixins.ListModelMixin):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-class PermissionSerializerMixin(PermissionMixin, SerializerMixin):
-    '''Доп классы'''
-    pass
-
 class PermisisonSerializerPostModelViewset(PermissionSerializerMixin, 
                                        ModelViewSet, 
                                        UsersPostsListMixin):
@@ -44,31 +41,20 @@ class PermisisonSerializerPostModelViewset(PermissionSerializerMixin,
     pass
 
 class PermissionSerializerCommentModelViewset(PermissionSerializerMixin,
-                                              ModelViewSet,
-                                            ):
+                                              ModelViewSet):
     '''Создание, редактирование и удаление с доп классами'''
     pass
 
 class PermissionCreateViewset(PermissionMixin,
-                                        mixins.CreateModelMixin,
-                                        GenericViewSet,
-                                    ):
+                              mixins.CreateModelMixin,
+                              GenericViewSet):
     '''Создание с доп классами'''
     pass
 
 class CreateViewset(mixins.CreateModelMixin,
-                    GenericViewSet,
-                ):
+                    GenericViewSet):
     '''Создание с доп классами'''
     pass
-    
-
-class LowReadContactSerializer(LowContactSerializer):
-    '''Все поля для чтения, кроме slug'''
-    first_name = serializers.CharField(read_only=True)
-    last_name = serializers.CharField(read_only=True)
-    avatar = serializers.ImageField(read_only=True)
-
 
 class BaseFeedSerializer(serializers.Serializer):
     '''Базовый класс для сериализаторов'''

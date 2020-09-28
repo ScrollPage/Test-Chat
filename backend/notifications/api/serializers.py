@@ -8,4 +8,4 @@ class NotificationSerializer(serializers.ModelSerializer):
     sender = LowContactSerializer(read_only=True)
     class Meta:
         model = Notice
-        fields = ['sender', 'event']
+        fields = ['sender', 'event', 'seen']
