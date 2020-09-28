@@ -44,7 +44,7 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
 
     def get_queryset(self):
         queryset = Post.objects.all()
-        return post_annotations(self, queryset).filter(published=True)
+        return post_annotations(self, queryset).filter(published=True).order_by('-timestamp')
 
 class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     '''Все про комменты, кроме метода list'''
