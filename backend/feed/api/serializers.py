@@ -86,7 +86,7 @@ class BasePostSerialzier(AbstractPostSerializer, serializers.ModelSerializer, Us
 
     class Meta:
         model = Post
-        fields = '__all__'
+        exclude = ['published']
 
 class PostSerializer(BasePostSerialzier):
     '''Сериализация поста'''

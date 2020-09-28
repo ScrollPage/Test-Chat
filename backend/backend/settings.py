@@ -243,5 +243,4 @@ AWS_S3_HOST = 'eu-west-2'
 S3_USE_SIGV4 = True
 
 AWS_S3_FILE_OVERWRITE = False
-# AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'backend.storage_backends.MediaStorage'
