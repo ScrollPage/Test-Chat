@@ -3,15 +3,11 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
 from feed.models import Post, Like, RePost, Comment
-from backend.service import LowContactSerializer, UserValidationSerializer
+from backend.service import LowContactSerializer, UserValidationSerializer, LowReadContactSerializer
 from .service import (
     BaseFeedSerializer, 
-    LowReadContactSerializer, 
     AbstractPostSerializer, 
-    LowReadContactSerializer,
-    RepresentationUsernameAdd
 )
-from contact.models import Contact
 from .exceptions import BadRequestError
 from notifications.service import send_like_notification
 
@@ -101,7 +97,7 @@ class PostSerializer(BasePostSerialzier, RepresentationUsernameAdd):
     '''Сериализация поста'''
     class Meta:
         model = Post
-        exclude = ['parent']    
+        exclude = ['parent', 'group_owner']    
 
     def validate(self, attrs):
         data = self.context['request'].data
@@ -117,6 +113,7 @@ class PostListSerializer(BasePostSerialzier):
     parent = RecursivePostSerialzier(read_only=True)
     is_watched = serializers.BooleanField(read_only=True)
     num_reviews = serializers.IntegerField(read_only=True)
+
     
 class RePostSerializer(BasePostSerialzier, UserValidationSerializer, RepresentationUsernameAdd):
     '''Сериализация репоста'''

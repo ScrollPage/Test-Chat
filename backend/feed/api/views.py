@@ -35,16 +35,16 @@ class PostsCustomViewset(PermisisonSerializerModelViewset):
         'partial_update': UpdatePostSerializer,
         'create': PostSerializer,
     }
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated]
     permission_classes_by_action = {
-        'update': [permissions.IsAuthenticated, IsRightUser, ],
-        'partial_update': [permissions.IsAuthenticated, IsRightUser, ],
-        'destroy': [permissions.IsAuthenticated, IsRightOwnerOrUser, ],
+        'update': [permissions.IsAuthenticated, IsRightUser],
+        'partial_update': [permissions.IsAuthenticated, IsRightUser],
+        'destroy': [permissions.IsAuthenticated, IsRightOwnerOrUser],
     }
 
     def get_queryset(self):
         queryset = Post.objects.all()
-        return post_annotations(self, queryset)
+        return post_annotations(self, queryset).filter(published=True)
 
 class CommentCustomViewset(PermissionSerializerExcludeListViewset):
     '''Все про комменты, кроме метода list'''
@@ -56,20 +56,28 @@ class CommentCustomViewset(PermissionSerializerExcludeListViewset):
         'partial_update': UpdateCommentSerializer,
         'create': CreateCommentSerializer,
     }
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated]
     permission_classes_by_action = {
-        'update': [permissions.IsAuthenticated, IsRightUser, ],
-        'partial_update': [permissions.IsAuthenticated, IsRightUser, ]
+        'update': [permissions.IsAuthenticated, IsRightUser],
+        'partial_update': [permissions.IsAuthenticated, IsRightUser],
     }
+
+    def get_queryset(self):
+        if self.action == 'list':
+            post_id = self.request.query_params.get('post_id', None)
+            if not post_id:
+                raise BadRequestError('You need to input a query parameter post id in your request.')
+            return Post.objects.get(id=post_id).comments
+        return super().get_queryset()
 
 class LikesCustomViewset(PermissionCreateViewset):
     '''Создание и удаление лайков'''
     queryset = Like.objects.all()
     model = Like
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsNotLiked, ]
+    permission_classes = [permissions.IsAuthenticated, IsNotLiked]
     permission_classes_by_action = {
-        'remove': [permissions.IsAuthenticated, ],
+        'remove': [permissions.IsAuthenticated],
     }
 
     @action(detail=False, methods=['post'])
@@ -90,7 +98,7 @@ class RePostMechanicsCustomViewset(CreateViewset):
     '''Создание репоста'''
     queryset = Post.objects.all()
     serializer_class = RePostSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated]
             
     def perform_create(self, serializer):
         user = self.request.user
@@ -111,12 +119,12 @@ class RePostMechanicsCustomViewset(CreateViewset):
 class ContactFeedView(generics.ListAPIView):
     '''Новости конкретного конатка'''
     serializer_class = PostListSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
         queryset = Post.objects.filter(
-            owner__in=[friend for friend in user.friends.all()]
+            owner__in=[friend for friend in user.my_page.friends.all()]
         ).exclude(user=self.request.user)
         queryset = queryset.order_by('timestamp')
         queryset = post_annotations(self, queryset)

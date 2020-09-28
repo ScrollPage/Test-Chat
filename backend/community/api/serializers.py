@@ -7,6 +7,7 @@ from backend.service import ContactSerializer, LowContactSerializer
 from community.models import AddRequest
 from notifications.service import send_addrequest_notification
 from feed.api.exceptions import BadRequestError
+from parties.api.serializers import PartyShortSerializer
 
 class ContactFriendsSerializer(serializers.ModelSerializer):
     '''Менее развернутый контакт'''
@@ -14,6 +15,15 @@ class ContactFriendsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact 
         fields = fields = ['id', 'first_name', 'last_name', 'slug', 'avatar', 'chat_id']
+
+class PageSerializer(serializers.ModelSerializer):
+    '''Сериализация страницы пользователя'''
+    friends = ContactFriendsSerializer(many=True, read_only=True)
+    parties = PartyShortSerializer(many=True, read_only=True)
+    class Meta:
+        model = Page
+        exclude = ['user']
+        ref_name = 'community'
 
 class ContactDetailSerializer(ContactFriendsSerializer):
     '''Выводит профиль пользователя'''

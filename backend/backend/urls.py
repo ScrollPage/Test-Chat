@@ -13,6 +13,8 @@ urlpatterns = [
     path('api/v1/', include('community.api.urls')),
     path('api/v1/', include('feed.api.urls')),
     path('api/v1/', include('score.api.urls')),
+    path('api/v1/', include('notifications.api.urls')),
+    path('api/v1/', include('parties.api.urls')),
 
     path('api-auth/', include('rest_framework.urls')),
 

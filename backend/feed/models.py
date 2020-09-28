@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 
 from contact.models import Contact
+from community.models import Page
+from parties.models import Party
 
 class AbstractPost(models.Model):
     '''Абстрактный пост'''
@@ -16,18 +18,20 @@ class AbstractPost(models.Model):
     class Meta:
         abstract = True
 
-
 class Post(AbstractPost):
     '''Обычный пост на стенку или коммент к другому посту'''
     parent = models.ForeignKey(
         'self', 
         verbose_name = 'Родитель', 
-        on_delete = models.SET_NULL, 
+        on_delete = models.DO_NOTHING, 
         null = True, 
         blank = True,
         related_name = 'children'
     )
-    owner = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='my_board_posts')
+    owner = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='my_board_posts')
+    group_owner = models.ForeignKey(Party, null=True, default=None, on_delete=models.CASCADE)
+    published = models.BooleanField(default=True)
+
     class Meta:
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'

@@ -19,6 +19,10 @@ class SerializerMixin:
         except KeyError:
             return self.serializer_class
 
+class PermissionSerializerMixin(PermissionMixin, SerializerMixin):
+    '''Доп классы'''
+    pass
+
 class ContactSerializer(serializers.ModelSerializer):
     '''Сериализует пользователя'''
     class Meta:
@@ -39,3 +43,10 @@ class UserValidationSerializer(serializers.Serializer):
         if attrs['user'] !=  user:
             raise ForbiddenError('You are the wrong user.')
         return attrs
+
+
+class LowReadContactSerializer(LowContactSerializer):
+    '''Все поля для чтения, кроме slug'''
+    first_name = serializers.CharField(read_only=True)
+    last_name = serializers.CharField(read_only=True)
+    avatar = serializers.ImageField(read_only=True)

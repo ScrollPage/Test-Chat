@@ -47,3 +47,22 @@ def filter_by_query_name(query_name, queryset):
                 Q(first_name__icontains=term) | Q(last_name__icontains=term)
             )
     return queryset
+
+def friend_manipulation(sender_id, receiver_id, add=True):
+    try:
+        sender_contact = Contact.objects.get(id=sender_id).prefetch_related(
+            Prefetch('my_page', to_attr='sender_page')
+        )
+        receiver_contact = Contact.objects.get(id=receiver_id).prefetch_related(
+            Prefetch('my_page', to_attr='receiver_page')
+        )
+    except Contact.DoesNotExist:
+        raise BadRequestError('User not found.')
+    if add:
+        sender_contact.sender_page.friends.add(receiver_contact)
+        receiver_contact.receiver_page.friends.add(sender_contact)
+    else:
+        sender_contact.sender_page.friends.remove(receiver_contact)
+        receiver_contact.receiver_page.friends.remove(sender_contact)
+    sender_contact.sender_page.save()
+    receiver_contact.receiver_page.save()
