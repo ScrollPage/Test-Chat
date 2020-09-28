@@ -124,7 +124,7 @@ class ContactFeedView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         queryset = Post.objects.filter(
-            owner__in=[friend for friend in user.friends.all()]
+            owner__in=[friend for friend in user.my_page.friends.all()]
         ).exclude(user=self.request.user)
         queryset = queryset.order_by('timestamp')
         queryset = post_annotations(self, queryset)

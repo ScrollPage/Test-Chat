@@ -5,7 +5,7 @@ from parties.models import Party
 from .service import PageSerializer
 from feed.api.exceptions import BadRequestError
 
-class PartyListSerializer(serializers.ModelSerializer):
+class PartyDetailSerializer(serializers.ModelSerializer):
     '''Сериализация списка групп'''
     staff = LowReadContactSerializer(many=True, read_only=True)
     members = PageSerializer(many=True, read_only=True)
@@ -29,6 +29,6 @@ class PartyShortSerializer(serializers.ModelSerializer):
         model = Party
         fields = ['name', 'image', 'slug', 'info']
 
-class JoinAndLeaveSerializer(serializers.Serializer):
+class IntegerFieldSerializer(serializers.Serializer):
     '''Вход и выход из группы'''
-    group_id = serializers.IntegerField(required=True)
+    some_id = serializers.IntegerField(required=True)

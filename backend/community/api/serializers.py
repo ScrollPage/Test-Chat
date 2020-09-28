@@ -29,6 +29,7 @@ class PageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         exclude = ['user']
+        ref_name = 'community'
 
 class ContactDetailSerializer(ContactFriendsSerializer):
     '''Выводит профиль пользователя'''

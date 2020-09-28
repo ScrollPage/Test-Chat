@@ -16,9 +16,19 @@ group_leave = PartyViewSet.as_view({
     'post': 'leave'
 })
 
+add_staff = PartyViewSet.as_view({
+    'post': 'add_staff'
+})
+
+remove_staff = PartyViewSet.as_view({
+    'post': 'remove_staff'
+})
+
 urlpatterns += format_suffix_patterns([
     path('group/join/', group_join, name='group-join'),
     path('group/leave/', group_leave, name='group-leave'),
+    path('group/<int:pk>/add/', add_staff, name='staff-add'),
+    path('group/<int:pk>/remove/', remove_staff, name='staff-remove'),
 ])
 
 r = DefaultRouter()
