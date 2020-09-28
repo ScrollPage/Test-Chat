@@ -6,6 +6,12 @@ import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import Search from '@/components/UI/Search';
 import Friend from '@/components/Friends/Friend';
+import { IUser } from '@/types/user';
+
+interface IGlobalSearch {
+  people: any;
+  user: IUser
+}
 
 export default function GlobalSearch({ people, user }) {
   const { data } = useSWR(`/api/v1/people/`, { initialData: people });

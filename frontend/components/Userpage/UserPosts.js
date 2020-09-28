@@ -5,10 +5,13 @@ import Modal from '@/components/Modal/Modal';
 import { addLike, removeLike } from '@/store/actions/post';
 import { addPost, rePost, deletePost } from '@/store/actions/post';
 import { useDispatch } from 'react-redux';
-import { mutate, trigger } from 'swr';
+import useSWR, { mutate } from 'swr';
 import DeletePostModal from '@/components/Modal/DeletePostModal';
 
-const UserPosts = ({ posts, pageUserId, user }) => {
+const UserPosts = ({ serverPosts, pageUserId, user }) => {
+
+    const { data: posts, mutate: postsMutate } = useSWR(`/api/v1/post/?id=${pageUserId}`, { initialData: serverPosts });
+
     const dispatch = useDispatch();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +19,7 @@ const UserPosts = ({ posts, pageUserId, user }) => {
 
     const [isDeletePost, setIsDeletePost] = useState(false);
     const [deletePostId, setDeletePostId] = useState(null);
-    
+
     const setIsOpenHandler = (parent) => {
         setIsDeletePost(false);
         setIsOpen(true);
@@ -43,52 +46,52 @@ const UserPosts = ({ posts, pageUserId, user }) => {
         }
     }
 
-    const addPostMutate = (isRepost, newPost, imageUrl, image) => {
-        const url = `/api/v1/post/?id=${pageUserId}`;
-        if (newPost.trim() !== '' || imageUrl) {
-            let newPosts;
-            let addNewPost = {
-                id: 0,
-                image: imageUrl,
-                is_liked: false,
-                is_watched: false,
-                num_likes: 0,
-                num_reposts: 0,
-                num_reviews: 0,
-                parent: null,
-                text: newPost,
-                user: {
-                    id: user.userId,
-                    first_name: user.firstName,
-                    last_name: user.lastName
-                }
-            }
-            if (isRepost) {
-                if (parent.user.id == user.userId) {
-                    addNewPost.parent = {
-                        id: parent.id,
-                        text: parent.text,
-                        image: parent.image,
-                        user: {
-                            id: parent.user.id,
-                            first_name: parent.user.first_name,
-                            last_name: parent.user.last_name
-                        }
-                    }
-                    newPosts = [addNewPost, ...posts];
-                    mutate(url, newPosts);
-                }
-                dispatch(rePost(newPost, image, parent.id));
-                setIsOpen(false);
-                trigger(url);
-            } else {
-                newPosts = [addNewPost, ...posts];
-                mutate(url, newPosts);
-                dispatch(addPost(newPost, image, pageUserId));
-                trigger(url);
+    const addPostMutate = (isRepost, newPost, mutatedImage, image) => {
+        const triggerUrl = `/api/v1/post/?id=${pageUserId}`;
+        let newPosts;
+        let addNewPost = {
+            id: 0,
+            image: mutatedImage,
+            is_liked: false,
+            is_watched: false,
+            num_likes: 0,
+            num_reposts: 0,
+            num_reviews: 0,
+            parent: null,
+            text: newPost,
+            user: {
+                id: user.userId,
+                first_name: user.firstName,
+                last_name: user.lastName
             }
         }
+        if (isRepost) {
+            if (pageUserId == user.userId) {
+                addNewPost.parent = {
+                    id: parent.id,
+                    text: parent.text,
+                    image: parent.image,
+                    user: {
+                        id: parent.user.id,
+                        first_name: parent.user.first_name,
+                        last_name: parent.user.last_name
+                    }
+                }
+                newPosts = [addNewPost, ...posts];
+                postsMutate(newPosts, false);
+                console.log('repost mutate')
+            }
+            dispatch(rePost(newPost, image, parent.id, triggerUrl));
+            setIsOpen(false);
+        } else {
+            newPosts = [addNewPost, ...posts];
+            postsMutate(newPosts, false);
+            console.log('post mutate')
+            dispatch(addPost(newPost, image, pageUserId, triggerUrl));
+        }
     }
+
+    console.log(posts, "asdsd");
 
     const deletePostMutate = () => {
         setIsOpen(false);
@@ -131,7 +134,7 @@ const UserPosts = ({ posts, pageUserId, user }) => {
                 isRepost={false}
             />
             <div style={{ marginTop: '20px' }}>
-                {posts.length === 0 ? <h2>Нет постов</h2> : renderPosts(posts)}
+                {posts ? posts.length === 0 ? <h2>Нет постов</h2> : renderPosts(posts) : 'Загрузка'}
             </div>
         </>
     );

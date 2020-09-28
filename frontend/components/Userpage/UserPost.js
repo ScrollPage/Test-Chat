@@ -5,13 +5,9 @@ import Link from 'next/link';
 import Like from '@/components/UI/Like';
 import Repost from '@/components/UI/Repost';
 import LinkAvatar from '@/components/UI/LinkAvatar';
+import { renderTimestamp } from '@/utils/index';
 
 const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDeletePostHandler }) => {
-
-    const cropImage = (imgUrl) => {
-        return imgUrl.slice(0, imgUrl.indexOf('?'));
-    }
-
     return (
         <StyledUserPost>
             {(post.owner == user.userId || post.user.id == user.userId) && (
@@ -33,7 +29,7 @@ const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDelete
                 </div>
                 <div>
                     <p>{post.user.first_name} {post.user.last_name}</p>
-                    <small>только что</small>
+                    <small>{renderTimestamp(post.timestamp)}</small>
                 </div>
             </div>
             <div className="user-post__body">
@@ -41,7 +37,7 @@ const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDelete
                     <div>{post.text}</div>
                 )}
                 {post.image && (<div>
-                    <img src={cropImage(post.image)} alt="" />
+                    <img src={post.image} alt="" />
                 </div>)}
             </div>
             {post.parent && (
@@ -58,7 +54,7 @@ const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDelete
                         </div>
                         <div>
                             <p>{post.parent.user.first_name} {post.parent.user.last_name}</p>
-                            <small>только что</small>
+                            <small>{renderTimestamp(post.parent.timestamp)}</small>
                         </div>
                     </div>
                     <div className="user-post__body">
@@ -66,7 +62,7 @@ const UserPost = ({ post, setIsOpenHandler, likeMutate, index, user, setIsDelete
                             <div>{post.parent.text}</div>
                         )}
                         {post.parent.image && (<div>
-                            <img src={cropImage(post.parent.image)} alt="" />
+                            <img src={post.parent.image} alt="" />
                         </div>)}
                     </div>
                 </>
@@ -142,12 +138,11 @@ const StyledUserPost = styled.div`
         display: flex;
         flex-direction: column;
         > div {
-            &:last-of-type {
-                margin-top: 12px;
-                img {
-                    max-width: 100%;
-                }
+            margin-top: 12px;
+            img {
+                max-width: 100%;
             }
+
         }
     }
     .user-post__footer {

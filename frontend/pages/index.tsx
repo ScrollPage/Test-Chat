@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import Link from 'next/link';
 import * as Yup from 'yup';
@@ -16,7 +15,18 @@ const validationSchema = Yup.object().shape({
     password: Yup.string().required('Введите пароль'),
 });
 
-const errorMessege = (touched, messege) => {
+const validateHandler = (touched: boolean | undefined, message: string | undefined) => {
+    if (!touched) {
+        return '';
+    }
+    if (message) {
+        return 'error';
+    } else {
+        return 'success';
+    }
+};
+
+const errorMessege = (touched: boolean | undefined, messege: string | undefined) => {
     if (!touched) {
         return;
     }
@@ -27,9 +37,6 @@ const errorMessege = (touched, messege) => {
 
 export default function Login() {
     const dispatch = useDispatch();
-
-    const { push } = useRouter();
-
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -68,13 +75,7 @@ export default function Login() {
                         name="email"
                         hasFeedback
                         help={errorMessege(touched.email, errors.email)}
-                        validateStatus={
-                            !touched.email
-                                ? null
-                                : errors.email
-                                ? 'error'
-                                : 'success'
-                        }
+                        validateStatus={validateHandler(touched.email, errors.email)}
                     >
                         <Input
                             id="email"
@@ -91,13 +92,7 @@ export default function Login() {
                         name="password"
                         hasFeedback
                         help={errorMessege(touched.password, errors.password)}
-                        validateStatus={
-                            !touched.password
-                                ? null
-                                : errors.password
-                                ? 'error'
-                                : 'success'
-                        }
+                        validateStatus={validateHandler(touched.password, errors.password)}
                     >
                         <Input.Password
                             id="log__password"

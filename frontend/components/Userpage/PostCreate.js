@@ -6,15 +6,17 @@ import { Input, Button } from 'antd';
 const PostCreate = ({ isRepost, addPostMutate }) => {
 
   const [newPost, setNewPost] = useState('');
-  const [imageUrl, setImageUrl] = useState(null);
-  const [image, setImage]  = useState(null);
+  const [mutatedImage, setMutatedImage] = useState(null);
+  const [image, setImage] = useState(null);
 
   const handleSubmit = event => {
     event.preventDefault();
-    console.log(imageUrl);
-    addPostMutate(isRepost, newPost, imageUrl, image);
-    setNewPost('');
-    setImageUrl(null);
+    if (newPost.trim() !== '' || mutatedImage) {
+      addPostMutate(isRepost, newPost, mutatedImage, image);
+      setNewPost('');
+      setMutatedImage(null);
+      setImage(null);
+    }
   };
 
   return (
@@ -35,8 +37,8 @@ const PostCreate = ({ isRepost, addPostMutate }) => {
             </div>
             <div>
               <FileUpload
-                imageUrl={imageUrl}
-                setImageUrl={setImageUrl}
+                mutatedImage={mutatedImage}
+                setMutatedImage={setMutatedImage}
                 setImage={setImage}
               />
             </div>

@@ -2,8 +2,9 @@ import { ThunkType } from '@/types/thunk';
 import axios from 'axios';
 import Cookie from 'js-cookie';
 import { show } from './alert';
+import { trigger } from 'swr';
 
-export const addPost = (text: string, image: any, pageUserId: number): ThunkType => async dispatch => {
+export const addPost = (text: string, image: any, pageUserId: number, triggerUrl: string): ThunkType => async dispatch => {
     let form_data = new FormData();
     if (image) {
         form_data.append('image', image, image.name);
@@ -16,9 +17,11 @@ export const addPost = (text: string, image: any, pageUserId: number): ThunkType
         .post('/api/v1/post/', form_data)
         .then(res => {
             dispatch(show('Пост успешно добавлен!', 'success'));
+            trigger(triggerUrl);
         })
         .catch(err => {
             dispatch(show('Ошибка в добавлении поста!', 'warning'));
+            trigger(triggerUrl);
         });
 };
 
@@ -33,7 +36,7 @@ export const deletePost = (postId: number): ThunkType => async dispatch => {
         });
 };
 
-export const rePost = (text: string, image: any, parent: number): ThunkType => async dispatch => {
+export const rePost = (text: string, image: any, parent: number, triggerUrl: string): ThunkType => async dispatch => {
     let form_data = new FormData();
     if (image) {
         form_data.append('image', image, image.name);
@@ -47,9 +50,11 @@ export const rePost = (text: string, image: any, parent: number): ThunkType => a
         .post('/api/v1/repost/', form_data)
         .then(res => {
             dispatch(show('Вы успешно репостнули пост!', 'success'));
+            trigger(triggerUrl);
         })
         .catch(err => {
             dispatch(show('Ошибка в репосте поста!', 'warning'));
+            trigger(triggerUrl);
         });
 };
 

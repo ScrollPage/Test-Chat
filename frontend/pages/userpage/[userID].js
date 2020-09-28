@@ -13,10 +13,6 @@ export default function Teams({ contact, pageUserId, posts, user }) {
 
     const { data } = useSWR(`/api/v1/contact/${pageUserId}/`, { initialData: contact });
 
-    const { data: newPosts } = useSWR(`/api/v1/post/?id=${pageUserId}`, { initialData: posts });
-
-    console.log(newPosts);
-
     return (
         <PrivateLayout user={user}>
             <StyledUser>
@@ -34,7 +30,7 @@ export default function Teams({ contact, pageUserId, posts, user }) {
                 </div>
                 <div className="user-info">
                     <UserInfo data={data} />
-                    <UserPosts posts={newPosts} pageUserId={pageUserId} user={user}/>
+                    <UserPosts serverPosts={posts} pageUserId={pageUserId} user={user}/>
                 </div>
             </StyledUser>
         </PrivateLayout>
