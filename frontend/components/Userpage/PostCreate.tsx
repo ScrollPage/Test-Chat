@@ -3,18 +3,25 @@ import styled from 'styled-components';
 import FileUpload from '@/components/UI/FileUpload';
 import { Input, Button } from 'antd';
 
-const PostCreate = ({ isRepost, addPostMutate }) => {
+interface IPostCreate {
+  isRepost: boolean;
+  addPostMutate: (isRepost: boolean, newPost: string, mutatedImage: any, image: any) => void;
+} 
+
+const PostCreate: React.FC<IPostCreate> = ({ isRepost, addPostMutate }) => {
 
   const [newPost, setNewPost] = useState('');
-  const [imageUrl, setImageUrl] = useState(null);
-  const [image, setImage]  = useState(null);
+  const [mutatedImage, setMutatedImage] = useState(null);
+  const [image, setImage] = useState(null);
 
-  const handleSubmit = event => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(imageUrl);
-    addPostMutate(isRepost, newPost, imageUrl, image);
-    setNewPost('');
-    setImageUrl(null);
+    if (newPost.trim() !== '' || mutatedImage) {
+      addPostMutate(isRepost, newPost, mutatedImage, image);
+      setNewPost('');
+      setMutatedImage(null);
+      setImage(null);
+    }
   };
 
   return (
@@ -26,7 +33,6 @@ const PostCreate = ({ isRepost, addPostMutate }) => {
               <Input.TextArea
                 id="create_post"
                 name="create_post"
-                size="large"
                 placeholder={isRepost ? 'Ваше сообщение' : 'Что у вас нового?'}
                 value={newPost}
                 onChange={e => setNewPost(e.target.value)}
@@ -35,8 +41,8 @@ const PostCreate = ({ isRepost, addPostMutate }) => {
             </div>
             <div>
               <FileUpload
-                imageUrl={imageUrl}
-                setImageUrl={setImageUrl}
+                mutatedImage={mutatedImage}
+                setMutatedImage={setMutatedImage}
                 setImage={setImage}
               />
             </div>

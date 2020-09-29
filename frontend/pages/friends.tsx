@@ -6,11 +6,21 @@ import Friend from '@/components/Friends/Friend';
 import SearchDialog from '@/components/Dialogs/SearchDialog';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { getUserFromServer } from '@/utils/index';
+import { GetServerSideProps } from 'next';
+import { IGlobalUser } from '@/types/people';
+import { IUser } from '@/types/user';
 
-export default function Friends({ friends, user }) {
+interface IFriends {
+    friends: Array<IGlobalUser>;
+    user: IUser;
+}
+
+export default function Friends({ friends, user }: IFriends) {
     const { data } = useSWR(`/api/v1/friends/`, { initialData: friends });
 
-    const renderFriends = friends =>
+    console.log(data);
+
+    const renderFriends = (friends: Array<IGlobalUser>) =>
         friends.map(friend => (
             <Friend
                 key={`friend__key__${friend.id}`}
@@ -38,7 +48,7 @@ export default function Friends({ friends, user }) {
     );
 }
 
-export const getServerSideProps = async ctx => {
+export const getServerSideProps: GetServerSideProps<IFriends> = async (ctx) => {
     const token = cookies(ctx)?.token || null;
 
     axios.defaults.headers = {
@@ -50,11 +60,12 @@ export const getServerSideProps = async ctx => {
         return {
             props: {
                 friends: [],
+                user: getUserFromServer(ctx)
             },
         };
     }
 
-    let friends = [];
+    let friends: Array<IGlobalUser> = [];
 
     await axios
         .get(`/api/v1/friends/`)

@@ -1,19 +1,24 @@
+import { IContact } from '@/types/contact';
 import React from 'react';
 import styled from 'styled-components';
 
-const UserInfo = ({ data }) => {
+interface IUserInfo {
+    contact: IContact;
+}
+
+const UserInfo: React.FC<IUserInfo> = ({ contact }) => {
     return (
         <StyledUserInfo>
             <div>
-                <h1>{`${data.first_name} ${data.last_name}`}</h1>
+                <h1>{`${contact.first_name} ${contact.last_name}`}</h1>
                 <small>
-                    {data.status === '' ? 'У вас нет статуса' : data.status}
+                    {contact.info.status === '' ? 'У вас нет статуса' : contact.info.status}
                 </small>
                 <hr />
                 <h4>Подробная информация: </h4>
                 <ul>
-                    <li>E-mail: {data.email}</li>
-                    <li>Номер телефона: {data.phone_number}</li>
+                    <li>E-mail: {contact.email}</li>
+                    <li>Номер телефона: {contact.phone_number}</li>
                 </ul>
             </div>
         </StyledUserInfo>

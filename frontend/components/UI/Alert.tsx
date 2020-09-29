@@ -8,7 +8,7 @@ import { Alert as AntdAlert } from 'antd';
 import { hide } from '@/store/actions/alert';
 import { getAlertText, getAlertType } from '../../store/selectors';
 
-const Alert = () => {
+const Alert: React.FC = () => {
     const text = useSelector(getAlertText);
     const type = useSelector(getAlertType);
     

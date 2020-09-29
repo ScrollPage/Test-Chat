@@ -13,21 +13,22 @@ import Navbar from './Navbar';
 import Container from '@/styles/Container';
 
 import { IUser } from '@/types/user';
+import { IMessage, IMessages } from '@/types/message';
 
-// interface IPrivateLayout {
-//     children: React.ReactNode;
-//     user: IUser;
-// } 
+interface IPrivateLayout {
+    children: React.ReactNode;
+    user: IUser;
+} 
 
-const PrivateLayout = ({ children, user }) => {
+const PrivateLayout: React.FC<IPrivateLayout> = ({ children, user }) => {
 
     const dispatch = useDispatch();
 
-    const setMessagesHandler = messages => {
+    const setMessagesHandler = (messages: IMessages) => {
         dispatch(setMessages(messages));
     };
 
-    const addMessageHandler = message => {
+    const addMessageHandler = (message: IMessage) => {
         dispatch(addMessage(message));
     };
 
@@ -39,22 +40,24 @@ const PrivateLayout = ({ children, user }) => {
     useEffect(() => {
         const pusher = new Pusher('3beceac9a6f0281fb76b', {
             cluster: 'eu',
+            // @ts-ignore: Unreachable code error
             encrypted: true
         });
         const channel = pusher.subscribe(`notifications${user?.userId}`);
-        channel.bind('new_request', function (data) {
+
+        channel.bind('new_request', function (data: any) {
             show(`${data.name} хочет добавить вас в друзья`, 'success');
             alert(`${data.name} хочет добавить вас в друзья`);
         });
-        channel.bind('new_like', function (data) {
+        channel.bind('new_like', function (data: any) {
             show(`${data.name} оценил вашу запись`, 'success');
             alert(`${data.name} оценил вашу запись`);
         });
-        channel.bind('new_message', function (data) {
+        channel.bind('new_message', function (data: any) {
             show(`${data.name} отправил вам сообщение`, 'success');
             alert(`${data.name} отправил вам сообщение`);
         });
-        channel.bind('new_friend', function (data) {
+        channel.bind('new_friend', function (data: any) {
             show(`${data.name} принял вашу заявку в друзья`, 'success');
             alert(`${data.name} принял вашу заявку в друзья`);
         });

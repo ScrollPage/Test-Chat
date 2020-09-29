@@ -3,7 +3,7 @@ import { AlertActionTypes } from '../actions/alert';
 
 const initialState = {
     text: null as string | null,
-    typeOf: 'success'
+    typeOf: 'success' as "success" | "info" | "warning" | "error" | undefined
 };
 
 type InititalStateType = typeof initialState;

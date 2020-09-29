@@ -48,7 +48,7 @@ const MyApp = ({ Component, pageProps }) => {
             <>
                 <GlobalStyle />
                 <SWRConfig
-                    value={{ dedupingInterval: 5000, fetcher: url => axios(url).then(r => r.data) }}
+                    value={{ dedupingInterval: 1000, fetcher: url => axios(url).then(r => r.data) }}
                 >
                     <Provider store={store}>
                         <Alert />

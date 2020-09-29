@@ -25,20 +25,10 @@ export const recieveFriend = (friendId: number): ThunkType => async dispatch => 
             receiver: Number(Cookie.get('userId')),
         })
         .then(res => {
-            dispatch(
-                show(
-                    'Вы успешно добавили в друзья!',
-                    'success'
-                )
-            );
+            dispatch(show('Вы успешно добавили в друзья!', 'success'));
         })
         .catch(err => {
-            dispatch(
-                show(
-                    'Ошибка добавления в друзья!',
-                    'warning'
-                )
-            );
+            dispatch(show('Ошибка добавления в друзья!', 'warning'));
         });
 };
 
@@ -49,17 +39,10 @@ export const removeAddFriend = (friendId: number): ThunkType => async dispatch =
             receiver: friendId,
         })
         .then(res => {
-            dispatch(
-                show(
-                    'Вы успешно отменили запрос о добавлении в друзья!',
-                    'success'
-                )
-            );
+            dispatch(show('Вы успешно отменили запрос о добавлении в друзья!', 'success'));
         })
         .catch(err => {
-            dispatch(
-                show('Ошибка отмены запроса о добавлении в друзья!', 'warning')
-            );
+            dispatch(show('Ошибка отмены запроса о добавлении в друзья!', 'warning'));
         });
 };
 

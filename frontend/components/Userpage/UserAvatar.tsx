@@ -15,46 +15,44 @@ import {
     createChat,
     recieveFriend
 } from '@/store/actions/friend';
+import { IContact } from '@/types/contact';
+import { IUser } from '@/types/user';
+import { show } from '@/store/actions/alert';
 
-const UserAvatar = ({ data, pageUserId, chatId, user }) => {
+interface IUserAvatar {
+    contact: IContact;
+    pageUserId: number;
+    chatId: number | null;
+    user: IUser;
+}
+
+const UserAvatar: React.FC<IUserAvatar> = ({ contact, pageUserId, chatId, user }) => {
     const dispatch = useDispatch();
 
     const { push } = useRouter();
 
-    const addFriendHandler = () => {
-        mutate(`/api/v1/contact/${pageUserId}/`, { ...data, is_sent: true }, false);
+    const addFriendHandler = (): void => {
+        mutate(`/api/v1/contact/${pageUserId}/`, { ...contact, is_sent: true }, false);
         dispatch(addFriend(pageUserId));
     };
 
-    const removeAddFriendHandler = () => {
-        mutate(
-            `/api/v1/contact/${pageUserId}/`,
-            { ...data, is_sent: false },
-            false
-        );
+    const removeAddFriendHandler = (): void => {
+        mutate(`/api/v1/contact/${pageUserId}/`, { ...contact, is_sent: false }, false);
         dispatch(removeAddFriend(pageUserId));
     };
 
-    const removeFriendHandler = () => {
-        mutate(
-            `/api/v1/contact/${pageUserId}/`,
-            { ...data, is_friend: false, is_sent: false },
-            false
-        );
+    const removeFriendHandler = (): void => {
+        mutate(`/api/v1/contact/${pageUserId}/`, { ...contact, is_friend: false, is_sent: false }, false);
         dispatch(removeFriend(pageUserId));
     };
 
     const recieveFriendHandler = () => {
-        mutate(
-            `/api/v1/contact/${pageUserId}/`,
-            { ...data, is_friend: true, is_sent: false, is_sent_to_you: false },
-            false
-        );
+        mutate(`/api/v1/contact/${pageUserId}/`, { ...contact, is_friend: true, is_sent: false, is_sent_to_you: false }, false);
         dispatch(recieveFriend(pageUserId));
     }
 
     const chatIsNull = () => {
-        if (chatId === null) {
+        if (!chatId) {
             dispatch(createChat(pageUserId));
         } else {
             push('/dialogs/[chatID]', `/dialogs/${chatId}`, { shallow: true });
@@ -70,7 +68,7 @@ const UserAvatar = ({ data, pageUserId, chatId, user }) => {
                     shape="square"
                     icon={<UserOutlined />}
                 />
-                {user.userId !== Number(pageUserId) && (
+                {user.userId !== pageUserId && (
                     <Button
                         onClick={chatIsNull}
                         type="primary"
@@ -79,8 +77,8 @@ const UserAvatar = ({ data, pageUserId, chatId, user }) => {
                         Написать сообщение
                     </Button>
                 )}
-                {user.userId !== Number(pageUserId) ? (
-                    data.is_friend ? (
+                {user.userId !== pageUserId ? (
+                    contact.is_friend ? (
                         <Button
                             onClick={() => removeFriendHandler()}
                             style={{ width: '100%', marginTop: '10px' }}
@@ -89,7 +87,7 @@ const UserAvatar = ({ data, pageUserId, chatId, user }) => {
                         >
                             Удалить из друзей
                         </Button>
-                    ) : data.is_sent ? (
+                    ) : contact.is_sent ? (
                         <Button
                             onClick={() => removeAddFriendHandler()}
                             style={{ width: '100%', marginTop: '10px' }}
@@ -99,7 +97,7 @@ const UserAvatar = ({ data, pageUserId, chatId, user }) => {
                         >
                             Отменить запрос
                         </Button>
-                    ) : data.is_sent_to_you ? (
+                    ) : contact.is_sent_to_you ? (
                         <Button
                             onClick={() => recieveFriendHandler()}
                             style={{ width: '100%', marginTop: '10px' }}
@@ -120,10 +118,7 @@ const UserAvatar = ({ data, pageUserId, chatId, user }) => {
                     )
                 ) : (
                     <Button
-                        onClick={() =>
-                            push({ pathname: '/account-change' }, undefined, {
-                                shallow: true,
-                            })}
+                        onClick={() => push({ pathname: '/account-change' }, undefined, { shallow: true })}
                         style={{ width: '100%', marginTop: '10px' }}
                         type="primary"
                         ghost
