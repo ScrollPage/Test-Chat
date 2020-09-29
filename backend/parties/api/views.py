@@ -69,6 +69,8 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
     def add_staff(self, request, *args, **kwargs):
         self.get_serializer(data=request.data).is_valid(raise_exception=True)
         user, group = get_user_and_group(request, kwargs)
+        if user == group.admin:
+            raise ForbiddenError('You are an admin.')
         group.staff.add(user)
         return Response(status=status.HTTP_200_OK)
 
@@ -138,7 +140,6 @@ class GroupPostsViewset(PartyPermissionSerializerEmptyViewset):
         ).order_by('-timestamp')
         serializer = self.get_serializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
-
 
     @action(detail=False, methods=['get'])
     def published_list(self, request, *args, **kwargs):
