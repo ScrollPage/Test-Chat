@@ -24,7 +24,7 @@ from .permissions import (
 from .service import (
     RetrieveUpdateDestroyPermissionViewset,
     ListCreatePermissionViewset,
-    ModelViewSetPermission,
+    ViewSetPermission,
     filter_by_query_name,
     friend_manipulation
 )
@@ -36,10 +36,11 @@ from notifications.service import new_friend_notification
 class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
     '''Обзор, обновление и удаление контакта'''
     serializer_class = ContactDetailSerializer
-    permission_classes = [permissions.IsAuthenticated, IsRightUser]
+    permission_classes = [IsRightUser]
     permission_classes_by_action = {
-        'retrieve': [permissions.IsAuthenticated]
+        'retrieve': []
     }
+    mass_permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         pk = int(self.kwargs['pk'])
@@ -76,16 +77,16 @@ class AddRequestCustomViewset(ListCreatePermissionViewset):
     '''Создание и удаление запроса на добавление'''
     queryset = AddRequest.objects.all()
     serializer_class = AddRequestSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = []
     permission_classes_by_action = {
         'create': [
-            permissions.IsAuthenticated, 
             IsSender, 
             NotCurrentAndNotFriends, 
             IsNotSent, 
         ],
-        'destroy': [permissions.IsAuthenticated, IsSender]
+        'destroy': [IsSender]
     }
+    mass_permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):
@@ -102,7 +103,7 @@ class AddRequestCustomViewset(ListCreatePermissionViewset):
         add_request.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class FriendPermissionViewset(ModelViewSetPermission):
+class FriendPermissionViewset(ViewSetPermission):
     '''Добавление и удаление друзей'''
     serializer_class = FriendActionsSerializer
     permission_classes = []
@@ -110,6 +111,7 @@ class FriendPermissionViewset(ModelViewSetPermission):
         'add': [IsReceiver],
         'remove': [IsFriends, OneOfUsers],
     }
+    mass_permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=False, methods=['post'])
     def add(self, request, *args, **kwargs):
@@ -155,7 +157,6 @@ class ContactFriendsView(generics.ListAPIView):
         queryset = filter_by_query_name(query_name, queryset)
 
         if id == self.request.user.id or not id:
-            print('asdasdasd')
             queryset = queryset.annotate(
                 chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user))
             )
@@ -169,7 +170,12 @@ class SearchPeopleView(generics.ListAPIView):
     def get_queryset(self):
         queryset = Contact.objects.exclude(id=self.request.user.id)
         query_name = self.request.query_params.get('query_name', None)
-        queryset = filter_by_query_name(query_name, queryset)
+        queryset = filter_by_query_name(
+            query_name, 
+            queryset
+        ).annotate(
+            chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user))
+        )
         return queryset.filter(is_active=True)
 
 class UserInfoUpdate(generics.UpdateAPIView, generics.RetrieveAPIView):

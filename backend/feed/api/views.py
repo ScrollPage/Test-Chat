@@ -35,12 +35,13 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
         'partial_update': UpdatePostSerializer,
         'create': PostSerializer,
     }
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = []
     permission_classes_by_action = {
-        'update': [permissions.IsAuthenticated, IsRightUser],
-        'partial_update': [permissions.IsAuthenticated, IsRightUser],
-        'destroy': [permissions.IsAuthenticated, IsRightOwnerOrUser],
+        'update': [IsRightUser],
+        'partial_update': [IsRightUser],
+        'destroy': [IsRightOwnerOrUser],
     }
+    mass_permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Post.objects.all()
@@ -56,11 +57,12 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
         'partial_update': UpdateCommentSerializer,
         'create': CreateCommentSerializer,
     }
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = []
     permission_classes_by_action = {
-        'update': [permissions.IsAuthenticated, IsRightUser],
-        'partial_update': [permissions.IsAuthenticated, IsRightUser],
+        'update': [IsRightUser],
+        'partial_update': [IsRightUser],
     }
+    mass_permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         if self.action == 'list':
@@ -75,10 +77,11 @@ class LikesCustomViewset(PermissionCreateViewset):
     queryset = Like.objects.all()
     model = Like
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsNotLiked]
+    permission_classes = [IsNotLiked]
     permission_classes_by_action = {
-        'remove': [permissions.IsAuthenticated],
+        'remove': [],
     }
+    mass_permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):

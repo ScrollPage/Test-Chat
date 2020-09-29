@@ -39,7 +39,7 @@ class ListCreatePermissionViewset(PermissionMixin,
     '''Глобальный обзорб создание'''
     pass
     
-class ModelViewSetPermission(PermissionMixin, ModelViewSet):
+class ViewSetPermission(PermissionMixin, GenericViewSet):
     '''ModelViewSet and PermissionMixin'''
     pass
 

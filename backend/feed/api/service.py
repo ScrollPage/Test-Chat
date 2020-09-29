@@ -76,4 +76,6 @@ def post_annotations(self, queryset):
             is_watched=Count('reviews', filter=Q(reviews__user=self.request.user))
         ).annotate(
             num_reviews=Count('reviews', distinct=True)
+        ).annotate(
+            num_comments=Count('comments', distinct=True)
         )

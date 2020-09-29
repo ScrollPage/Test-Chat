@@ -27,20 +27,20 @@ class NotCurrentAndNotFriends(BasePermission):
         receiver_page = get_object_or_404(Contact, id=receiver_id).my_page
         return all([
             (sender_page!=receiver_page),
-            (receiver_page not in sender_page.friends.all()),
-            (sender_page not in receiver_page.friends.all()),
+            (receiver_page.user not in sender_page.friends.all()),
+            (sender_page.user not in receiver_page.friends.all()),
         ])
 
 class IsSender(BasePermission):
     '''Отправитель ли'''
     def has_permission(self, request, view):
-        data = request.data
-        try:
+        if request.method == 'POST':
+            view.get_serializer(data=request.data).is_valid(raise_exception=True)
+            data = request.data
             sender_id = data['sender']
-        except KeyError:
-            return True
-        sender_contact = get_object_or_404(Contact, id=sender_id)
-        return bool(request.user==sender_contact)
+            sender_contact = get_object_or_404(Contact, id=sender_id)
+            return request.user==sender_contact
+        return True
 
 class IsNotSent(BasePermission):
     '''Запрос еще не был отправлен'''

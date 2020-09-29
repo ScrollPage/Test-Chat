@@ -66,9 +66,11 @@ class AddRequestSerializer(serializers.ModelSerializer):
         exclude = ['id']
 
     def create(self, validated_data):
-        receiver = validated_data.get('receiver', None)
-        sender = validated_data.get('sender', None)
-        if sender and receiver:
-            send_addrequest_notification(sender, receiver)
-            return super().create(validated_data)
+        send_addrequest_notification(sender, receiver)
+        return super().create(validated_data)
+
+    def validate(self, data):
+        if data.get('receiver', None) and data.get('sender', None):
+            return super().validate(data)
         raise BadRequestError('You need sender and receiver.')
+        

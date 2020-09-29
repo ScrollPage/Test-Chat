@@ -2,14 +2,19 @@ from rest_framework import serializers
 
 from contact.models import Contact
 from .exceptions import ForbiddenError
+from parties.models import Party
 
 class PermissionMixin:
     '''Mixin permission для action'''
     def get_permissions(self):
         try:
-            return [permission() for permission in self.permission_classes_by_action[self.action]]
+            return [permission() for permission in self.permission_classes_by_action[self.action] 
+                + self.mass_permission_classes
+            ] 
         except KeyError:
-            return [permission() for permission in self.permission_classes]
+            return [permission() for permission in self.permission_classes 
+                + self.mass_permission_classes
+            ]
 
 class SerializerMixin:
     '''Класс сериализатора в зависимости от action'''
@@ -50,3 +55,9 @@ class LowReadContactSerializer(LowContactSerializer):
     first_name = serializers.CharField(read_only=True)
     last_name = serializers.CharField(read_only=True)
     avatar = serializers.ImageField(read_only=True)
+
+class PartyShortSerializer(serializers.ModelSerializer):
+    '''Коротенькая сериализация групп'''
+    class Meta:
+        model = Party
+        fields = ['id', 'name', 'image', 'slug']

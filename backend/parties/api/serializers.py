@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
-from backend.service import LowReadContactSerializer
+from backend.service import LowReadContactSerializer, PartyShortSerializer
 from parties.models import Party
 from .service import PageSerializer
 from feed.api.exceptions import BadRequestError
+from feed.api.serializers import PostSerializer, PostListSerializer
+from feed.models import Post
 
 class PartyDetailSerializer(serializers.ModelSerializer):
     '''Сериализация списка групп'''
@@ -23,12 +25,29 @@ class PartyCreateSerializer(serializers.ModelSerializer):
         model = Party
         exclude = ['blacklist', 'staff']
 
-class PartyShortSerializer(serializers.ModelSerializer):
-    '''Коротенькая сериализация групп'''
-    class Meta:
-        model = Party
-        fields = ['name', 'image', 'slug', 'info']
-
 class IntegerFieldSerializer(serializers.Serializer):
     '''Вход и выход из группы'''
     some_id = serializers.IntegerField(required=True)
+
+class EmptySerializer(serializers.Serializer):
+    '''Пустой сериализатор'''
+    pass
+
+class OfferedPostSerializer(PostSerializer):
+    '''Сериализация поста в предложжку'''
+    published = serializers.BooleanField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Post
+        exclude = ['parent', 'owner', 'group_owner']
+
+class PostListSerializer(PostListSerializer):
+    '''Сериализция списка постов без группы-владельца'''
+    owner = None
+    published = None
+    parent = None
+    class Meta:
+        model = Post
+        exclude = ['parent', 'published', 'owner']
+        ref_name = 'group_post_list_serialzier'

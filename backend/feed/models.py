@@ -32,7 +32,13 @@ class Post(AbstractPost):
         blank = True,
         related_name = 'children'
     )
-    owner = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='my_board_posts')
+    owner = models.ForeignKey(
+        Page, 
+        on_delete=models.CASCADE, 
+        null=True, 
+        default=None, 
+        related_name='my_board_posts'
+    )
     group_owner = models.ForeignKey(Party, null=True, default=None, on_delete=models.CASCADE)
     published = models.BooleanField(default=True)
 

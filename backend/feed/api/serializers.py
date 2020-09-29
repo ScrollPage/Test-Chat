@@ -4,13 +4,19 @@ from django.shortcuts import get_object_or_404
 
 from community.models import Page
 from feed.models import Post, Like, RePost, Comment
-from backend.service import LowContactSerializer, UserValidationSerializer, LowReadContactSerializer
+from backend.service import (
+    LowContactSerializer, 
+    UserValidationSerializer, 
+    LowReadContactSerializer,
+    PartyShortSerializer,
+)
 from .service import (
     BaseFeedSerializer, 
     AbstractPostSerializer, 
 )
 from .exceptions import BadRequestError
 from notifications.service import send_like_notification
+from parties.api.service import PageSerializer
 
 
 class UpdatePostSerializer(serializers.ModelSerializer):
@@ -100,15 +106,15 @@ class PostSerializer(BasePostSerialzier):
             return super().validate(attrs)
         raise BadRequestError('You need either image or text.')
 
-
 class PostListSerializer(BasePostSerialzier):
     '''Сериализация списка постов'''
     user = LowReadContactSerializer(read_only=True)
     parent = RecursivePostSerialzier(read_only=True)
     is_watched = serializers.BooleanField(read_only=True)
     num_reviews = serializers.IntegerField(read_only=True)
+    group_owner = PartyShortSerializer(read_only=True)
+    num_comments = serializers.IntegerField(read_only=True)
 
-    
 class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
     '''Сериализация репоста'''
 

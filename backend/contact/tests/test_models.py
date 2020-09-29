@@ -1,11 +1,13 @@
 from mixer.backend.django import mixer
 from django.test import TestCase
 
+from contact.models import ContactCounter, Contact
+
 class TestModels(TestCase):
 
     def test_contact_str(self):
-        contact = mixer.blend('contact.Contact', email='test@case.test')
-        self.assertEqual(str(contact), 'test@case.test')
+        contact = mixer.blend('contact.Contact')
+        self.assertEqual(str(contact), '1')
 
     def test_token_str(self):
         token = mixer.blend('contact.MyToken', token='testtoken')

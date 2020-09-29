@@ -29,7 +29,6 @@ class ContactActivationView(generics.GenericAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             user.is_active = True
-            Page.objects.create(user=user)
             user.save()
             token.delete()
             return Response(status=status.HTTP_200_OK)
