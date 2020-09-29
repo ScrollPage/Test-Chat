@@ -1,7 +1,7 @@
 from rest_framework.test import APIClient
 from django.shortcuts import reverse
 
-def get_response(url, method, user=None, data=None, kwargs=None, is_url=False):
+def get_response(url, method, user=None, data=None, kwargs=None, is_url=False, format=None):
     client = APIClient()
 
     if user:
@@ -17,4 +17,4 @@ def get_response(url, method, user=None, data=None, kwargs=None, is_url=False):
         'delete': client.delete
     }
 
-    return method_dict[method](url, data)
+    return method_dict[method](url, data, format=format)

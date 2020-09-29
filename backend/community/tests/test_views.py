@@ -5,7 +5,7 @@ import json
 
 from contact.models import Contact
 from community.models import AddRequest
-from .service import get_response
+from backend.service import get_response
 
 class ContactTestCase(APITestCase):
 

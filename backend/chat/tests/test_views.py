@@ -6,6 +6,7 @@ from django.conf import settings
 
 from contact.models import Contact
 from chat.models import Chat
+from backend.service import get_response
 
 class ChatCreationTestCase(APITestCase):
 
@@ -34,45 +35,31 @@ class ChatCreationTestCase(APITestCase):
         self.chat2 = Chat.objects.create()
         self.chat2.participants.add(self.admin)
 
-    def api_authentication(self, user):
-        self.client.force_authenticate(user=user)
-
     def test_chat_creation_unauthenticated(self):
         '''Убедиться, что неавторизованные пользователи не могут создавать чаты'''
-        url = '/api/v1/chat/'
-        data = {"participants": []}
-        response = self.client.post(url, data)
+        response = get_response('/api/v1/chat/', 'post', data={"participants": []}, is_url=True) 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
     def test_chat_creation_authenticated(self):
-        self.api_authentication(self.admin)
-        url = '/api/v1/chat/'
-        data = {"participants": []}
-        response = self.client.post(url, data, format='json')
+        response = get_response('/api/v1/chat/', 'post', self.admin, data={"participants": []}, format='json', is_url=True) 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_chat_list_authenticated(self):
-        self.api_authentication(self.admin)
-        url = '/api/v1/chat/'
-        response = self.client.get(url)
+        response = get_response('/api/v1/chat/', 'get', self.admin, is_url=True) 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
     
     def test_chat_list_unauthenticated(self):
-        url = '/api/v1/chat/'
-        response = self.client.get(url)
+        response = get_response('/api/v1/chat/', 'get', is_url=True) 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_chat_list_query_authenticated(self):
-        self.api_authentication(self.admin)
-        url = '/api/v1/chat/?query_name=user'
-        response = self.client.get(url)
+
+        response = get_response('/api/v1/chat/?query_name=user', 'get', self.admin, is_url=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
     def test_chat_list_query_authenticated_other_user(self):
-        self.api_authentication(self.user)
-        url = '/api/v1/chat/'
-        response = self.client.get(url)
+        response = get_response('/api/v1/chat/', 'get', self.user, is_url=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
