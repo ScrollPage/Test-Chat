@@ -14,6 +14,8 @@ import {
 import { Form, Input, Button } from 'antd';
 import { authChange } from '@/store/actions/auth';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
+import { GetServerSideProps } from 'next';
+import { IUser } from '@/types/user';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -33,7 +35,7 @@ const validationSchema = Yup.object().shape({
         .required('Введите номер телефона'),
 });
 
-const errorMessege = (touched, messege) => {
+const errorMessege = (touched: boolean | undefined, messege: string | undefined) => {
     if (!touched) {
         return;
     }
@@ -42,7 +44,13 @@ const errorMessege = (touched, messege) => {
     }
 };
 
-export default function Change({ email, user, phoneNumber }) {
+interface IChange {
+    email: string;
+    user: IUser;
+    phoneNumber: string;
+}
+
+export default function Change({ email, user, phoneNumber }: IChange) {
     const dispatch = useDispatch();
 
     const { firstName, lastName } = user;
@@ -179,9 +187,9 @@ export default function Change({ email, user, phoneNumber }) {
     );
 }
 
-export const getServerSideProps = async ctx => {
-    const email = cookies(ctx)?.email || null;
-    const phoneNumber = cookies(ctx)?.phoneNumber || null;
+export const getServerSideProps: GetServerSideProps<IChange> = async (ctx) => {
+    const email = cookies(ctx)?.email || "";
+    const phoneNumber = cookies(ctx)?.phoneNumber || "";
 
     return {
         props: {

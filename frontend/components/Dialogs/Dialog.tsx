@@ -7,7 +7,7 @@ import Link from 'next/link';
 interface IDialog {
     chatID: number;
     name: string;
-    dialogUserId: number;
+    dialogUserId: number | null;
 }
 
 const Dialog: React.FC<IDialog> = ({ chatID, name, dialogUserId }) => {

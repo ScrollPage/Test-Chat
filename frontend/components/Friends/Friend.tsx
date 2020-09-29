@@ -11,7 +11,7 @@ import LinkAvatar from '@/components/UI/LinkAvatar';
 interface IFriend {
     userId: number;
     name: string;
-    chatId: number;
+    chatId: number | null;
 }
 
 const Friend: React.FC<IFriend> = ({ userId, name, chatId }) => {

@@ -2,16 +2,22 @@ import React, { useState } from 'react';
 import { Upload, message } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
-const FileUpload = ({ mutatedImage, setMutatedImage, setImage }) => {
+interface IFileUpload {
+    mutatedImage: any;
+    setMutatedImage: (mutatedImage: any) => void;
+    setImage: (image: any) => void;
+} 
+
+const FileUpload: React.FC<IFileUpload> = ({ mutatedImage, setMutatedImage, setImage }) => {
     const [loading, setLoading] = useState(false);
 
-    function getBase64(img, callback) {
+    function getBase64(img: any, callback: any) {
         const reader = new FileReader();
         reader.addEventListener('load', () => callback(reader.result));
         reader.readAsDataURL(img);
     }
 
-    function beforeUpload(file) {
+    function beforeUpload(file: any) {
         const isJpgOrPng =
             file.type === 'image/jpeg' || file.type === 'image/png';
         if (!isJpgOrPng) {
@@ -24,13 +30,13 @@ const FileUpload = ({ mutatedImage, setMutatedImage, setImage }) => {
         return isJpgOrPng && isLt2M;
     }
 
-    const handleChange = info => {
+    const handleChange = (info: any) => {
         if (info.file.status === 'uploading') {
             setLoading(true);
             return;
         }
         if (info.file.status === 'done') {
-            getBase64(info.file.originFileObj, mutatedImage => {
+            getBase64(info.file.originFileObj, (mutatedImage: any) => {
                 setMutatedImage(mutatedImage);
                 setLoading(false);
                 setImage(info.file.originFileObj);

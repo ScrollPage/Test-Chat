@@ -1,8 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import { NotificationOutlined } from '@ant-design/icons';
+import { IPost, IPostParent } from '@/types/post';
 
-const Repost = ({setIsOpenHandler, post}) => {
+interface IRepost {
+    setIsOpenHandler: (parent: IPostParent) => void;
+    post: IPost;
+}
+
+const Repost: React.FC<IRepost> = ({ setIsOpenHandler, post }) => {
     return (
         <StyledRepost>
             <NotificationOutlined 

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { authActivate } from '@/store/actions/auth';
 
-import VisitorLayout from '@/components/Layout/PrivateLayout';
+import VisitorLayout from '@/components/Layout/VisitorLayout';
 
 export default function Activation() {
     const dispatch = useDispatch();
@@ -13,7 +13,7 @@ export default function Activation() {
 
     useEffect(() => {
         if (query.token !== undefined && query.token !== null) {
-            dispatch(authActivate(query.token));
+            dispatch(authActivate(query.token?.[0]));
             setTimeout(() => {
                 push({ pathname: '/' }, undefined, { shallow: true });
             }, 5000);

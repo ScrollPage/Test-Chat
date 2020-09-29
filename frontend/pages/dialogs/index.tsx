@@ -6,42 +6,52 @@ import SearchDialog from '@/components/Dialogs/SearchDialog';
 import Dialog from '@/components/Dialogs/Dialog';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { getUserFromServer } from '@/utils/index';
+import { IUser } from '@/types/user';
+import { IChat, IChatParticipiant } from '@/types/chat';
+import { GetServerSideProps } from 'next';
 
-export default function Dialogs({ chats, user }) {
-    const { data } = useSWR(`/api/v1/chat/?id=${user.userId}`, {
-        initialData: chats,
-    });
+interface IDialogs {
+    chats: Array<IChat>;
+    user: IUser;
+}
 
-    console.log(data);
+export default function Dialogs({ chats, user }: IDialogs) {
+    const { data } = useSWR(`/api/v1/chat/?id=${user.userId}`, { initialData: chats });  
 
-    const participant = (participant1, participant2, isId) => {
+    const participantName = (participant1: IChatParticipiant, participant2: IChatParticipiant): string => {
         let partic;
-        if (participant1.id === Number(user.userId)) {
+        if (participant1.id === user.userId) {
             partic = participant2;
         } else {
             partic = participant1;
         }
-        if (isId) {
-            return partic.id
-        } else {
-            return `${partic.first_name} ${partic.last_name}`
-        }
+        return `${partic.first_name} ${partic.last_name}`
     }
 
-    const isConversation = (people) => {
+    const participantId = (participant1: IChatParticipiant, participant2: IChatParticipiant): number => {
+        let partic;
+        if (participant1.id === user.userId) {
+            partic = participant2;
+        } else {
+            partic = participant1;
+        }
+        return partic.id
+    }
+
+    const isConversation = (people: Array<IChatParticipiant>) => {
         if (people.length === 2) {
             return false
         }
         return true
     }
 
-    const renderChats = chats =>
+    const renderChats = (chats: Array<IChat>) =>
         chats.map(chat => (
             <Dialog
                 key={`chat__key__${chat.id}`}
-                name={isConversation(chat.participants) ? `Беседа №${chat.id}` : participant(chat.participants[0], chat.participants[1], false)}
+                name={isConversation(chat.participants) ? `Беседа №${chat.id}` : participantName(chat.participants[0], chat.participants[1])}
                 chatID={chat.id}
-                dialogUserId={isConversation(chat.participants) ? null : participant(chat.participants[0], chat.participants[1], true)}
+                dialogUserId={isConversation(chat.participants) ? null : participantId(chat.participants[0], chat.participants[1])}
             />
         ));
 
@@ -59,10 +69,10 @@ export default function Dialogs({ chats, user }) {
     );
 }
 
-export const getServerSideProps = async ctx => {
+export const getServerSideProps: GetServerSideProps<IDialogs> = async (ctx) => {
     const token = cookies(ctx)?.token || null;
 
-    const user = getUserFromServer(ctx);
+    const user: IUser = getUserFromServer(ctx);
     const { userId } = user;
     
     axios.defaults.headers = {
@@ -70,16 +80,16 @@ export const getServerSideProps = async ctx => {
         Authorization: `Token ${token}`,
     };
 
+    let chats: Array<IChat> = [];
+
     if (!ctx?.req) {
         return {
             props: {
-                chats: [],
-                userId
+                chats,
+                user
             },
         };
     }
-
-    let chats = [];
 
     await axios
         .get(`/api/v1/chat/?id=${userId}`)
@@ -92,7 +102,7 @@ export const getServerSideProps = async ctx => {
     return {
         props: {
             chats,
-            user: user
+            user
         },
     };
 };

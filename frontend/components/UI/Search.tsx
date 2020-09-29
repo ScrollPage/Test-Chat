@@ -1,14 +1,12 @@
 import React from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
-
 import styled from 'styled-components';
 import { Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { setSearch } from '@/store/actions/search';
 import { getSearch } from '../../store/selectors';
 
-const SearchDialog = () => {
+const SearchDialog: React.FC = () => {
     const dispatch = useDispatch();
     const search = useSelector(getSearch);
 

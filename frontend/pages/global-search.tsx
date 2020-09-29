@@ -7,16 +7,18 @@ import PrivateLayout from '@/components/Layout/PrivateLayout';
 import Search from '@/components/UI/Search';
 import Friend from '@/components/Friends/Friend';
 import { IUser } from '@/types/user';
+import { IGlobalUser } from '@/types/people';
+import { GetServerSideProps } from 'next';
 
 interface IGlobalSearch {
-  people: any;
-  user: IUser
+  people: Array<IGlobalUser>;
+  user: IUser;
 }
 
-export default function GlobalSearch({ people, user }) {
+export default function GlobalSearch({ people, user }: IGlobalSearch) {
   const { data } = useSWR(`/api/v1/people/`, { initialData: people });
 
-  const renderPeople = people =>
+  const renderPeople = (people: Array<IGlobalUser>) =>
     people.map(man => (
       <Friend
         key={`people__key__${man.id}`}
@@ -44,7 +46,7 @@ export default function GlobalSearch({ people, user }) {
   );
 }
 
-export const getServerSideProps = async ctx => {
+export const getServerSideProps: GetServerSideProps<IGlobalSearch> = async (ctx) => {
   const token = cookies(ctx)?.token || null;
 
   axios.defaults.headers = {
@@ -56,11 +58,12 @@ export const getServerSideProps = async ctx => {
     return {
       props: {
         people: [],
+        user: getUserFromServer(ctx)
       },
     };
   }
 
-  let people = [];
+  let people: Array<IGlobalUser> = [];
 
   await axios
     .get(`/api/v1/people/`)

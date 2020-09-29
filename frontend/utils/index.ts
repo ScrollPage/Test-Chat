@@ -4,9 +4,9 @@ import { GetServerSidePropsContext } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 
 export const getUserFromServer = (ctx: GetServerSidePropsContext<ParsedUrlQuery>) => {
-    const userId = cookies(ctx)?.userId || null;
-    const firstName = cookies(ctx)?.firstName || null;
-    const lastName = cookies(ctx)?.lastName || null;
+    const userId = cookies(ctx)?.userId || "";
+    const firstName = cookies(ctx)?.firstName || "";
+    const lastName = cookies(ctx)?.lastName || "";
     const user = {
         userId: Number(userId),
         firstName: firstName,

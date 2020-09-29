@@ -2,7 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { HeartOutlined, HeartTwoTone } from '@ant-design/icons';
 
-const Like = ({ isTap, postId, likeMutate, index }) => {
+interface ILike {
+    isTap: boolean;
+    postId: number;
+    likeMutate: (index: number, postId: number) => void;
+    index: number;
+}
+
+const Like: React.FC<ILike> = ({ isTap, postId, likeMutate, index }) => {
     return (
         <StyledLike onClick={() => likeMutate(index, postId)}>
             {isTap ? (

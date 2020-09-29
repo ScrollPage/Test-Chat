@@ -1,7 +1,12 @@
 import React from 'react';
 import { Avatar } from 'antd';
+import { IContactUser } from '@/types/people';
 
-const UserFriends = ({ friends }) => {
+interface UserFriends {
+    friends: Array<IContactUser>;
+}
+
+const UserFriends: React.FC<UserFriends> = ({ friends }) => {
     return (
         <Avatar.Group
             maxCount={6}

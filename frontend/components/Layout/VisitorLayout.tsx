@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const VisitorLayout = ({ children }) => {
+interface IVisitorLayout {
+    children: React.ReactNode;
+} 
+
+const VisitorLayout: React.FC<IVisitorLayout> = ({ children }) => {
     return <StyledMain>{children}</StyledMain>;
 };
 
