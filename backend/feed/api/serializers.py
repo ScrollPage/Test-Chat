@@ -42,9 +42,19 @@ class PostParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     '''Вывод родителя поста'''
     parent = RecursivePostSerialzier(read_only=True)
     user = LowReadContactSerializer(read_only=True)
+    compressed_image = serializers.ImageField(read_only=True)
     class Meta:
         model = Post
-        fields = ['id', 'user', 'owner', 'parent', 'text', 'image', 'timestamp']
+        fields = [
+            'id', 
+            'user', 
+            'owner', 
+            'parent', 
+            'text', 
+            'image', 
+            'timestamp',
+            'compressed_image'
+        ]
 
 class RecursiveCommentSerialzier(serializers.Serializer):
     '''Рекурсивный вывод детей'''
@@ -118,13 +128,17 @@ class PostListSerializer(BasePostSerialzier):
 
 class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
     '''Сериализация репоста'''
+    
+    class Meta:
+        model = Post
+        exclude = ['group_owner', 'compressed_image', 'published']
 
     def validate(self, attrs):
         data = self.context['request'].data
-        if data.get('parent', None):
+        if data.get('parent', None) and data.get('owner', None):
             return super().validate(attrs)
         else:
-            raise BadRequestError('You need a parent.')
+            raise BadRequestError('You need a parent and owner.')
 
 class LikeSerializer(serializers.ModelSerializer):
     '''Сериализация лайка'''

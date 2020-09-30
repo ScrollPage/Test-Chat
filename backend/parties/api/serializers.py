@@ -40,7 +40,7 @@ class OfferedPostSerializer(PostSerializer):
 
     class Meta:
         model = Post
-        exclude = ['parent', 'owner', 'group_owner']
+        exclude = ['parent', 'owner', 'group_owner', 'compressed_image']
 
 class PostListSerializer(PostListSerializer):
     '''Сериализция списка постов без группы-владельца'''
