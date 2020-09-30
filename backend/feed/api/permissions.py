@@ -37,8 +37,12 @@ class NotInOwnersBlacklist(BasePermission):
     '''Не находится ли пост в той групее, в которой данный пользователь находится в черном списке?'''
     def has_permission(self, request, view):
         if request.method == 'POST':
-            data = request.data
-            post = Post.objects.get(id=int(data['post_id']))
+            post_id = request.data.get('post_id', None) or request.data.get('parent', None)
+            try:
+                post_id = int(post_id)
+            except TypeError:
+                return True
+            post = Post.objects.get(id=post_id)
             if post.group_owner:
                 return request.user not in post.group_owner.blacklist.all()
         return True

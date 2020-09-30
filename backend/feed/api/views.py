@@ -102,7 +102,7 @@ class RePostMechanicsCustomViewset(CreateViewset):
     '''Создание репоста'''
     queryset = Post.objects.all()
     serializer_class = RePostSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, NotInOwnersBlacklist]
             
     def perform_create(self, serializer):
         user = self.request.user
