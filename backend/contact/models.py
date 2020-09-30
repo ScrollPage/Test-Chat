@@ -8,8 +8,10 @@ from django.contrib.auth.models import (
     BaseUserManager, 
     PermissionsMixin
 )
+from PIL import Image
+from io import BytesIO
 
-from .service import generate_token
+from .service import generate_token, save_image
 
 class ContactManager(BaseUserManager):
     '''Мэнэджер кастомного пользователя'''
@@ -75,12 +77,37 @@ class Contact(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     avatar = models.ImageField(upload_to='user_avatars/%Y/%m/%d', blank=True)
+    compressed_avatar = models.ImageField(upload_to='compressed_user_avatars/%Y/%m/%d', blank=True)
+    small_avatar = models.ImageField(upload_to='small_user_avatars/%Y/%m/%d', blank=True)
     is_active = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number', 'slug']
 
     objects = ContactManager()
+
+    def save(self, *args, **kwargs):
+        try:
+            im1 = im2 = Image.open(self.avatar)
+        except ValueError:
+            pass
+        else:
+            output = BytesIO()
+
+            im1.save(output, format='JPEG', quality=0)
+            output.seek(0)
+
+            self.compressed_avatar = save_image(output, self.avatar.name)
+
+            output = BytesIO()
+            im2 = im2.resize((50, 50))
+            im2.save(output, format='JPEG', quality=100)
+            output.seek(0)
+
+            self.small_avatar = save_image(output, self.avatar.name)
+
+        finally:
+            super().save()
 
     def __str__(self):
         return str(self.id)

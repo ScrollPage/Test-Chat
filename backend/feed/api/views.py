@@ -22,7 +22,7 @@ from .serializers import (
     PostListSerializer,
     CreateCommentSerializer,
 )
-from .permissions import IsRightOwnerOrUser, IsNotLiked, IsRightUser
+from .permissions import IsRightOwnerOrUser, IsNotLiked, IsRightUser, NotInOwnersBlacklist
 from .exceptions import BadRequestError, NotFoundError
 from notifications.service import send_repost_notification
 
@@ -61,8 +61,9 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     permission_classes_by_action = {
         'update': [IsRightUser],
         'partial_update': [IsRightUser],
+        'destroy': [IsRightUser],
     }
-    mass_permission_classes = [permissions.IsAuthenticated]
+    mass_permission_classes = [permissions.IsAuthenticated, NotInOwnersBlacklist]
 
     def get_queryset(self):
         if self.action == 'list':

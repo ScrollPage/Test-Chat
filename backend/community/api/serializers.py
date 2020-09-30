@@ -41,6 +41,8 @@ class ContactDetailSerializer(ContactFriendsSerializer):
     is_sent_to_you = serializers.BooleanField(read_only=True)
     my_page = PageSerializer(read_only=True)
     info = UserInfoSerializer(read_only=True)
+    compressed_avatar = serializers.ImageField(read_only=True)
+    small_avatar = serializers.ImageField(read_only=True)
 
     class Meta:
         model = Contact

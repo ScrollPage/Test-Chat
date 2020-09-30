@@ -1,13 +1,12 @@
 from django.db import models
 from django.utils import timezone
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 from io import BytesIO
-import sys
 
 from contact.models import Contact
 from community.models import Page
 from parties.models import Party
+from backend.service import save_image
 
 class AbstractPost(models.Model):
     '''Абстрактный пост'''
@@ -18,23 +17,19 @@ class AbstractPost(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        im = Image.open(self.image)
+        try:
+            im = Image.open(self.image)
+        except ValueError:
+            pass
+        else:
+            output = BytesIO()
 
-        output = BytesIO()
+            im.save(output, format='JPEG', quality=0)
+            output.seek(0)
 
-        im.save(output, format='JPEG', quality=0)
-        output.seek(0)
-
-        self.compressed_image = InMemoryUploadedFile(
-            output, 
-            'ImageField', 
-            "%s.jpg" % self.image.name.split('.')[0], 
-            'image/jpeg',
-            sys.getsizeof(output), 
-            None
-        )
-
-        super().save()
+            self.compressed_image = save_image(output, self.image.name)
+        finally:
+            super().save()
 
     def __str__(self):
         return str(self.id)

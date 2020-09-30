@@ -114,6 +114,7 @@ class PostListSerializer(BasePostSerialzier):
     num_reviews = serializers.IntegerField(read_only=True)
     group_owner = PartyShortSerializer(read_only=True)
     num_comments = serializers.IntegerField(read_only=True)
+    owner = PageSerializer(read_only=True)
 
 class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
     '''Сериализация репоста'''

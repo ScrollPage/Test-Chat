@@ -1,10 +1,22 @@
 from rest_framework import serializers
 from rest_framework.test import APIClient
 from django.shortcuts import reverse
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import sys
 
 from contact.models import Contact
 from .exceptions import ForbiddenError
 from parties.models import Party
+
+def save_image(output, name):
+    return InMemoryUploadedFile(
+            output, 
+            'ImageField', 
+            "%s.jpg" % name.split('.')[0], 
+            'image/jpeg',
+            sys.getsizeof(output), 
+            None
+        )
 
 def get_response(url, method, user=None, data=None, kwargs=None, is_url=False, format=None):
     client = APIClient()
@@ -58,7 +70,7 @@ class LowContactSerializer(serializers.ModelSerializer):
     '''Базовая сриализация контакта'''
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'slug', 'avatar',]
+        fields = ['id', 'first_name', 'last_name', 'slug', 'small_avatar',]
 
 class UserValidationSerializer(serializers.Serializer):
     '''Проверка соответствия пользователей'''
@@ -74,7 +86,7 @@ class LowReadContactSerializer(LowContactSerializer):
     '''Все поля для чтения, кроме slug'''
     first_name = serializers.CharField(read_only=True)
     last_name = serializers.CharField(read_only=True)
-    avatar = serializers.ImageField(read_only=True)
+    small_avatar = serializers.ImageField(read_only=True)
 
 class PartyShortSerializer(serializers.ModelSerializer):
     '''Коротенькая сериализация групп'''

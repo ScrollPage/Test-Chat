@@ -2,6 +2,7 @@ from rest_framework.permissions import BasePermission
 from django.shortcuts import get_object_or_404
 
 from .exceptions import BadRequestError
+from feed.models import Post
 
 class IsRightUser(BasePermission):
     '''ТОт ли пользователь?'''
@@ -30,3 +31,11 @@ class IsNotLiked(BasePermission):
         else:
             raise BadRequestError('You need post id and user to add like.')
         return False
+
+class NotInOwnersBlacklist(BasePermission):
+    '''Не находится ли пост в той групее, в которой данный пользователь находится в черном списке?'''
+
+    def has_object_permission(self, request, view, obj):
+        if obj.post_id.group_owner:
+            return request.user not in obj.post_id.group_owner.blacklist.alL()
+        return True
