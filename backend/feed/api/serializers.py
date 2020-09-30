@@ -23,13 +23,13 @@ class UpdatePostSerializer(serializers.ModelSerializer):
     '''Сериализатор для метода put'''
     class Meta:
         model = Post
-        fields = ['text', 'image']
+        fields = ['text']
 
 class UpdateCommentSerializer(serializers.ModelSerializer):
     '''Сериализатор для обновления сообщения'''
     class Meta:
         model = Comment
-        fields = ['text', 'image']
+        fields = ['text']
 
 class RecursivePostSerialzier(serializers.Serializer):
     '''Рекурсивный вывод родителей'''
@@ -63,7 +63,7 @@ class CreateCommentSerializer(AbstractPostSerializer, serializers.ModelSerialize
 
     class Meta:
         model = Comment
-        fields = '__all__'
+        exclude = ['compressed_image']
 
     def validate(self, attrs):
         data = self.context['request'].data
@@ -98,7 +98,7 @@ class PostSerializer(BasePostSerialzier):
     '''Сериализация поста'''
     class Meta:
         model = Post
-        exclude = ['parent', 'group_owner', 'published']    
+        exclude = ['parent', 'group_owner', 'published', 'compressed_image']    
 
     def validate(self, attrs):
         data = self.context['request'].data

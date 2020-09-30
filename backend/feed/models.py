@@ -1,5 +1,9 @@
 from django.db import models
 from django.utils import timezone
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from PIL import Image
+from io import BytesIO
+import sys
 
 from contact.models import Contact
 from community.models import Page
@@ -10,13 +14,34 @@ class AbstractPost(models.Model):
     user = models.ForeignKey(Contact, on_delete=models.CASCADE)
     text = models.TextField(max_length=1000, blank=True, default='')
     image = models.ImageField(upload_to='user_posts/%Y/%m/%d', blank=True, null=True)
+    compressed_image = models.ImageField(upload_to='compressed_user_posts/%Y/%m/%d', blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        im = Image.open(self.image)
+
+        output = BytesIO()
+
+        im.save(output, format='JPEG', quality=0)
+        output.seek(0)
+
+        self.compressed_image = InMemoryUploadedFile(
+            output, 
+            'ImageField', 
+            "%s.jpg" % self.image.name.split('.')[0], 
+            'image/jpeg',
+            sys.getsizeof(output), 
+            None
+        )
+
+        super().save()
 
     def __str__(self):
         return str(self.id)
 
     def delete(self):
         self.image.delete(save=False)
+        self.compressed_image.delete(save=False)
         super().delete()
 
     class Meta:
@@ -85,5 +110,3 @@ class RePost(models.Model):
     class Meta:
         verbose_name = 'Репост'
         verbose_name_plural = 'Репосты'
-
-
