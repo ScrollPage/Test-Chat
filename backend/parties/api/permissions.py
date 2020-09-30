@@ -35,10 +35,8 @@ class IsGroupAdmin(BasePermission):
 class NotInBlacklist(BasePermission):
     '''Не в черном списке?'''
     def has_permission(self, request, view):
-        if request.method == 'POST':
-            group = get_object_or_404(Party, id=view.kwargs['pk'])
-            return request.user not in group.blacklist.all()
-        return True
+        group = get_object_or_404(Party, id=view.kwargs['pk'])
+        return request.user not in group.blacklist.all()
 
 class RightPostGroupOwner(BasePermission):
     '''Владеет ли группа данным постом?'''
