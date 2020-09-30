@@ -1,5 +1,5 @@
+import { IMessages, IMessage } from '@/types/message';
 import * as types from '../types';
-import { IMessage, IMessages } from '../types';
 
 type SetMessagesSuccessActionType = {
     type: typeof types.SET_MESSAGES

@@ -4,11 +4,7 @@ import { LeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import LinkAvatar from '@/components/UI/LinkAvatar';
 
-interface IChatHeader {
-    time: number
-}
-
-const ChatHeader: React.FC<IChatHeader> = () => {
+const ChatHeader: React.FC = () => {
     return (
         <StyledChatHeader>
             <Link href="/dialogs">

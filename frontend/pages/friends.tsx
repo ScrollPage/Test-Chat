@@ -11,12 +11,12 @@ import { IGlobalUser } from '@/types/people';
 import { IUser } from '@/types/user';
 
 interface IFriends {
-    friends: Array<IGlobalUser>;
+    friends: IGlobalUser[];
     user: IUser;
 }
 
 export default function Friends({ friends, user }: IFriends) {
-    const { data } = useSWR(`/api/v1/friends/`, { initialData: friends });
+    const { data } = useSWR<IGlobalUser[]>(`/api/v1/friends/`, { initialData: friends });
 
     console.log(data);
 

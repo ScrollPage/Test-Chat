@@ -5,13 +5,12 @@ import { HeartOutlined, HeartTwoTone } from '@ant-design/icons';
 interface ILike {
     isTap: boolean;
     postId: number;
-    likeMutate: (index: number, postId: number) => void;
-    index: number;
+    likeMutate: (postId: number) => void;
 }
 
-const Like: React.FC<ILike> = ({ isTap, postId, likeMutate, index }) => {
+const Like: React.FC<ILike> = ({ isTap, postId, likeMutate }) => {
     return (
-        <StyledLike onClick={() => likeMutate(index, postId)}>
+        <StyledLike onClick={() => likeMutate(postId)}>
             {isTap ? (
                 <HeartTwoTone
                     twoToneColor="#eb2f96"

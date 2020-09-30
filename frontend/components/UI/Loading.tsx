@@ -18,7 +18,7 @@ const Loading: React.FC = () => {
 export default Loading;
 
 const StyledLoading = styled.div`
-    min-height: calc(100vh - 210px);
+    height: 100%;
     width: 100%;
     position: relative;
     > div {

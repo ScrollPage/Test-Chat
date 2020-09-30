@@ -11,12 +11,12 @@ import { IGlobalUser } from '@/types/people';
 import { GetServerSideProps } from 'next';
 
 interface IGlobalSearch {
-  people: Array<IGlobalUser>;
+  people: IGlobalUser[];
   user: IUser;
 }
 
 export default function GlobalSearch({ people, user }: IGlobalSearch) {
-  const { data } = useSWR(`/api/v1/people/`, { initialData: people });
+  const { data } = useSWR<IGlobalUser[]>(`/api/v1/people/`, { initialData: people });
 
   const renderPeople = (people: Array<IGlobalUser>) =>
     people.map(man => (

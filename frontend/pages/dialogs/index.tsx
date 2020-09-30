@@ -11,12 +11,12 @@ import { IChat, IChatParticipiant } from '@/types/chat';
 import { GetServerSideProps } from 'next';
 
 interface IDialogs {
-    chats: Array<IChat>;
+    chats: IChat[];
     user: IUser;
 }
 
 export default function Dialogs({ chats, user }: IDialogs) {
-    const { data } = useSWR(`/api/v1/chat/?id=${user.userId}`, { initialData: chats });  
+    const { data } = useSWR<IChat[]>(`/api/v1/chat/?id=${user.userId}`, { initialData: chats });  
 
     const participantName = (participant1: IChatParticipiant, participant2: IChatParticipiant): string => {
         let partic;

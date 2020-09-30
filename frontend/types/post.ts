@@ -14,6 +14,7 @@ export interface IPostParent {
   text: string;
   image: string | null;
   timestamp?: string;
+  compressed_image: string | null;
 }
 
 export interface IPost {
@@ -30,5 +31,7 @@ export interface IPost {
   image: string | null;
   owner?: number | null;
   group_owner: number | null;
+  num_comments: number;
+  compressed_image: string | null;
 }
 

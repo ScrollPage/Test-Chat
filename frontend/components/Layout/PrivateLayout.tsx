@@ -14,6 +14,7 @@ import Container from '@/styles/Container';
 
 import { IUser } from '@/types/user';
 import { IMessage, IMessages } from '@/types/message';
+import DeleteCommentModal from '../Modal/DeleteCommentModal';
 
 interface IPrivateLayout {
     children: React.ReactNode;
@@ -76,6 +77,7 @@ const PrivateLayout: React.FC<IPrivateLayout> = ({ children, user }) => {
                     <div className="private-layout__main">{children}</div>
                 </Container>
             </StyledMain>
+            <DeleteCommentModal />
         </>
     );
 };

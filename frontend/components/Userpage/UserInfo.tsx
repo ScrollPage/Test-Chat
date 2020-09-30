@@ -19,7 +19,7 @@ const UserInfo: React.FC<IUserInfo> = ({ contact }) => {
                 <ul>
                     <li>E-mail: {contact.email}</li>
                     <li>Номер телефона: {contact.phone_number}</li>
-                </ul>
+                </ul>                   
             </div>
         </StyledUserInfo>
     );

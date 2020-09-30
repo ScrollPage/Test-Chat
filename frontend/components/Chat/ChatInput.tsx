@@ -4,8 +4,8 @@ import { SendOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 interface IChatInput {
-    sendMessage: () => void;
-    messageChange: () => void;
+    sendMessage: (e: React.FormEvent<HTMLFormElement>) => void;
+    messageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     message: string;
 }
 
@@ -15,7 +15,7 @@ const ChatInput: React.FC<IChatInput>= ({ sendMessage, messageChange, message })
             <form onSubmit={sendMessage}>
                 <StyledChatInputInner>
                     <div>
-                        <Input onChange={messageChange} value={message} />
+                        <Input onChange={e => messageChange(e)} value={message} />
                     </div>
                     <div>
                         <Button htmlType="submit">

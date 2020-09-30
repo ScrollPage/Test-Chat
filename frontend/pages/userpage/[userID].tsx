@@ -16,7 +16,7 @@ import { GetServerSideProps } from 'next';
 interface ITeams {
     contact: IContact | null;
     pageUserId: number | undefined;
-    posts: Array<IPost>;
+    posts: IPost[];
     user: IUser;
 }
 

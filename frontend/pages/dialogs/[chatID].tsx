@@ -12,8 +12,15 @@ import ChatHeader from '@/components/Chat/ChatHeader';
 import Loading from '@/components/UI/Loading';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { getMessages, getMessagesLoading } from '../../store/selectors';
+import { IUser } from '@/types/user';
+import { GetServerSideProps } from 'next';
+import { IMessages } from '@/types/message';
 
-export default function Chat({user}) {
+interface ChatPage {
+    user: IUser;
+}
+
+export default function ChatPage({user}: ChatPage) {
     const dispatch = useDispatch();
 
     const messages = useSelector(getMessages);
@@ -37,14 +44,14 @@ export default function Chat({user}) {
         };
     }, [query.chatID]);
 
-    const initialiseChat = () => {
+    const initialiseChat = (): void => {
         waitForSocketConnection(() => {
             WebSocketInstance.fetchMessages(user.userId, query.chatID);
         });
         WebSocketInstance.connect(query.chatID);
     };
 
-    const waitForSocketConnection = callback => {
+    const waitForSocketConnection = (callback: () => void): void => {
         setTimeout(function () {
             if (WebSocketInstance.state() === 1) {
                 console.log('Connection is made');
@@ -56,11 +63,11 @@ export default function Chat({user}) {
         }, 100);
     };
 
-    const messageChangeHandler = e => {
+    const messageChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void=> {
         setMessage(e.target.value);
     };
 
-    const sendMessageHandler = e => {
+    const sendMessageHandler = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
         if (message.trim() !== '') {
             const messageObject = {
@@ -74,10 +81,11 @@ export default function Chat({user}) {
     };
 
     const scrollToBottom = () => {
+        // @ts-ignore: Unreachable code error
         messagesEnd.scrollIntoViewIfNeeded({ behavior: 'smooth' });
     };
 
-    const renderMessages = () => {
+    const renderMessages = (messages: IMessages) => {
         return messages.map(message => {
             return (
                 <ChatItem
@@ -106,6 +114,7 @@ export default function Chat({user}) {
                             )}
                     <div
                         className="messages-end"
+                        // @ts-ignore: Unreachable code error
                         ref={el => (messagesEnd = el)}
                     />
                 </StyledChatInner>
@@ -119,7 +128,7 @@ export default function Chat({user}) {
     );
 }
 
-export const getServerSideProps = async ctx => {
+export const getServerSideProps: GetServerSideProps<ChatPage> = async (ctx) => {
     return {
         props: {
             user: getUserFromServer(ctx)

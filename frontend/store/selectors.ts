@@ -19,3 +19,11 @@ export const getMessages = (state: AppStateType) => {
 export const getMessagesLoading = (state: AppStateType) => {
   return state.message.loading
 }
+
+export const getModalName = (state: AppStateType) => {
+  return state.modal.modalName
+}
+
+export const getModalProps = (state: AppStateType) => {
+  return state.modal.modalProps
+}

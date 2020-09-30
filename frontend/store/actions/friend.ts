@@ -1,14 +1,13 @@
 import { ThunkType } from '@/types/thunk';
 import axios from 'axios';
-import Cookie from 'js-cookie';
 import Router from 'next/router';
 import { show } from './alert';
 
-export const addFriend = (friendId: number): ThunkType => async dispatch => {
+export const addFriend = (friendId: number, userId: number): ThunkType => async dispatch => {
     await axios
         .post('/api/v1/request/add/', {
-            sender: Number(Cookie.get('userId')),
-            receiver: friendId,
+            sender: userId,
+            receiver: friendId
         })
         .then(res => {
             dispatch(show('Вы успешно отправили запрос о добавлении в друзья!', 'success'));
@@ -18,11 +17,11 @@ export const addFriend = (friendId: number): ThunkType => async dispatch => {
         });
 };
 
-export const recieveFriend = (friendId: number): ThunkType => async dispatch => {
+export const recieveFriend = (friendId: number, userId: number): ThunkType => async dispatch => {
     await axios
         .post('/api/v1/friends/add/', {
             sender: friendId,
-            receiver: Number(Cookie.get('userId')),
+            receiver: userId,
         })
         .then(res => {
             dispatch(show('Вы успешно добавили в друзья!', 'success'));
@@ -32,10 +31,10 @@ export const recieveFriend = (friendId: number): ThunkType => async dispatch => 
         });
 };
 
-export const removeAddFriend = (friendId: number): ThunkType => async dispatch => {
+export const removeAddFriend = (friendId: number, userId: number): ThunkType => async dispatch => {
     await axios
         .post('/api/v1/request/remove/', {
-            sender: Number(Cookie.get('userId')),
+            sender: userId,
             receiver: friendId,
         })
         .then(res => {
@@ -46,10 +45,10 @@ export const removeAddFriend = (friendId: number): ThunkType => async dispatch =
         });
 };
 
-export const removeFriend = (friendId: number): ThunkType => async dispatch => {
+export const removeFriend = (friendId: number, userId: number): ThunkType => async dispatch => {
     await axios
         .post('/api/v1/friends/remove/', {
-            sender: Number(Cookie.get('userId')),
+            sender: userId,
             receiver: friendId,
         })
         .then(res => {
@@ -60,10 +59,10 @@ export const removeFriend = (friendId: number): ThunkType => async dispatch => {
         });
 };
 
-export const createChat = (friendId: number): ThunkType => async dispatch => {
+export const createChat = (friendId: number, userId: number): ThunkType => async dispatch => {
     await axios
         .post('/api/v1/chat/', {
-            participants: [Cookie.get('userId'), String(friendId)],
+            participants: [String(userId), String(friendId)],
         })
         .then(res => {
             Router.push('/dialogs/[chatID]', `/dialogs/${res.data.id}`, {

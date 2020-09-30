@@ -6,12 +6,12 @@ import { addLike, removeLike } from '@/store/actions/post';
 import { addPost, rePost, deletePost } from '@/store/actions/post';
 import { useDispatch } from 'react-redux';
 import useSWR, { mutate } from 'swr';
-import DeletePostModal from '@/components/Modal/DeletePostModal';
+import DeletePostModal from '@/components/Modal/DeleteModal';
 import { IPost, IPostParent } from '@/types/post';
 import { IUser } from '@/types/user';
 
 interface IUserPosts {
-    serverPosts: Array<IPost>;
+    serverPosts: IPost[];
     pageUserId: number;
     user: IUser;
 }
@@ -20,15 +20,14 @@ const UserPosts: React.FC<IUserPosts> = ({ serverPosts, pageUserId, user }) => {
     const {
         data: posts = [],
         mutate: postsMutate,
-    } = useSWR(`/api/v1/post/?id=${pageUserId}`, { initialData: serverPosts });
+    } = useSWR<IPost[]>(`/api/v1/post/?id=${pageUserId}`, { initialData: serverPosts });
 
     const dispatch = useDispatch();
 
-    type IDeletePostId = number | null;
     const [isOpen, setIsOpen] = useState(false);
     const [parent, setParent] = useState<IPostParent | null>(null);
     const [isDeletePost, setIsDeletePost] = useState(false);
-    const [deletePostId, setDeletePostId] = useState<IDeletePostId>(null);
+    const [deletePostId, setDeletePostId] = useState<number | null>(null);
 
     const setIsOpenHandler = (parent: IPostParent): void => {
         setIsDeletePost(false);
@@ -42,8 +41,8 @@ const UserPosts: React.FC<IUserPosts> = ({ serverPosts, pageUserId, user }) => {
         setDeletePostId(postId);
     };
 
-    const likeMutate = (index: number, postId: number): void => {
-        const url = `/api/v1/post/?id=${pageUserId}`;
+    const likeMutate = (postId: number): void => {
+        const index = posts.findIndex(post => post.id === postId);
         let newPosts = [...posts];
         if (posts[index].is_liked) {
             newPosts[index] = {
@@ -51,7 +50,7 @@ const UserPosts: React.FC<IUserPosts> = ({ serverPosts, pageUserId, user }) => {
                 is_liked: false,
                 num_likes: posts[index].num_likes - 1,
             };
-            mutate(url, newPosts, false);
+            postsMutate(newPosts, false);
             dispatch(removeLike(postId));
         } else {
             newPosts[index] = {
@@ -59,7 +58,7 @@ const UserPosts: React.FC<IUserPosts> = ({ serverPosts, pageUserId, user }) => {
                 is_liked: true,
                 num_likes: posts[index].num_likes + 1,
             };
-            mutate(url, newPosts, false);
+            postsMutate(newPosts, false);
             dispatch(addLike(postId));
         }
     };
@@ -83,7 +82,9 @@ const UserPosts: React.FC<IUserPosts> = ({ serverPosts, pageUserId, user }) => {
                 last_name: user.lastName,
                 avatar: null
             },
-            group_owner: null
+            group_owner: null,
+            num_comments: 0,
+            compressed_image: null
         };
         if (isRepost) {
             if (parent) {
@@ -98,7 +99,8 @@ const UserPosts: React.FC<IUserPosts> = ({ serverPosts, pageUserId, user }) => {
                             last_name: parent.user.last_name,
                             avatar: null
                         },
-                        parent: null
+                        parent: null,
+                        compressed_image: null
                     };
                     newPosts = [addNewPost, ...posts];
                     postsMutate(newPosts, false);
@@ -118,8 +120,7 @@ const UserPosts: React.FC<IUserPosts> = ({ serverPosts, pageUserId, user }) => {
     const deletePostMutate = (): void => {
         setIsOpen(false);
         if (deletePostId) {
-            const url = `/api/v1/post/?id=${pageUserId}`;
-            mutate(url, posts.filter(post => post.id !== deletePostId), false);
+            postsMutate(posts.filter(post => post.id !== deletePostId), false);
             dispatch(deletePost(deletePostId));
         }
     };
@@ -128,12 +129,13 @@ const UserPosts: React.FC<IUserPosts> = ({ serverPosts, pageUserId, user }) => {
         return posts.map((post, index) => (
             <UserPost
                 key={`post__key__${index}`}
-                index={index}
                 user={user}
                 post={post}
                 likeMutate={likeMutate}
                 setIsOpenHandler={setIsOpenHandler}
                 setIsDeletePostHandler={setIsDeletePostHandler}
+                pageUserId={pageUserId}
+                
             />
         ));
     };
