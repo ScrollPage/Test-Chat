@@ -93,18 +93,25 @@ class Contact(AbstractBaseUser, PermissionsMixin):
             pass
         else:
             output = BytesIO()
-
-            im1.save(output, format='JPEG', quality=0)
+            try:
+                im1.save(output, format='JPEG', quality=0)
+                format = 'jpeg'
+            except OSError:
+                im1.save(output, format='PNG', quality=0)
+                format = 'png'
             output.seek(0)
-
-            self.compressed_avatar = save_image(output, self.avatar.name)
+            self.compressed_avatar = save_image(output, self.avatar.name, format)
 
             output = BytesIO()
             im2 = im2.resize((50, 50))
-            im2.save(output, format='JPEG', quality=100)
+            try:
+                im2.save(output, format='JPEG', quality=100)
+                format = 'jpeg'
+            except OSError:
+                im2.save(output, format='PNG', quality=100)
+                format = 'png'
             output.seek(0)
-
-            self.small_avatar = save_image(output, self.avatar.name)
+            self.small_avatar = save_image(output, self.avatar.name, format)
 
         finally:
             super().save()

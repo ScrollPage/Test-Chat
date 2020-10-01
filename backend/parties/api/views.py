@@ -36,13 +36,13 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
         'join': EmptySerializer,
         'leave': EmptySerializer,
     }
-    permission_classes = [IsGroupAdminOrStaff]
+    permission_classes = [IsGroupAdmin]
     permission_classes_by_action = {
-        'add_staff': [IsGroupAdmin],
-        'remove_staff': [IsGroupAdmin],
-        'destroy': [IsGroupAdmin],
+        'retrieve': [NotInBlacklist],
         'join': [NotInBlacklist],
-        'leave': []
+        'leave': [],
+        'list': [],
+        'create': []
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 

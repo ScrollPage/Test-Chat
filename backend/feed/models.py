@@ -23,10 +23,14 @@ class AbstractPost(models.Model):
             pass
         else:
             output = BytesIO()
-
-            im.save(output, format='JPEG', quality=0)
+            try:
+                im.save(output, format='JPEG', quality=0)
+                format = 'jpeg'
+            except OSError:
+                im.save(output, format='PNG', quality=0)
+                format = 'png'
+                
             output.seek(0)
-
             self.compressed_image = save_image(output, self.image.name)
         finally:
             super().save()
