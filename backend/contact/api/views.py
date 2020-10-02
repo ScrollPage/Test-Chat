@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, mixins
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -8,6 +8,7 @@ from django.utils import timezone
 from .serializers import CreateContactSerializer, TokenSerializer
 from contact.models import Contact, MyToken, ContactCounter
 from community.models import Page
+from feed.api.exceptions import BadRequestError
 
 class RegistrationView(generics.CreateAPIView):
     '''Создание пользователя'''

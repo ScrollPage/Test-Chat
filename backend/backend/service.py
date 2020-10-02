@@ -8,12 +8,12 @@ from contact.models import Contact
 from .exceptions import ForbiddenError
 from parties.models import Party
 
-def save_image(output, name):
+def save_image(output, name, format):
     return InMemoryUploadedFile(
             output, 
             'ImageField', 
             "%s.jpg" % name.split('.')[0], 
-            'image/jpeg',
+            f'image/{format}',
             sys.getsizeof(output), 
             None
         )

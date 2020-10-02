@@ -16,24 +16,20 @@ class AbstractPost(models.Model):
     compressed_image = models.ImageField(upload_to='compressed_user_posts/%Y/%m/%d', blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def save(self, *args, **kwargs):
+    def image_save(self, *args, **kwargs):
+        im = Image.open(self.image)
+        output = BytesIO()
         try:
-            im = Image.open(self.image)
-        except ValueError:
-            pass
-        else:
-            output = BytesIO()
-            try:
-                im.save(output, format='JPEG', quality=0)
-                format = 'jpeg'
-            except OSError:
-                im.save(output, format='PNG', quality=0)
-                format = 'png'
-                
-            output.seek(0)
-            self.compressed_image = save_image(output, self.image.name)
-        finally:
-            super().save()
+            im.save(output, format='JPEG', quality=0)
+            format = 'jpeg'
+        except OSError:
+            im.save(output, format='PNG', quality=0)
+            format = 'png'
+
+        output.seek(0)
+        self.compressed_image = save_image(output, self.image.name, format)
+
+        super().save()
 
     def __str__(self):
         return str(self.id)

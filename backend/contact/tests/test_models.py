@@ -1,5 +1,5 @@
 from mixer.backend.django import mixer
-from django.test import TestCase
+from django.test import TestCase 
 
 from contact.models import ContactCounter, Contact
 

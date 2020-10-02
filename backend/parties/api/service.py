@@ -1,10 +1,10 @@
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from backend.service import PermissionSerializerMixin, LowReadContactSerializer
 from community.models import Page
-from parties.models import Party
 from contact.models import Contact
 
 class PartyPermissionSerializerModelViewset(PermissionSerializerMixin,

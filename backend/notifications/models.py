@@ -21,7 +21,7 @@ class Notice(models.Model):
 
     receiver = models.ForeignKey(Contact, on_delete = models.CASCADE, related_name='notifications')
     sender = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    event = models.CharField(max_length=10, choices=CHOICES)
+    event = models.CharField(max_length=20, choices=CHOICES)
     seen = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 

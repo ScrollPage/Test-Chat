@@ -43,6 +43,14 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        res = super().create(request, args, kwargs)
+        if res.data.get('image', None):
+            id = int(res.data.get('id'))
+            post = get_object_or_404(Post, id=id)
+            post.image_save()
+        return res
+
     def get_queryset(self):
         queryset = Post.objects.all()
         return post_annotations(self, queryset).filter(published=True).order_by('-timestamp')

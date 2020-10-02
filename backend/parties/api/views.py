@@ -46,6 +46,22 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        res = super().create(request, args, kwargs)
+        if res.data.get('image', None):
+            id = int(res.data.get('id'))
+            post = get_object_or_404(Party, id=id)
+            post.image_save()
+        return res
+
+    def update(self, request, *args, **kwargs):
+        super().update(request, args, kwargs)
+        if request.data.get('image', None):
+            id = int(kwargs['pk'])
+            post = get_object_or_404(Party, id=id)
+            post.image_save()
+        return res
+
     @action(detail=False, methods=['post'])
     def add_blacklist(self, request, *args, **kwargs):
         self.get_serializer(data=request.data).is_valid(raise_exception=True)

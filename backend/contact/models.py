@@ -10,8 +10,10 @@ from django.contrib.auth.models import (
 )
 from PIL import Image
 from io import BytesIO
+from random import randint
 
 from .service import generate_token, save_image
+
 
 class ContactManager(BaseUserManager):
     '''Мэнэджер кастомного пользователя'''
@@ -86,35 +88,30 @@ class Contact(AbstractBaseUser, PermissionsMixin):
 
     objects = ContactManager()
 
-    def save(self, *args, **kwargs):
+    def image_save(self, *args, **kwargs):
+        im1 = im2 = Image.open(self.avatar)
+        output = BytesIO()
         try:
-            im1 = im2 = Image.open(self.avatar)
-        except ValueError:
-            pass
-        else:
-            output = BytesIO()
-            try:
-                im1.save(output, format='JPEG', quality=0)
-                format = 'jpeg'
-            except OSError:
-                im1.save(output, format='PNG', quality=0)
-                format = 'png'
-            output.seek(0)
-            self.compressed_avatar = save_image(output, self.avatar.name, format)
+            im1.save(output, format='JPEG', quality=0)
+            format = 'jpeg'
+        except OSError:
+            im1.save(output, format='PNG', quality=0)
+            format = 'png'
+        output.seek(0)
+        self.compressed_avatar = save_image(output, self.avatar.name, format)
 
-            output = BytesIO()
-            im2 = im2.resize((50, 50))
-            try:
-                im2.save(output, format='JPEG', quality=100)
-                format = 'jpeg'
-            except OSError:
-                im2.save(output, format='PNG', quality=100)
-                format = 'png'
-            output.seek(0)
-            self.small_avatar = save_image(output, self.avatar.name, format)
+        output = BytesIO()
+        im2 = im2.resize((50, 50))
+        try:
+            im2.save(output, format='JPEG', quality=100)
+            format = 'jpeg'
+        except OSError:
+            im2.save(output, format='PNG', quality=100)
+            format = 'png'
+        output.seek(0)
+        self.small_avatar = save_image(output, self.avatar.name, format)
 
-        finally:
-            super().save()
+        super().save()
 
     def __str__(self):
         return str(self.id)
@@ -137,9 +134,14 @@ class Contact(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = 'Контакты'
         ordering = ['-date_joined']
 
+class Code(models.Model):
+    '''Код активации'''
+    user = models.OneToOneField(Contact, on_delete=models.CASCADE, default=None, null=True)
+    code = models.PositiveSmallIntegerField(default=0)
+
 class MyToken(models.Model):
     '''Токены для подтвреждения почты'''
-    user = models.ForeignKey(Contact, on_delete=models.CASCADE, default=None, null=True)
+    user = models.OneToOneField(Contact, on_delete=models.CASCADE, default=None, null=True)
     token = models.CharField(max_length=100, default='')
     created = models.DateTimeField(auto_now_add=True)
 

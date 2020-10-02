@@ -23,7 +23,7 @@ class PartyCreateSerializer(serializers.ModelSerializer):
     '''Сериализация создания групп'''
     class Meta:
         model = Party
-        exclude = ['blacklist', 'staff']
+        exclude = ['blacklist', 'staff', 'compressed_image', 'small_image']
 
 class IntegerFieldSerializer(serializers.Serializer):
     '''Вход и выход из группы'''
