@@ -20,6 +20,7 @@ class AddRequest(models.Model):
 class Page(models.Model):
     '''Страница пользователя'''
     friends = models.ManyToManyField(Contact, blank=True)
+    blacklist = models.ManyToManyField(Contact, blank=True, related_name='blacklisted')
     parties = models.ManyToManyField(Party, blank=True, related_name='members')
     user = models.OneToOneField(Contact, related_name='my_page', on_delete=models.CASCADE)
 
