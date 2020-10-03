@@ -1,14 +1,12 @@
 from rest_framework import generics, permissions, mixins
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from datetime import timedelta
-from django.utils import timezone
 
-from .serializers import CreateContactSerializer, TokenSerializer
-from contact.models import Contact, MyToken, ContactCounter
+from .serializers import CreateContactSerializer, TokenSerializer, CodeSerializer
+from contact.models import Contact, MyToken, ContactCounter, Code
 from community.models import Page
 from feed.api.exceptions import BadRequestError
+from .service import SerializerViewset, make_active
 
 class RegistrationView(generics.CreateAPIView):
     '''Создание пользователя'''
@@ -16,20 +14,21 @@ class RegistrationView(generics.CreateAPIView):
     serializer_class = CreateContactSerializer
     permission_classes = [permissions.AllowAny]
 
-class ContactActivationView(generics.GenericAPIView):
+
+class ContactActivationView(SerializerViewset):
     '''Подтверждение аккаунта пользователя'''
     serializer_class = TokenSerializer
-    permission_classes = [permissions.AllowAny,]
+    serializer_class_by_action = {
+        'phone_activation0': CodeSerializer
+    }
+    permission_classes = [permissions.AllowAny]
 
-    def post(self, request):
+    def email_activation(self, request):
         token = request.data['token']
         token = get_object_or_404(MyToken, token=token)
-        user = token.user
-        if token.created + timedelta(hours=2) < timezone.now():
-            user.delete()
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            user.is_active = True
-            user.save()
-            token.delete()
-            return Response(status=status.HTTP_200_OK)
+        return make_active(token)
+
+    def phone_activation(self, request):
+        code = request.data['code']
+        code = get_object_or_404(Code, code=code)
+        return make_active(code)

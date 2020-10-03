@@ -43,12 +43,12 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
     mass_permission_classes = [permissions.IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
-        super().update(request, args, kwargs)
+        res = super().update(request, args, kwargs)
         avatar = request.data.get('avatar', None)
         if avatar:
             contact = get_object_or_404(Contact, id=kwargs['pk'])
             contact.image_save()
-        return Response(status=status.HTTP_200_OK)
+        return res
 
     def get_queryset(self):
         pk = int(self.kwargs['pk'])

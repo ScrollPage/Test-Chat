@@ -11,12 +11,13 @@ from django.contrib.auth.models import (
 from PIL import Image
 from io import BytesIO
 from random import randint
+import requests
 
 from .service import generate_token, save_image
 
-
 class ContactManager(BaseUserManager):
     '''Мэнэджер кастомного пользователя'''
+
     def create_user(
         self,
         email,
@@ -82,6 +83,7 @@ class Contact(AbstractBaseUser, PermissionsMixin):
     compressed_avatar = models.ImageField(upload_to='compressed_user_avatars/%Y/%m/%d', blank=True)
     small_avatar = models.ImageField(upload_to='small_user_avatars/%Y/%m/%d', blank=True)
     is_active = models.BooleanField(default=False)
+    activation_type = models.CharField(default='', max_length=10, null=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number', 'slug']
@@ -138,6 +140,7 @@ class Code(models.Model):
     '''Код активации'''
     user = models.OneToOneField(Contact, on_delete=models.CASCADE, default=None, null=True)
     code = models.PositiveSmallIntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
 
 class MyToken(models.Model):
     '''Токены для подтвреждения почты'''
@@ -180,14 +183,30 @@ def send_conf_mail(sender, instance=None, created=False, **kwargs):
     '''Отправляет письмо с подтверждением'''
     if created:
         if not instance.is_superuser:
-            m = MyToken.objects.create(
-                user=instance, 
-                token=generate_token(instance.email)
-            )
-            send_mail(
-                'Подтверждение регистрации',
-                f"Перейдите по ссылке, чтобы завершить регистрацию: {settings.REACT_DOMEN}/account-activation?token={m.token}",
-                settings.EMAIL_HOST_USER, 
-                [instance.email, ], 
-                fail_silently=False
-            )
+            if instance.activation_type == 'email':
+                m = MyToken.objects.create(
+                    user=instance, 
+                    token=generate_token(instance.email)
+                )
+                send_mail(
+                    'Подтверждение регистрации',
+                    f"Перейдите по ссылке, чтобы завершить регистрацию: {settings.REACT_DOMEN}/account-activation?token={m.token}",
+                    settings.EMAIL_HOST_USER, 
+                    [instance.email],
+                    fail_silently=False
+                )
+            else:
+                code = Code.objects.create(
+                    user=instance,
+                    code=randint(100000, 999999)
+                )
+
+                url = 'http://api.sms-prosto.ru/?'
+                method = 'push_msg'
+                email = settings.SMS_EMAIL
+                password = settings.SMS_PASSWORD
+                phone = f'{instance.phone_number}'
+                text = f'Ваш код подтверждения: {code.code}'
+                sender_name = 'ScrollNet'
+                url = f'{url}method={method}&email={email}&password={password}&text={text}&phone={phone}&sender_name={sender_name}'
+                r = requests.get(url)

@@ -23,6 +23,7 @@ from .permissions import IsGroupAdminOrStaff, IsGroupAdmin, NotInBlacklist, Righ
 from contact.models import Contact
 from feed.models import Post
 from backend.service import ForbiddenError
+from community.api.permissions import IsRightUser
 
 class GroupViewSet(PartyPermissionSerializerModelViewset):
     '''Все о группах'''
@@ -42,7 +43,7 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
         'join': [NotInBlacklist],
         'leave': [],
         'list': [],
-        'create': []
+        'create': [IsRightUser]
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
@@ -55,7 +56,7 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
         return res
 
     def update(self, request, *args, **kwargs):
-        super().update(request, args, kwargs)
+        res = super().update(request, args, kwargs)
         if request.data.get('image', None):
             id = int(kwargs['pk'])
             post = get_object_or_404(Party, id=id)

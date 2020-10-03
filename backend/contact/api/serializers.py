@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.db import models
 
-from contact.models import Contact, MyToken, ContactCounter
+from contact.models import Contact, MyToken, ContactCounter, Code
 from feed.api.exceptions import BadRequestError
 
 class CreateContactSerializer(serializers.ModelSerializer):
@@ -14,14 +14,14 @@ class CreateContactSerializer(serializers.ModelSerializer):
             'first_name', 
             'last_name',
             'phone_number',
+            'activation_type',
         ]
 
     def create(self, validated_data):
-        email = validated_data.get('email', None)
-        password = validated_data.get('password', None)
-        first_name = validated_data.get('first_name', None)
-        last_name = validated_data.get('last_name', None)
-        phone_number = validated_data.get('phone_number', None)
+        password = validated_data.pop('password', None)
+        activation_type = validated_data.get('activation_type', None)
+        if activation_type != 'email' and activation_type != 'phone':
+            raise BadRequestError('Wrong activation type.')
         try:
             slug = ContactCounter.objects.get(id=1).counter + 1
         except ContactCounter.DoesNotExist:
@@ -29,11 +29,8 @@ class CreateContactSerializer(serializers.ModelSerializer):
             slug = 1
     
         user = Contact.objects.create(
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            phone_number=phone_number,
-            slug=f'id{slug}'
+            slug=f'id{slug}',
+            **validated_data,
         )
         user.set_password(password)
         user.save()
@@ -49,3 +46,14 @@ class TokenSerializer(serializers.ModelSerializer):
         if data.get('token', None):
             return super().validate(data)
         return BadRequestError('You need a token.')
+
+class CodeSerializer(serializers.ModelSerializer):
+    '''Сериализация токена'''
+    class Meta:
+        model = Code
+        fields = ['code']
+    
+    def validate(self, data):
+        if data.get('code', None):
+            return super().validate(data)
+        return BadRequestError('You need a code.')

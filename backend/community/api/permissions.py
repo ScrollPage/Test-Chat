@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from contact.models import Contact
 from community.models import AddRequest, UserInfo
+from parties.models import Party
 
 from rest_framework.permissions import BasePermission
 
@@ -13,6 +14,8 @@ class IsRightUser(BasePermission):
             return request.user == obj
         elif type(obj) == UserInfo:
             return request.user == obj.user
+        elif type(obj) == Party:
+            return request. user == obj.admin
 
 class NotCurrentAndNotFriends(BasePermission):
     '''Не тот же самый, и не друг ли уже?'''

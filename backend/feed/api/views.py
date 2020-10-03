@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from itertools import chain
+from operator import attrgetter
 
 from .service import (
     PermisisonSerializerPostModelViewset, 
@@ -135,9 +137,16 @@ class ContactFeedView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Post.objects.filter(
-            owner__in=[friend for friend in user.my_page.friends.all()]
+        queryset_friends = Post.objects.filter(
+            owner__in=[friend.my_page for friend in user.my_page.friends.all()]
         ).exclude(user=self.request.user)
-        queryset = queryset.order_by('timestamp')
-        queryset = post_annotations(self, queryset)
+        queryset_groups = Post.objects.filter(
+            group_owner__in=[group for group in user.my_page.parties.all()]
+        )
+        queryset_friends = post_annotations(self, queryset_friends)
+        queryset_groups = post_annotations(self, queryset_groups)
+        queryset = reversed(sorted(
+            chain(queryset_friends, queryset_groups),
+            key=attrgetter('timestamp')
+        ))
         return queryset
