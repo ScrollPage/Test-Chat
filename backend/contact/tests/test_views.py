@@ -60,3 +60,12 @@ class RegisrationTestCase(APITestCase):
         code = Code.objects.get(user=self.user1).code
         response = get_response('phone-activation', 'post', data={'code': str(code)[1:]})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_me_view_unauth(self):
+        response = get_response('me', 'get')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_me_view_auth(self):
+        response = get_response('me', 'get', self.user1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['email'], 'test@case.test1')

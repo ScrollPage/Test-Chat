@@ -58,7 +58,8 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
 
     def get_queryset(self):
         queryset = Post.objects.all()
-        return post_annotations(self, queryset).filter(published=True).order_by('-timestamp')
+        queryset = post_annotations(self.request.user, queryset)
+        return queryset.filter(published=True).order_by('-timestamp')
 
 class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     '''Все про комменты, кроме метода list'''
@@ -152,8 +153,8 @@ class ContactFeedView(generics.ListAPIView):
         queryset_groups = Post.objects.filter(
             group_owner__in=[group for group in user.my_page.parties.all()]
         )
-        queryset_friends = post_annotations(self, queryset_friends)
-        queryset_groups = post_annotations(self, queryset_groups)
+        queryset_friends = post_annotations(user, queryset_friends)
+        queryset_groups = post_annotations(user, queryset_groups)
         queryset = reversed(sorted(
             chain(queryset_friends, queryset_groups),
             key=attrgetter('timestamp')

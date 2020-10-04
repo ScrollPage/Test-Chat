@@ -13,6 +13,11 @@ class TestUrls(TestCase):
         path = reverse('phone-activation')
         self.assertEqual(resolve(path).view_name, 'phone-activation')
 
+    def test_me_url(self):
+        '''Убедиться, что ссылка и вью связаны правильно'''
+        path = reverse('me')
+        self.assertEqual(resolve(path).view_name, 'me')
+
     def test_registration_url(self):
         '''Убедиться, что ссылка и вью связаны правильно'''
         path = reverse('register')

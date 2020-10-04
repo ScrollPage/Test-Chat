@@ -65,15 +65,15 @@ class AbstractPostSerializer(serializers.Serializer):
     num_likes = serializers.IntegerField(read_only=True)
     timestamp = serializers.DateTimeField(read_only=True)
 
-def post_annotations(self, queryset):
+def post_annotations(user, queryset):
     return queryset.annotate(
             num_likes=Count('likes', distinct=True)
         ).annotate(
             num_reposts=Count('reposts', distinct=True)
         ).annotate(
-            is_liked=Count('likes', filter=Q(likes__user=self.request.user))
+            is_liked=Count('likes', filter=Q(likes__user=user))
         ).annotate(
-            is_watched=Count('reviews', filter=Q(reviews__user=self.request.user))
+            is_watched=Count('reviews', filter=Q(reviews__user=user))
         ).annotate(
             num_reviews=Count('reviews', distinct=True)
         ).annotate(
