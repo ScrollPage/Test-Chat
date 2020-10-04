@@ -47,6 +47,9 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(admin=self.request.user)
+
     def create(self, request, *args, **kwargs):
         res = super().create(request, args, kwargs)
         if res.data.get('image', None):

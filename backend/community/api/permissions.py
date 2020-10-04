@@ -106,3 +106,27 @@ class OneOfUsers(BasePermission):
             (request.user==sender),
             (request.user==receiver)
         ])
+
+class InBlackList(BasePermission):
+    '''В черном ли списке?'''
+    def has_permission(self, request, view):
+        try:
+            id = request.data['user_id']
+        except KeyError:
+            return True
+        else:
+            id=int(id)
+            user = get_object_or_404(Contact, id=id)
+            return user in request.user.my_page.blacklist.all()
+
+class NotInBlackList(InBlackList):
+    '''Не в черном списке'''
+    def has_permission(self, request, view):
+        try:
+            id = request.data['user_id']
+        except KeyError:
+            return True
+        else:
+            id=int(id)
+            user = get_object_or_404(Contact, id=id)
+            return bool(user not in request.user.my_page.blacklist.all())

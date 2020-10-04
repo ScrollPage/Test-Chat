@@ -72,16 +72,6 @@ class LowContactSerializer(serializers.ModelSerializer):
         model = Contact
         fields = ['id', 'first_name', 'last_name', 'slug', 'small_avatar',]
 
-class UserValidationSerializer(serializers.Serializer):
-    '''Проверка соответствия пользователей'''
-
-    def validate(self, attrs):
-        user = self.context['request'].user
-        if attrs['user'] !=  user:
-            raise ForbiddenError('You are the wrong user.')
-        return attrs
-
-
 class LowReadContactSerializer(LowContactSerializer):
     '''Все поля для чтения, кроме slug'''
     first_name = serializers.CharField(read_only=True)

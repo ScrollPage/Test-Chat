@@ -23,7 +23,7 @@ class PartyCreateSerializer(serializers.ModelSerializer):
     '''Сериализация создания групп'''
     class Meta:
         model = Party
-        exclude = ['blacklist', 'staff', 'compressed_image', 'small_image']
+        exclude = ['blacklist', 'staff', 'compressed_image', 'small_image', 'admin']
 
 class IntegerFieldSerializer(serializers.Serializer):
     '''Вход и выход из группы'''
@@ -40,7 +40,7 @@ class OfferedPostSerializer(PostSerializer):
 
     class Meta:
         model = Post
-        exclude = ['parent', 'owner', 'group_owner', 'compressed_image']
+        exclude = ['parent', 'owner', 'group_owner', 'compressed_image', 'user']
 
 class PostListSerializer(PostListSerializer):
     '''Сериализция списка постов без группы-владельца'''

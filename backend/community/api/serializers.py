@@ -76,4 +76,10 @@ class AddRequestSerializer(serializers.ModelSerializer):
         if data.get('receiver', None) and data.get('sender', None):
             return super().validate(data)
         raise BadRequestError('You need sender and receiver.')
+
+class IntegerFieldSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField(required=True)
+
+    class Meta:
+        ref_name = 'community_int_serializer'
         

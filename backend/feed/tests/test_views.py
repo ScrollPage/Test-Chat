@@ -79,13 +79,9 @@ class ContactTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_create_auth(self):
-        response = get_response('/api/v1/post/', 'post', self.user1, {'text': '123', 'user': 1}, is_url=True)
+        response = get_response('/api/v1/post/', 'post', self.user1, {'text': '123'}, is_url=True)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(json.loads(response.content)['text'], '123')
-
-    def test_post_create_wrong_user(self):
-        response = get_response('/api/v1/post/', 'post', self.user1, {'text': '123', 'user': 2}, is_url=True)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_post_update_in_blacklist(self):
         self.group.blacklist.add(self.user1)
@@ -123,7 +119,7 @@ class ContactTestCase(APITestCase):
             '/api/v1/comment/', 
             'post', 
             self.user1, 
-            {'post_id': 1, 'user': 1, 'text': '123'}, 
+            {'post_id': 1, 'text': '123'}, 
             is_url=True
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

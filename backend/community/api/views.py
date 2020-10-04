@@ -10,7 +10,8 @@ from .serializers import (
     AddRequestSerializer,
     FriendActionsSerializer,
     ContactFriendsSerializer,
-    UserInfoSerializer
+    UserInfoSerializer,
+    IntegerFieldSerializer
 )
 from .permissions import (
     NotCurrentAndNotFriends, 
@@ -20,6 +21,8 @@ from .permissions import (
     OneOfUsers,
     IsSender,
     IsRightUser,
+    InBlackList,
+    NotInBlackList
 )
 from .service import (
     RetrieveUpdateDestroyPermissionViewset,
@@ -143,6 +146,30 @@ class FriendPermissionViewset(ViewSetPermission):
         receiver_id = data['receiver']
         friend_manipulation(sender_id, receiver_id, add=False)
         return Response(status=status.HTTP_200_OK)
+
+class BlacklistViewset(ViewSetPermission):
+    '''Добавление в черный список и удаление из него'''
+    serializer_class = IntegerFieldSerializer
+    permission_classes = [NotInBlackList]
+    permission_classes_by_action = {
+        'remove': [InBlackList]
+    }
+    mass_permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['post'])
+    def add(self, request, *args, **kwargs):
+        id = request.data.get('user_id', None)
+        user = get_object_or_404(Contact, id=int(id))
+        request.user.my_page.blacklist.add(user)
+        return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'])
+    def remove(self, request, *args, **kwargs):
+        id = request.data.get('user_id', None)
+        user = get_object_or_404(Contact, id=id)
+        request.user.my_page.blacklist.remove(user)
+        return Response(status=status.HTTP_200_OK)
+
 
 class ContactFriendsView(generics.ListAPIView):
     '''Выводит список друзей контакта'''

@@ -5,9 +5,8 @@ from django.shortcuts import get_object_or_404
 from contact.models import Contact
 from score.models import Score
 from feed.models import Post
-from backend.service import UserValidationSerializer
 
-class ScoreCreateSerializer(serializers.ModelSerializer, UserValidationSerializer):
+class ScoreCreateSerializer(serializers.ModelSerializer):
     '''Сериализация просмотра'''
     class Meta:
         model = Score

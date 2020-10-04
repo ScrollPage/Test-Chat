@@ -45,6 +45,9 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     def create(self, request, *args, **kwargs):
         res = super().create(request, args, kwargs)
         if res.data.get('image', None):
@@ -75,6 +78,9 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     }
     mass_permission_classes = [permissions.IsAuthenticated, NotInOwnersBlacklist]
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     def get_queryset(self):
         if self.action == 'list':
             post_id = self.request.query_params.get('post_id', None)
@@ -93,6 +99,9 @@ class LikesCustomViewset(PermissionCreateViewset):
         'remove': [],
     }
     mass_permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):
@@ -128,7 +137,7 @@ class RePostMechanicsCustomViewset(CreateViewset):
                 user=user
             )
             send_repost_notification(parent.user, user, parent)
-        super().perform_create(serializer)
+        serializer.save(user=self.request.user)
 
 class ContactFeedView(generics.ListAPIView):
     '''Новости конкретного конатка'''

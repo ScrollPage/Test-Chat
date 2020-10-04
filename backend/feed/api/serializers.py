@@ -5,13 +5,11 @@ from django.shortcuts import get_object_or_404
 from community.models import Page
 from feed.models import Post, Like, RePost, Comment
 from backend.service import (
-    LowContactSerializer, 
-    UserValidationSerializer, 
+    LowContactSerializer,  
     LowReadContactSerializer,
     PartyShortSerializer,
 )
 from .service import (
-    BaseFeedSerializer, 
     AbstractPostSerializer, 
 )
 from .exceptions import BadRequestError
@@ -68,12 +66,12 @@ class FilterCommentSerializer(serializers.ListSerializer):
         data = data.filter(parent = None)
         return super().to_representation(data)
 
-class CreateCommentSerializer(AbstractPostSerializer, serializers.ModelSerializer, UserValidationSerializer):
+class CreateCommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     '''Сериализатор создания комментария'''
 
     class Meta:
         model = Comment
-        exclude = ['compressed_image']
+        exclude = ['compressed_image', 'user']
 
     def validate(self, attrs):
         data = self.context['request'].data
@@ -95,7 +93,7 @@ class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
 
-class BasePostSerialzier(AbstractPostSerializer, serializers.ModelSerializer, UserValidationSerializer):
+class BasePostSerialzier(AbstractPostSerializer, serializers.ModelSerializer):
     '''Базовый класс сeриализации постов и репостов'''
     num_reposts = serializers.IntegerField(read_only=True)
     is_liked = serializers.BooleanField(read_only=True)
@@ -108,7 +106,7 @@ class PostSerializer(BasePostSerialzier):
     '''Сериализация поста'''
     class Meta:
         model = Post
-        exclude = ['parent', 'group_owner', 'published', 'compressed_image']    
+        exclude = ['parent', 'group_owner', 'published', 'compressed_image', 'user']    
 
     def validate(self, attrs):
         data = self.context['request'].data
@@ -126,12 +124,12 @@ class PostListSerializer(BasePostSerialzier):
     num_comments = serializers.IntegerField(read_only=True)
     owner = PageSerializer(read_only=True)
 
-class RePostSerializer(BasePostSerialzier, UserValidationSerializer):
+class RePostSerializer(BasePostSerialzier):
     '''Сериализация репоста'''
     
     class Meta:
         model = Post
-        exclude = ['group_owner', 'compressed_image', 'published']
+        exclude = ['group_owner', 'compressed_image', 'published', 'user']
 
     def validate(self, attrs):
         data = self.context['request'].data
@@ -144,7 +142,7 @@ class LikeSerializer(serializers.ModelSerializer):
     '''Сериализация лайка'''
     class Meta:
         model = Like
-        fields = '__all__'
+        exclude = ['user']
 
     def create(self, validated_data):
         user = validated_data.get('user', None)

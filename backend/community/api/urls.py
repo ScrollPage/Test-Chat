@@ -9,6 +9,7 @@ from .views import (
     ContactFriendsView,
     SearchPeopleView,
     UserInfoUpdate,
+    BlacklistViewset,
 )
 
 urlpatterns = [
@@ -23,6 +24,14 @@ friends_add = FriendPermissionViewset.as_view({
 
 friends_remove = FriendPermissionViewset.as_view({
     'post': 'remove',
+})
+
+blacklist_add = BlacklistViewset.as_view({
+    'post': 'add'
+})
+
+blacklist_remove = BlacklistViewset.as_view({
+    'post': 'remove'
 })
 
 request_add = AddRequestCustomViewset.as_view({
@@ -40,6 +49,8 @@ request_remove = AddRequestCustomViewset.as_view({
 urlpatterns += format_suffix_patterns([
     path('friends/add/', friends_add, name='friends-add'),
     path('friends/remove/', friends_remove, name='friends-remove'),
+    path('blacklist/add/', blacklist_add, name='blacklist-add'),
+    path('blacklist/remove/', blacklist_remove, name='blacklist-remove'),
     path('request/list/', request_list, name='request-list'),
     path('request/add/', request_add, name='request-add'),
     path('request/remove/', request_remove, name='request-remove'),
