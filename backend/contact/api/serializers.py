@@ -4,6 +4,22 @@ from django.db import models
 from contact.models import Contact, MyToken, ContactCounter, Code
 from feed.api.exceptions import BadRequestError
 
+class MeSerializer(serializers.ModelSerializer):
+    '''Обзор самого себя'''
+    id = serializers.IntegerField()
+    class Meta:
+        model = Contact
+        fields = [
+            'id',
+            'email',
+            'first_name',
+            'last_name',
+            'slug',
+            'avatar',
+            'compressed_avatar',
+            'small_avatar'
+        ]
+
 class CreateContactSerializer(serializers.ModelSerializer):
     '''Создание пользоватля'''
     class Meta:
