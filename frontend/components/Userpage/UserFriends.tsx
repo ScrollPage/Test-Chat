@@ -13,8 +13,8 @@ const UserFriends: React.FC<UserFriends> = ({ friends }) => {
     <StyledUserFriends>
       {friends.map((friend, index) => (
         <StyledUserFriend key={`user-friends__key__${friend.id}`} end={index ? (index + 1) % 6 === 0 : undefined}>
-          <div>
-            <LoadImage isCircle={true} src={friend.avatar} size={'35'} />
+          <div className="user-friends__avatar" >
+            <LoadImage isCircle={true} src={friend.avatar} />
           </div>
         </StyledUserFriend>
       ))}
@@ -29,12 +29,13 @@ const StyledUserFriends = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   padding-bottom: 10px;
-  width: 220px;
+  width: 200px !important;
+  margin-left: -10px;
 `;
 
 const StyledUserFriend = styled.div<{ end?: boolean }>`
   display: contents;
-  > div {
+  .user-friends__avatar {
     width: 25px;
     height: 25px;
   }
