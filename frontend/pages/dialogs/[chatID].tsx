@@ -17,12 +17,20 @@ import { GetServerSideProps } from 'next';
 import { IMessages } from '@/types/message';
 import axios from 'axios';
 import cookies from 'next-cookies';
+import { IChatParticipiant } from '@/types/chat';
+
+interface IChatInfo {
+    id: number;
+    participants: IChatParticipiant[];
+    companion: IChatParticipiant;
+}
 
 interface ChatPage {
     user: IUser;
+    chatInfo: IChatInfo | null;
 }
 
-export default function ChatPage({user}: ChatPage) {
+export default function ChatPage({user, chatInfo}: ChatPage) {
     const dispatch = useDispatch();
 
     const messages = useSelector(getMessages);
@@ -142,15 +150,12 @@ export const getServerSideProps: GetServerSideProps<ChatPage> = async (ctx) => {
         Authorization: `Token ${token}`,
     };
 
-
-    interface chatInfo {
-        
-    }
+    let chatInfo: (IChatInfo | null) = null;
 
     await axios
         .get(`/api/v1/chat/?id=${chatId}`)
         .then(response => {
-            chats = response?.data;
+            chatInfo = response?.data;
         })
         .catch(error => {
             console.log(error);
@@ -158,7 +163,8 @@ export const getServerSideProps: GetServerSideProps<ChatPage> = async (ctx) => {
 
     return {
         props: {
-            user: getUserFromServer(ctx)
+            user: getUserFromServer(ctx),
+            chatInfo: chatInfo
         }
     }
 }
