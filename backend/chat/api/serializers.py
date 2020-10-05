@@ -33,6 +33,15 @@ class ChatOverviewSerializer(ChatSerializer):
     '''Сериализация контакта при обзоре'''
     participants = ContactSerializer(many=True)
 
+    def to_representation(self, value):
+        user = self.context['request'].user
+        for participant in value.participants.all():
+            if participant != user:
+                full_name = participant.get_full_name()
+                break
+        response = super().to_representation(value).update({'companion_name': full_name})
+        return response
+
 class ChatCreateSerializer(ChatSerializer):
     '''Сериализация контакта при создании'''
     participants = ContactIDSerializer(many=True)
