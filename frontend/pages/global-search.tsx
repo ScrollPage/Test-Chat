@@ -18,13 +18,16 @@ interface IGlobalSearch {
 export default function GlobalSearch({ people, user }: IGlobalSearch) {
   const { data } = useSWR<IGlobalUser[]>(`/api/v1/people/`, { initialData: people });
 
+  console.log(data);
+
   const renderPeople = (people: Array<IGlobalUser>) =>
     people.map(man => (
       <Friend
         key={`people__key__${man.id}`}
         name={`${man.first_name} ${man.last_name}`}
-        userId={man.id}
+        friendId={man.id}
         chatId={man.chat_id}
+        src={man.avatar}
       />
     ));
 

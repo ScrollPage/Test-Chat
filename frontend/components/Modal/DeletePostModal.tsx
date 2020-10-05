@@ -6,10 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getModalName, getModalProps } from '@/store/selectors';
 import { modalHide } from '@/store/actions/modal';
 import { mutate } from 'swr';
-import { IComment } from '@/types/comment';
-import { deleteComment } from '@/store/actions/comment';
-import { commentAmountMutate } from '@/mutates/comment';
-import { IDeleteCommentModal } from '@/components/Comment/Comment';
+import { deletePost } from '@/store/actions/post';
+import { IPost } from '@/types/post';
 
 const DeleteCommentModal: React.FC = () => {
   const dispatch = useDispatch();
@@ -17,24 +15,25 @@ const DeleteCommentModal: React.FC = () => {
   const modalProps = useSelector(getModalProps);
   const modalName = useSelector(getModalName);
 
-  const deleteHanlder = (modalProps: IDeleteCommentModal) => {
-    const commentUrl = `/api/v1/comment/?post_id=${modalProps.postId}`;
+  const deleteHanlder = (modalProps: any) => {
+    setClose();
     let postUrl = '/api/v1/feed/';
     if (modalProps.pageUserId) {
       postUrl = `/api/v1/post/?id=${modalProps.pageUserId}`;
     }
-    setClose();
+    console.log(postUrl);
     mutate(
-      commentUrl,
-      async (comments: IComment[]) => {
-        if (comments) {
-          return comments.filter(comment => comment.id !== modalProps.commentId);
+      postUrl,
+      async (posts: IPost[]) => {
+        console.log(posts);
+        if (posts) {
+          console.log(posts.filter(post => post.id !== modalProps.postId));
+          return posts.filter(post => post.id !== modalProps.postId);
         }
       },
       false
     );
-    commentAmountMutate(modalProps.postId, false, postUrl);
-    dispatch(deleteComment(modalProps.commentId));
+    dispatch(deletePost(modalProps.postId));
   };
 
   const setClose = () => {
@@ -42,9 +41,9 @@ const DeleteCommentModal: React.FC = () => {
   };
 
   return (
-    <NewModal isOpen={modalName === 'comment_modal'} setClose={setClose}>
+    <NewModal isOpen={modalName === 'post_modal'} setClose={setClose}>
       <StyledDeleteCommentModal>
-        <h4>Вы дейтвительно хотите удалить комментарий?</h4>
+        <h4>Вы дейтвительно хотите удалить пост?</h4>
         <Button type="primary" danger onClick={() => deleteHanlder(modalProps)}>
           Да
         </Button>

@@ -1,5 +1,5 @@
-import { SearchActionTypes } from './../actions/search';
-import * as types from '../types';
+import * as search from './../actions/search';
+import { PropertiesType } from '@/types/actions';
 
 const initialState = {
     search: ""
@@ -7,9 +7,11 @@ const initialState = {
 
 type InititalStateType = typeof initialState;
 
+type SearchActionTypes = ReturnType<PropertiesType<typeof search>>
+
 export const searchReducer = (state = initialState, action: SearchActionTypes): InititalStateType=> {
     switch (action.type) {
-        case types.SET_SEARCH:
+        case 'SET_SEARCH':
             return { ...state, search: action.search }
         default:
             return state;

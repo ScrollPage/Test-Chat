@@ -2,7 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { LeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import LinkAvatar from '@/components/UI/LinkAvatar';
+import Avatar from 'antd/lib/avatar/avatar';
+import { UserOutlined } from '@ant-design/icons';
 
 const ChatHeader: React.FC = () => {
     return (
@@ -19,9 +20,7 @@ const ChatHeader: React.FC = () => {
             </Link>
             <div>Название</div>
             <div>
-                <LinkAvatar
-                    isUsername={false}
-                />
+                <Avatar icon={<UserOutlined />} />
             </div>
         </StyledChatHeader>
     );

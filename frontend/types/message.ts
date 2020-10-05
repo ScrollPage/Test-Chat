@@ -7,4 +7,5 @@ export interface IMessage {
   id: number;
   last_name: string;
   timestamp: string;
+  small_avatar?: string;
 }

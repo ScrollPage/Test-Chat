@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 interface ILinkAvatar {
   href?: string;
@@ -11,33 +11,29 @@ interface ILinkAvatar {
   style?: any;
   size?: number;
   isUsername: boolean;
+  src?: string;
 }
 
-const LinkAvatar: React.FC<ILinkAvatar> = ({ href = "", as = "", isLink = true, style, size, isUsername }) => {
+const LinkAvatar: React.FC<ILinkAvatar> = ({ href = "", as = "", isLink = true, style, size, isUsername, src }) => {
   return (
     <StyledLinkAvatar isUsername={isUsername}>
-      { isLink ? (
         <Link href={href} as={as}>
           <a>
             <Avatar
               style={style}
               size={size}
               icon={<UserOutlined />}
+              src={src}
             />
           </a>
-        </Link >) : (
-          <Avatar
-            style={style}
-            size={size}
-            icon={<UserOutlined />}
-          />
-        )}
+        </Link >
     </StyledLinkAvatar>
   );
 }
 
 const StyledLinkAvatar = styled.div<{isUsername: boolean}>`
   .ant-avatar {
+    position: relative;
     background-color: ${props =>
       props.isUsername ? 'lightblue' : '#87d068'};
     }

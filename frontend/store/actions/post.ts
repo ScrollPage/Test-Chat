@@ -4,7 +4,7 @@ import Cookie from 'js-cookie';
 import { show } from './alert';
 import { trigger } from 'swr';
 
-export const addPost = (text: string, image: any, pageUserId: number, triggerUrl: string): ThunkType => async dispatch => {
+export const addPost = (text: string, image: any, triggerUrl: string, pageUserId?: number): ThunkType => async dispatch => {
     let form_data = new FormData();
     if (image) {
         form_data.append('image', image, image.name);
@@ -12,7 +12,11 @@ export const addPost = (text: string, image: any, pageUserId: number, triggerUrl
     form_data.append('text', text);
     const userId: any = Cookie.get('userId');
     form_data.append('user', userId);
-    form_data.append('owner', String(pageUserId));
+    let owner = userId;
+    if (pageUserId) {
+        owner = pageUserId;
+    }
+    form_data.append('owner', String(owner));
     await axios
         .post('/api/v1/post/', form_data)
         .then(res => {
@@ -43,7 +47,7 @@ export const rePost = (text: string, image: any, parent: number, triggerUrl: str
     }
     form_data.append('text', text);
     const userId: any = Cookie.get('userId');
-    form_data.append('user', userId);
+    // form_data.append('user', userId);
     form_data.append('owner', userId);
     form_data.append('parent', String(parent));
     await axios
@@ -61,7 +65,6 @@ export const rePost = (text: string, image: any, parent: number, triggerUrl: str
 export const addLike = (postId: number): ThunkType => async dispatch => {
     await axios
         .post('/api/v1/like/add/', {
-            user: Number(Cookie.get('userId')),
             post_id: postId,
         })
         .then(res => {
@@ -75,7 +78,6 @@ export const addLike = (postId: number): ThunkType => async dispatch => {
 export const removeLike = (postId: number): ThunkType => async dispatch => {
     await axios
         .post('/api/v1/like/remove/', {
-            user: Cookie.get('userId'),
             post_id: postId,
         })
         .then(res => {

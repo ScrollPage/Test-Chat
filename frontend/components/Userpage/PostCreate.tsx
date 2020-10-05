@@ -2,23 +2,49 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import FileUpload from '@/components/UI/FileUpload';
 import { Input, Button } from 'antd';
+import { addPostMutate, addRepostMutate } from '@/mutates/post';
+import { IUser } from '@/types/user';
+import { useDispatch } from 'react-redux';
+import { addPost, rePost } from '@/store/actions/post';
+import { IPost } from '@/types/post';
 
 interface IPostCreate {
   isRepost: boolean;
-  addPostMutate: (isRepost: boolean, newPost: string, mutatedImage: any, image: any) => void;
-} 
+  pageUserId?: number;
+  user: IUser;
+  parent?: IPost;
+  setClose?: () => void;
+}
 
-const PostCreate: React.FC<IPostCreate> = ({ isRepost, addPostMutate }) => {
+const PostCreate: React.FC<IPostCreate> = ({
+  isRepost,
+  pageUserId,
+  user,
+  parent,
+  setClose,
+}) => {
+  const dispatch = useDispatch();
 
-  const [newPost, setNewPost] = useState('');
+  const [postText, setPostText] = useState('');
   const [mutatedImage, setMutatedImage] = useState(null);
   const [image, setImage] = useState(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (newPost.trim() !== '' || mutatedImage) {
-      addPostMutate(isRepost, newPost, mutatedImage, image);
-      setNewPost('');
+    if (postText.trim() !== '' || mutatedImage) {
+      let postUrl = '/api/v1/feed/';
+      if (pageUserId) {
+        postUrl = `/api/v1/post/?id=${pageUserId}`;
+      }
+      if (isRepost && parent && setClose) {
+        setClose();
+        addRepostMutate(postText, mutatedImage, parent, user, postUrl);
+        dispatch(rePost(postText, image, parent.id, postUrl));
+      } else {
+        addPostMutate(postText, mutatedImage, user, postUrl);
+        dispatch(addPost(postText, image, postUrl, pageUserId));
+      }
+      setPostText('');
       setMutatedImage(null);
       setImage(null);
     }
@@ -34,8 +60,8 @@ const PostCreate: React.FC<IPostCreate> = ({ isRepost, addPostMutate }) => {
                 id="create_post"
                 name="create_post"
                 placeholder={isRepost ? 'Ваше сообщение' : 'Что у вас нового?'}
-                value={newPost}
-                onChange={e => setNewPost(e.target.value)}
+                value={postText}
+                onChange={e => setPostText(e.target.value)}
                 autoSize={{ minRows: 4, maxRows: 4 }}
               />
             </div>
@@ -54,46 +80,46 @@ const PostCreate: React.FC<IPostCreate> = ({ isRepost, addPostMutate }) => {
       </StyledPostCreate>
     </>
   );
-}
+};
 
 export default PostCreate;
 
 const StyledPostCreate = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: 20px;
-    padding-bottom: 12px !important;
-    background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px;
+  padding-bottom: 12px !important;
+  background-color: #f4f4f4;
 `;
 
 const StyledTopPost = styled.div`
-    flex: 1;
-    display: flex;
-    @media (max-width: 991.98px) {
-      flex-direction: column;
+  flex: 1;
+  display: flex;
+  @media (max-width: 991.98px) {
+    flex-direction: column;
+  }
+  > div {
+    &:first-of-type {
+      margin-right: 20px;
+      flex: 1;
+      @media (max-width: 991.98px) {
+        margin-right: 0px;
+      }
     }
-    > div {
-        &:first-of-type {
-            margin-right: 20px;
-            flex: 1;
-            @media (max-width: 991.98px) {
-              margin-right: 0px;
-            }
+    &:last-of-type {
+      .ant-upload-select-picture-card {
+        height: 98px;
+        width: 98px;
+      }
+      @media (max-width: 991.98px) {
+        width: 100%;
+        margin-top: 20px;
+        .ant-upload-select-picture-card {
+          width: 100%;
+          height: 20px;
         }
-        &:last-of-type {
-            .ant-upload-select-picture-card {
-              height: 98px;
-              width: 98px;
-            }
-            @media (max-width: 991.98px) {
-              width: 100%;
-              margin-top: 20px;
-              .ant-upload-select-picture-card {
-                width: 100%;
-                height: 20px;
-              }
-            }
-        }
+      }
     }
+  }
 `;

@@ -30,17 +30,13 @@ export default SearchDialog;
 
 const StyledSearch = styled.div`
     width: 100%;
+    height: 60px;
+    border-bottom: 1px solid #f0f0f0;
     display: flex;
     align-items: center;
-    position: sticky;
-    top: 60px;
-    z-index: 1;
-    /* max-width: 200px; */
-    padding: 20px 0;
-    background: #fff;
     > div {
         &:first-of-type {
-            margin: 0 20px 0 0px;
+            margin: 0 20px 0 10px;
         }
         &:last-of-type {
             flex: 1;

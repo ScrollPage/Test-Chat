@@ -18,15 +18,14 @@ interface IFriends {
 export default function Friends({ friends, user }: IFriends) {
     const { data } = useSWR<IGlobalUser[]>(`/api/v1/friends/`, { initialData: friends });
 
-    console.log(data);
-
     const renderFriends = (friends: Array<IGlobalUser>) =>
         friends.map(friend => (
             <Friend
                 key={`friend__key__${friend.id}`}
                 name={`${friend.first_name} ${friend.last_name}`}
-                userId={friend.id}
+                friendId={friend.id}
                 chatId={friend.chat_id}
+                src={friend.avatar}
             />
         ));
 

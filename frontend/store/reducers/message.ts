@@ -1,7 +1,7 @@
-import { MessageActionTypes } from './../actions/message';
+import { PropertiesType } from '@/types/actions';
 import { IMessages } from '@/types/message';
-import * as types from '../types';
-
+import { message } from './../actions/message';
+    
 const initialState = {
     messages: [] as IMessages,
     loading: false,
@@ -9,15 +9,17 @@ const initialState = {
 
 type InititalStateType = typeof initialState;
 
+type MessageActionTypes = ReturnType<PropertiesType<typeof message>>
+
 export const messageReducer = (state = initialState, action: MessageActionTypes): InititalStateType => {
     switch (action.type) {
-        case types.ADD_MESSAGE:
+        case 'ADD_MESSAGE':
             return { ...state,  messages: [...state.messages, action.message] }
-        case types.SET_MESSAGES:
+        case 'SET_MESSAGES':
             return { ...state, messages: action.messages.reverse() }
-        case types.SET_LOADING_FALSE:
+        case 'SET_LOADING_FALSE':
             return { ...state, loading: false }
-        case types.SET_LOADING:
+        case 'SET_LOADING':
             return { ...state, loading: true }
         default:
             return state;

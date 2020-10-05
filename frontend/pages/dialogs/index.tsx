@@ -28,14 +28,14 @@ export default function Dialogs({ chats, user }: IDialogs) {
         return `${partic.first_name} ${partic.last_name}`
     }
 
-    const participantId = (participant1: IChatParticipiant, participant2: IChatParticipiant): number => {
+    const participant = (participant1: IChatParticipiant, participant2: IChatParticipiant): IChatParticipiant => {
         let partic;
         if (participant1.id === user.userId) {
             partic = participant2;
         } else {
             partic = participant1;
         }
-        return partic.id
+        return partic
     }
 
     const isConversation = (people: Array<IChatParticipiant>) => {
@@ -45,13 +45,15 @@ export default function Dialogs({ chats, user }: IDialogs) {
         return true
     }
 
+    console.log(data);
+
     const renderChats = (chats: Array<IChat>) =>
         chats.map(chat => (
             <Dialog
                 key={`chat__key__${chat.id}`}
                 name={isConversation(chat.participants) ? `Беседа №${chat.id}` : participantName(chat.participants[0], chat.participants[1])}
                 chatID={chat.id}
-                dialogUserId={isConversation(chat.participants) ? null : participantId(chat.participants[0], chat.participants[1])}
+                dialogUser={isConversation(chat.participants) ? null : participant(chat.participants[0], chat.participants[1])}
             />
         ));
 
@@ -90,7 +92,6 @@ export const getServerSideProps: GetServerSideProps<IDialogs> = async (ctx) => {
             },
         };
     }
-
     await axios
         .get(`/api/v1/chat/?id=${userId}`)
         .then(response => {

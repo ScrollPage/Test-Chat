@@ -11,7 +11,6 @@ import {
 import Link from 'next/link';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import Cookie from 'js-cookie';
 import { IUser } from '@/types/user';
 
 interface IActiveLink {
