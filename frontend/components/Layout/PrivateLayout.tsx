@@ -5,7 +5,7 @@ import WebSocketInstance from '@/websocket';
 import Pusher from 'pusher-js';
 
 import { authCheckState } from '@/store/actions/auth';
-import { setMessages, addMessage } from '@/store/actions/message';
+import { setMessages, message as actionMessage } from '@/store/actions/message';
 import { show } from '@/store/actions/alert';
 
 import Header from './Header';
@@ -15,6 +15,9 @@ import Container from '@/styles/Container';
 import { IUser } from '@/types/user';
 import { IMessage, IMessages } from '@/types/message';
 import DeleteCommentModal from '../Modal/DeleteCommentModal';
+import DeletePostModal from '../Modal/DeletePostModal';
+import AddRepostModal from '../Modal/AddRepostModal';
+import ChangeAvatarModal from '../Modal/ChangeAvatarModal';
 
 interface IPrivateLayout {
     children: React.ReactNode;
@@ -30,7 +33,7 @@ const PrivateLayout: React.FC<IPrivateLayout> = ({ children, user }) => {
     };
 
     const addMessageHandler = (message: IMessage) => {
-        dispatch(addMessage(message));
+        dispatch(actionMessage.addMessage(message));
     };
 
     useEffect(() => {
@@ -78,6 +81,9 @@ const PrivateLayout: React.FC<IPrivateLayout> = ({ children, user }) => {
                 </Container>
             </StyledMain>
             <DeleteCommentModal />
+            <DeletePostModal />
+            <AddRepostModal />
+            <ChangeAvatarModal />
         </>
     );
 };

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Comment from './Comment';
 import useSWR from 'swr';
-import { IComment } from '@/types/comment';
+import { IComment, ICommentUser } from '@/types/comment';
 import Loading from '../UI/Loading';
 import { IUser } from '@/types/user';
 import CommentInput from './CommentInput';
@@ -10,7 +10,7 @@ import styled from 'styled-components';
 interface ICommentFC {
   postId: number;
   user: IUser;
-  pageUserId: number;
+  pageUserId?: number;
 }
 
 const Comments: React.FC<ICommentFC> = ({ postId, user, pageUserId }) => {
@@ -18,14 +18,20 @@ const Comments: React.FC<ICommentFC> = ({ postId, user, pageUserId }) => {
     `/api/v1/comment/?post_id=${postId}`
   );
 
+  const commentAnswerHandler = (
+    commentUser: ICommentUser,
+    commentId: number
+  ) => {};
+
   const renderComments = (comments: Array<IComment>) => {
-    return comments.map((comment, index) => (
+    return comments.map(comment => (
       <Comment
-        key={`comment__key__${index}__${comment.post_id}`}
+        key={`comment__key__${comment.id}`}
         userId={user.userId}
         comment={comment}
         postId={postId}
         pageUserId={pageUserId}
+        commentAnswerHandler={commentAnswerHandler}
       />
     ));
   };
@@ -43,7 +49,7 @@ const Comments: React.FC<ICommentFC> = ({ postId, user, pageUserId }) => {
           <Loading />
         </div>
       )}
-      <CommentInput postId={postId} user={user} />
+      <CommentInput pageUserId={pageUserId} postId={postId} user={user} />
     </StyledComments>
   );
 };

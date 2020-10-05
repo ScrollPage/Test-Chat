@@ -17,6 +17,7 @@ export interface IChatParticipiant {
   first_name: string;
   last_name: string;
   slug: string;
+  small_avatar?: string; 
 }
 
 export interface IChat {

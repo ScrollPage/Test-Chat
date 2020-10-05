@@ -4,7 +4,7 @@ export interface IContactUser {
   first_name: string;
   last_name: string;
   slug: string;
-  avatar: string | null;
+  avatar?: string;
 }
 
 export interface IGlobalUser extends IContactUser {

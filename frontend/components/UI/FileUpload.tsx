@@ -5,10 +5,11 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 interface IFileUpload {
     mutatedImage: any;
     setMutatedImage: (mutatedImage: any) => void;
-    setImage: (image: any) => void;
+    setImage?: (image: any) => void;
+    onPreview?: (file: any) => void;
 } 
 
-const FileUpload: React.FC<IFileUpload> = ({ mutatedImage, setMutatedImage, setImage }) => {
+const FileUpload: React.FC<IFileUpload> = ({ mutatedImage, setMutatedImage, setImage, onPreview }) => {
     const [loading, setLoading] = useState(false);
 
     function getBase64(img: any, callback: any) {
@@ -39,7 +40,9 @@ const FileUpload: React.FC<IFileUpload> = ({ mutatedImage, setMutatedImage, setI
             getBase64(info.file.originFileObj, (mutatedImage: any) => {
                 setMutatedImage(mutatedImage);
                 setLoading(false);
-                setImage(info.file.originFileObj);
+                if (setImage) {
+                    setImage(info.file.originFileObj);
+                }
             });
         }
     };
@@ -59,6 +62,7 @@ const FileUpload: React.FC<IFileUpload> = ({ mutatedImage, setMutatedImage, setI
             showUploadList={false}
             beforeUpload={beforeUpload}
             onChange={handleChange}
+            onPreview={onPreview}
         >
             {mutatedImage ? (
                 <img src={mutatedImage} alt="avatar" style={{ width: '100%' }} />

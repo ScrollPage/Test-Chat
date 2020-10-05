@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import cookies from 'next-cookies';
 import { GetServerSidePropsContext } from 'next';
@@ -33,3 +34,42 @@ export const renderTimestamp = (timestamp: string): string => {
     }
     return prefix;
 };
+
+
+export const isImageLoaded = (src: string) => {
+
+    const [loadImage, setLoadImage] = useState(false); 
+
+    const loadImageWithPromiseTimeout = (src: string) =>
+    new Promise((resolve, reject) => {
+        const image = new Image();
+
+        const timeout = setTimeout(() => {
+            image.onload = null;
+            reject();
+        }, 1000);
+
+        image.onload = () => {
+            clearTimeout(timeout);
+            resolve();
+        };
+
+        image.src = src;
+    });
+
+    const awaitImage = async () => {
+        try {
+          await loadImageWithPromiseTimeout(src);
+          setLoadImage(true);
+        } catch {
+          console.error(`Unable to load ${src} in 1s`);
+          setLoadImage(true);
+        }
+      };
+
+    useEffect(() => {
+        awaitImage();
+    })
+
+    return loadImage
+}

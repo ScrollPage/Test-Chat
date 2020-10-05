@@ -1,4 +1,4 @@
-import { instance, instanceWithOutHeaders } from '@/api/api';
+import { trigger } from 'swr';
 import axios from 'axios';
 import Cookie from 'js-cookie';
 import Router from 'next/router';
@@ -12,15 +12,17 @@ export const authInfo = (token: string): ThunkType => async dispatch => {
         Authorization: `Token ${token}`
     }
     await axios
-        .get('/auth/users/me/')
+        .get('/api/v1/me/')
         .then(res => {
+            Cookie.set('userId', res.data.id);
             Cookie.set('email', res.data.email);
             Cookie.set('firstName', res.data.first_name);
             Cookie.set('lastName', res.data.last_name);
-            Cookie.set('phoneNumber', res.data.phone_number);
             Cookie.set('slug', res.data.slug);
-            Cookie.set('userId', res.data.id);
+            Cookie.set('avatar', res.data.avatar);
+            Cookie.set('smallAvatar', res.data.small_avatar);
             console.log('Информация успешно занесена в куки');
+            console.log(res.data);
             Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });
         })
         .catch(err => {
@@ -35,11 +37,11 @@ export const authLogin = (email: string, password: string): ThunkType => async d
             password,
         })
         .then(res => {
-            const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
+            const expirationDate = new Date(new Date().getTime() + 3600 * 1000 * 24);
             Cookie.set('token', res.data.access);
             Cookie.set('expirationDate', expirationDate);
             dispatch(authInfo(res.data.access));
-            dispatch(checkAuthTimeout(3600));
+            dispatch(checkAuthTimeout(3600 * 24));
             dispatch(show('Вы успешно вошли!', 'success'));
         })
         .catch(err => {
@@ -144,5 +146,30 @@ export const authChange = (
         })
         .catch(err => {
             dispatch(show('Ошибка смены данных!', 'warning'));
+        });
+};
+
+export const avatarChange = (
+    image: any,
+    triggerUrl: string
+): ThunkType => async dispatch => {
+    axios.defaults.headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Token ${Cookie.get('token')}`
+    }
+    const postUrl = `/api/v1/post/?id=${Cookie.get('userId')}`
+    let form_data = new FormData();
+    form_data.append('avatar', image, image.name);
+    await axios
+        .patch(triggerUrl, form_data)
+        .then(res => {
+            dispatch(show('Вы успешно сменили аватар!', 'success'));
+            trigger(triggerUrl);
+            trigger(postUrl);
+        })
+        .catch(err => {
+            dispatch(show('Ошибка смены аватара!', 'warning'));
+            trigger(triggerUrl);
+            trigger(postUrl);
         });
 };

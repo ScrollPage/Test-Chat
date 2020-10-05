@@ -3,7 +3,7 @@ export interface IPostUser {
   first_name: string;
   last_name: string;
   slug?: string;
-  avatar: string | null;
+  small_avatar?: string;
 }
 
 export interface IPostParent {

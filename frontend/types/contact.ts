@@ -32,5 +32,6 @@ export interface IContact {
   phone_number: string;
   date_joined: string;
   last_login: string;
-  avatar: string | null;
+  avatar?: string;
+  compressed_avatar?: string;
 }

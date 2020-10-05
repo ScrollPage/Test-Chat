@@ -1,3 +1,4 @@
+import Cookie from 'js-cookie';
 import { ThunkType } from '@/types/thunk';
 import axios from 'axios';
 import Router from 'next/router';
@@ -59,10 +60,10 @@ export const removeFriend = (friendId: number, userId: number): ThunkType => asy
         });
 };
 
-export const createChat = (friendId: number, userId: number): ThunkType => async dispatch => {
+export const createChat = (friendId: number): ThunkType => async dispatch => {
     await axios
         .post('/api/v1/chat/', {
-            participants: [String(userId), String(friendId)],
+            participants: [Cookie.get('userId'), String(friendId)],
         })
         .then(res => {
             Router.push('/dialogs/[chatID]', `/dialogs/${res.data.id}`, {

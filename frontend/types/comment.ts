@@ -3,7 +3,7 @@ export interface ICommentUser {
   first_name: string;
   last_name: string;
   slug?: string;
-  avatar?: string | null;
+  small_avatar?: string;
 }
 
 export interface IComment {

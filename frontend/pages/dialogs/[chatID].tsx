@@ -4,7 +4,7 @@ import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
 import { getUserFromServer } from '@/utils/index';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { setLoading } from '@/store/actions/message';
+import { message as actionMessage } from '@/store/actions/message';
 import WebSocketInstance from '@/websocket';
 import ChatItem from '@/components/Chat/ChatItem';
 import ChatInput from '@/components/Chat/ChatInput';
@@ -37,7 +37,7 @@ export default function ChatPage({user}: ChatPage) {
     }, [messages]);
 
     useEffect(() => {
-        dispatch(setLoading());
+        dispatch(actionMessage.setLoading());
         initialiseChat();
         return () => {
             WebSocketInstance.disconnect();
@@ -86,15 +86,18 @@ export default function ChatPage({user}: ChatPage) {
     };
 
     const renderMessages = (messages: IMessages) => {
+        console.log(messages)
+
         return messages.map(message => {
             return (
                 <ChatItem
-                    key={`${message.id}__${Math.random()}`}
+                    key={`Message__key__${message.id}__${Math.random()}`}
                     name={`${message.first_name} ${message.last_name}`}
                     time={message.timestamp}
                     message={message.content}
                     isUsername={message.author === Number(user.userId)}
                     messageUserId={message.author}
+                    avatar={message.small_avatar}
                 />
             )
         });

@@ -1,5 +1,4 @@
 import { ModalActionTypes, ModalNameType } from './../actions/modal';
-import * as types from '../types';
 
 const initialState = {
   modalName: null as ModalNameType,
@@ -10,9 +9,9 @@ type InititalStateType = typeof initialState;
 
 export const modalReducer = (state = initialState, action: ModalActionTypes): InititalStateType => {
   switch (action.type) {
-    case types.MODAL_SHOW:
+    case 'MODAL_SHOW':
       return { ...state, modalName: action.modalName, modalProps: action.modalProps }
-    case types.MODAL_HIDE:
+    case 'MODAL_HIDE':
       return initialState
     default:
       return state;
