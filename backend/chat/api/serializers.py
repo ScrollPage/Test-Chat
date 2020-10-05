@@ -40,7 +40,7 @@ class ChatOverviewSerializer(ChatSerializer):
                 break
         
         if companion.small_avatar:
-            small_avatar = companion.small_avatar
+            small_avatar = companion.small_avatar.url
         else:
             small_avatar = None
         

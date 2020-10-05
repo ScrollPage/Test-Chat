@@ -40,14 +40,14 @@ class ChatConsumer(WebsocketConsumer):
     def message_to_json(self, message):
         user = message.contact
         if user.small_avatar:
-            small_avatar = user.small_avatar
+            small_avatar = user.small_avatar.url
         else:
             small_avatar = None
         return {
             'id': message.id,
-            'author': message.contact.id,
-            'first_name': message.contact.first_name,
-            'last_name': message.contact.last_name,
+            'author': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
             'content': message.content,
             'timestamp': str(message.timestamp),
             'small_avatar': small_avatar,
