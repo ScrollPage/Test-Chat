@@ -24,10 +24,9 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class ChatSerializer(serializers.ModelSerializer):
     '''Базовый сериализатор для чатов'''
-    messages = MessageSerializer(read_only=True, many=True)
     class Meta:
         model = Chat
-        fields = '__all__'
+        exclude = ['messages']
 
 class ChatOverviewSerializer(ChatSerializer):
     '''Сериализация контакта при обзоре'''
@@ -37,9 +36,24 @@ class ChatOverviewSerializer(ChatSerializer):
         user = self.context['request'].user
         for participant in value.participants.all():
             if participant != user:
-                full_name = participant.get_full_name()
+                companion = participant
                 break
-        response = super().to_representation(value).update({'companion_name': full_name})
+        
+        if companion.small_avatar:
+            small_avatar = companion.small_avatar
+        else:
+            small_avatar = None
+        
+        d = {
+            'id': companion.id,
+            'first_name': companion.first_name,
+            'last_name': companion.last_name,
+            'slug': companion.slug,
+            'small_avatar': small_avatar,
+        }
+
+        response = super().to_representation(value)
+        response.update({'companion': d})
         return response
 
 class ChatCreateSerializer(ChatSerializer):

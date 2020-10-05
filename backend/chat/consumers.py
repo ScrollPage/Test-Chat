@@ -38,6 +38,11 @@ class ChatConsumer(WebsocketConsumer):
         return [self.message_to_json(message) for message in messages]
 
     def message_to_json(self, message):
+        user = message.contact
+        if user.small_avatar:
+            small_avatar = user.small_avatar
+        else:
+            small_avatar = None
         return {
             'id': message.id,
             'author': message.contact.id,
@@ -45,6 +50,7 @@ class ChatConsumer(WebsocketConsumer):
             'last_name': message.contact.last_name,
             'content': message.content,
             'timestamp': str(message.timestamp),
+            'small_avatar': small_avatar,
         }
 
     commands = {
