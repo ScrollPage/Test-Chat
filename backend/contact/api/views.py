@@ -23,12 +23,15 @@ class MeViewset(viewsets.GenericViewSet):
 
     @action(detail=True, methods=['get'])
     def me(self, request, *args, **kwargs):
-        user = request.user
-        user = model_to_dict(user)
+        user = model_to_dict(request.user)
         if not user['avatar']:
             user['avatar'] = None
             user['compressed_avatar'] = None
             user['small_avatar'] = None
+        else:
+            user['avatar'] = request.user.avatar.url
+            user['compressed_avatar'] = request.user.compressed_avatar.url
+            user['small_avatar'] = request.user.small_avatar.url
         serializer = self.get_serializer(data=user)
         serializer.is_valid()
         return Response(data=serializer.data, status=status.HTTP_200_OK)

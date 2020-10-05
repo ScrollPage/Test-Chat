@@ -7,9 +7,6 @@ from feed.api.exceptions import BadRequestError
 class MeSerializer(serializers.ModelSerializer):
     '''Обзор самого себя'''
     id = serializers.IntegerField()
-    avatar = serializers.ImageField()
-    compressed_avatar = serializers.ImageField()
-    small_avatar = serializers.ImageField()
 
     class Meta:
         model = Contact
