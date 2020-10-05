@@ -56,6 +56,9 @@ class ContactTestCase(APITestCase):
             admin=self.user1,
         )
 
+        self.group.members.add(self.user3.my_page)
+        self.group.blacklist.add(self.user4)
+
         self.post = Post.objects.create(
             user=self.user1,
             text='123',
@@ -73,6 +76,8 @@ class ContactTestCase(APITestCase):
             user=self.user2,
             group_owner=self.group,
         )
+
+        self.user1.my_page.blacklist.add(self.user4)
 
     def test_post_create_unauth(self):
         response = get_response('/api/v1/post/', 'post', data={'text': '123'}, is_url=True)
@@ -132,3 +137,71 @@ class ContactTestCase(APITestCase):
     def test_comment_update_not_by_owner(self):
         response = get_response('comment-detail', 'patch', self.user2, {'text': '1234'}, {'pk': 1})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_comment_create_in_blacklist(self):
+        response = get_response('comment-list', 'post', self.user4, data={'text': '123', 'post_id': 1})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_comment_update_after_blacklisted(self):
+        Comment.objects.create(user=self.user2, text='123', post_id=self.post)
+        self.user1.my_page.blacklist.add(self.user2)
+        response = get_response('comment-detail', 'patch', self.user2, {'text':'1234'}, {'pk': 2})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_comment_delete_after_blacklisted(self):
+        Comment.objects.create(user=self.user2, text='123', post_id=self.post)
+        self.user1.my_page.blacklist.add(self.user2)
+        response = get_response('comment-detail', 'delete', self.user2, kwargs={'pk': 2})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_like_create(self):
+        response = get_response('like-add', 'post', self.user1, {'post_id': 1})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_like_create_already_created(self):
+        Like.objects.create(user=self.user1, post_id=self.post)
+        response = get_response('like-add', 'post', self.user1, {'post_id': 1})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_like_create_in_blacklist(self):
+        response = get_response('like-add', 'post', self.user4, {'post_id': 1})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_like_create_in_group_blacklist(self):
+        response = get_response('like-add', 'post', self.user4, {'post_id': self.group_post.id})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_like_remove(self):
+        Like.objects.create(user=self.user1, post_id=self.post)
+        response = get_response('like-remove', 'post', self.user1, {'post_id': 1})
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_like_remove_not_created(self):
+        response = get_response('like-remove', 'post', self.user1, {'post_id': 1})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_like_remove_in_blacklist(self):
+        Like.objects.create(user=self.user2, post_id=self.post)
+        self.user1.my_page.blacklist.add(self.user2)
+        response = get_response('like-remove', 'post', self.user2, {'post_id': 1})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_repost_unauth(self):
+        response = get_response('/api/v1/repost/', 'post', data={'parent': 1, 'owner': 1}, is_url=True)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_repost_group_blacklist(self):
+        reponse = get_response('/api/v1/repost/', 'post', self.user4, {'parent': 2, 'owner': 4}, is_url=True)
+        self.assertEqual(reponse.status_code, status.HTTP_403_FORBIDDEN)
+    
+    def test_repost_owner_blacklist(self):
+        reponse = get_response('/api/v1/repost/', 'post', self.user4, {'parent': 1, 'owner': 4}, is_url=True)
+        self.assertEqual(reponse.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_feed_unauth(self):
+        response = get_response('feed', 'get')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_feed_auth(self):
+        response = get_response('feed', 'get', self.user1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

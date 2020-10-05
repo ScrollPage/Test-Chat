@@ -99,7 +99,7 @@ class LikesCustomViewset(PermissionCreateViewset):
     permission_classes_by_action = {
         'remove': [],
     }
-    mass_permission_classes = [permissions.IsAuthenticated]
+    mass_permission_classes = [permissions.IsAuthenticated, NotInOwnersBlacklist]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -132,12 +132,13 @@ class RePostMechanicsCustomViewset(CreateViewset):
                 post_id=parent, 
                 user=user
             )
-        except RePost.DoesNotExist:
+        except (RePost.DoesNotExist, TypeError):
             RePost.objects.create(
                 post_id=parent,
                 user=user
             )
             send_repost_notification(parent.user, user, parent)
+
         serializer.save(user=self.request.user)
 
 class ContactFeedView(generics.ListAPIView):

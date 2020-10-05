@@ -37,3 +37,8 @@ class TestUrls(TestCase):
         '''Убедиться, что ссылка и вью связаны правильно'''
         path = reverse('feed')
         self.assertEqual(resolve(path).view_name, 'feed')
+
+    def test_repost_url(self):
+        '''Убедиться, что ссылка и вью связаны правильно'''
+        path = reverse('repost-list')
+        self.assertEqual(resolve(path).view_name, 'repost-list')
