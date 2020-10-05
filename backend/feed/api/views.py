@@ -25,7 +25,7 @@ from .serializers import (
     CreateCommentSerializer,
 )
 from .permissions import IsRightOwnerOrUser, IsNotLiked, IsRightUser, NotInOwnersBlacklist
-from .exceptions import BadRequestError, NotFoundError
+from .exceptions import BadRequestError
 from notifications.service import send_repost_notification
 
 class PostsCustomViewset(PermisisonSerializerPostModelViewset):
@@ -106,9 +106,9 @@ class LikesCustomViewset(PermissionCreateViewset):
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):
-        user = request.data.get('user', None)
+        user = request.user
         post_id = request.data.get('post_id', None)
-        if not user or not post_id:
+        if not post_id:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         post_id = int(post_id)
         like = Like.objects.filter(Q(user=user)&Q(post_id=post_id)).first()
@@ -141,7 +141,7 @@ class RePostMechanicsCustomViewset(CreateViewset):
         serializer.save(user=self.request.user)
 
 class ContactFeedView(generics.ListAPIView):
-    '''Новости конкретного конатка'''
+    '''Новости конкретного контакта'''
     serializer_class = PostListSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -149,7 +149,7 @@ class ContactFeedView(generics.ListAPIView):
         user = self.request.user
         queryset_friends = Post.objects.filter(
             owner__in=[friend.my_page for friend in user.my_page.friends.all()]
-        ).exclude(user=self.request.user)
+        ).exclude(user=user)
         queryset_groups = Post.objects.filter(
             group_owner__in=[group for group in user.my_page.parties.all()]
         )

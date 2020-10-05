@@ -21,16 +21,19 @@ class IsRightOwnerOrUser(BasePermission):
 class IsNotLiked(BasePermission):
     '''Нет ли лайка?'''
     def has_permission(self, request, view):
+        user = request.user
         data = request.data
-        user = data.get('user', None)
-        post_id = data.get('post_id', None)
-        if user and post_id:
+        try:
+            post_id = data['post_id']
+        except KeyError:
+            return True
+        if post_id:
             try:
                 like = view.model.objects.get(user=user, post_id=post_id)
             except view.model.DoesNotExist:
                 return True
         else:
-            raise BadRequestError('You need post id and user to add like.')
+            raise BadRequestError('You need post id to  add like.')
         return False
 
 class NotInOwnersBlacklist(BasePermission):
