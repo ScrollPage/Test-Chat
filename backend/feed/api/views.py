@@ -148,8 +148,9 @@ class ContactFeedView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        friends_plus_you = [friend.my_page for friend in user.my_page.friends.all()] + [user.my_page]
         queryset_friends = Post.objects.filter(
-            owner__in=[friend.my_page for friend in user.my_page.friends.all()]
+            owner__in=friends_plus_you
         )
         queryset_groups = Post.objects.filter(
             group_owner__in=[group for group in user.my_page.parties.all()]
