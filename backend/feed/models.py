@@ -34,9 +34,12 @@ class AbstractPost(models.Model):
     def __str__(self):
         return str(self.id)
 
-    def delete(self):
+    def delete_images(self):
         self.image.delete(save=False)
         self.compressed_image.delete(save=False)
+
+    def delete(self):
+        self.delete_images(s)
         super().delete()
 
     class Meta:

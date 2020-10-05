@@ -127,8 +127,13 @@ class Contact(AbstractBaseUser, PermissionsMixin):
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
 
-    def delete(self):
+    def delete_avatars(self):
         self.avatar.delete(save=False)
+        self.compressed_avatar.delete(save=False)
+        self.small_avatar.delete(save=False)
+
+    def delete(self):
+        self.delete_avatars()
         super().delete()
 
     class Meta:

@@ -150,7 +150,7 @@ class ContactFeedView(generics.ListAPIView):
         user = self.request.user
         queryset_friends = Post.objects.filter(
             owner__in=[friend.my_page for friend in user.my_page.friends.all()]
-        ).exclude(user=user)
+        )
         queryset_groups = Post.objects.filter(
             group_owner__in=[group for group in user.my_page.parties.all()]
         )

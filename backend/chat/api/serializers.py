@@ -8,7 +8,7 @@ class ContactSerializer(serializers.ModelSerializer):
     '''Сериализация контакта'''
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'slug']
+        fields = ['id', 'first_name', 'last_name', 'slug', 'small_avatar']
 
 class ContactIDSerializer(serializers.StringRelatedField):
     '''Сериализация id контакта'''

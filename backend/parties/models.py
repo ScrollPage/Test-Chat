@@ -46,6 +46,15 @@ class Party(models.Model):
     def __str__(self):
         return f'group {self.name}'
 
+    def delete_images(self):
+        self.image.delete(save=False)
+        self.compressed_image.delete(save=False)
+        self.small_image.delete(save=False)
+
+    def delete(self):
+        self.delete_images()
+        super().delete()
+
     class Meta:
         verbose_name = 'Группа'
         verbose_name_plural = 'Группы'
