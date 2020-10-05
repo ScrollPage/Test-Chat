@@ -14,7 +14,7 @@ interface ILoadImage {
   as?: string;
 }
 
-const LoadImage: React.FC<ILoadImage> = ({ size = 35, src, isCircle, href, as }) => {
+const LoadImage: React.FC<ILoadImage> = ({ size = '35', src, isCircle, href, as }) => {
   let loadImage: null | boolean = null;
 
   if (src) {
@@ -50,10 +50,12 @@ const LoadImage: React.FC<ILoadImage> = ({ size = 35, src, isCircle, href, as })
 
 export default LoadImage;
 
-const StyledLoadImage = styled.div<{ size: string; isCircle?: boolean }>`
+const StyledLoadImage = styled.div<{ size?: string; isCircle?: boolean }>`
   position: relative;
-  height: ${props => props.size}px;
-  width: ${props => props.size}px;
+  ${props => props.size && css`
+    height: ${props.size}px;
+    weight: ${props.size}px;
+  `}
   img {
     max-height: 100%;
   }

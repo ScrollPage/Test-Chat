@@ -15,6 +15,8 @@ import { getMessages, getMessagesLoading } from '../../store/selectors';
 import { IUser } from '@/types/user';
 import { GetServerSideProps } from 'next';
 import { IMessages } from '@/types/message';
+import axios from 'axios';
+import cookies from 'next-cookies';
 
 interface ChatPage {
     user: IUser;
@@ -132,6 +134,28 @@ export default function ChatPage({user}: ChatPage) {
 }
 
 export const getServerSideProps: GetServerSideProps<ChatPage> = async (ctx) => {
+    const token = cookies(ctx)?.token || null;    
+    const chatId = ctx?.params?.chatID?.[0];
+
+    axios.defaults.headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Token ${token}`,
+    };
+
+
+    interface chatInfo {
+        
+    }
+
+    await axios
+        .get(`/api/v1/chat/?id=${chatId}`)
+        .then(response => {
+            chats = response?.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
     return {
         props: {
             user: getUserFromServer(ctx)
