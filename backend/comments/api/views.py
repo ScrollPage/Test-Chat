@@ -36,8 +36,12 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     mass_permission_classes = [permissions.IsAuthenticated]
 
     def not_in_blacklist(self, inst):
-        if self.request.user not in inst.owner.blacklist.all():
-            return
+        if inst.owner:
+            if self.request.user not in inst.owner.blacklist.all():
+                return
+        else:
+            if self.request.user not in inst.group_owner.blacklist.all():
+                return
         raise ForbiddenError('You are in blacklist.')
 
     def parent_is_here(self, inst, data):
@@ -70,10 +74,15 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     def comment_photo(self, request, *args, **kwargs):
         return self.create_comment(Photo)
 
-    # def get_queryset(self):
-    #     if self.action == 'list':
-    #         post_id = self.request.query_params.get('post_id', None)
-    #         if not post_id:
-    #             raise BadRequestError('You need to input a query parameter post id in your request.')
-    #         return Post.objects.get(id=post_id).comments
-    #     return super().get_queryset()
+    def get_queryset(self):
+        if self.action == 'list':
+            post_id = self.request.query_params.get('post_id', None)
+            if post_id:
+                post = get_object_or_404(Post, id=post_id)
+                return post.comments
+            elif photo_id:
+                photo = get_object_or_404(Photo, id=photo_id)
+                return photo.comments
+            else:
+                raise BadRequestError('You need to input a query parameter post id in your request.')
+        return super().get_queryset()
