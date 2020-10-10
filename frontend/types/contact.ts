@@ -1,9 +1,16 @@
 import { IContactUser } from '@/types/people';
 
+export interface ITeam {
+  id: number;
+  image?: string;
+  name: string;
+  slug: string;
+}
+
 export interface IMyPage {
   id: number;
-  friends: Array<IContactUser>;
-  parties: [];
+  friends: IContactUser[];
+  parties: ITeam[];
 }
 
 export interface IContactInfo {

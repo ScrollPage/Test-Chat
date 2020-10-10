@@ -21,6 +21,7 @@ export const authInfo = (token: string): ThunkType => async dispatch => {
             Cookie.set('slug', res.data.slug);
             Cookie.set('avatar', res.data.avatar);
             Cookie.set('smallAvatar', res.data.small_avatar);
+            Cookie.set('phoneNumber', res.data.phoneNumber);
             console.log('Информация успешно занесена в куки');
             console.log(res.data);
             Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });

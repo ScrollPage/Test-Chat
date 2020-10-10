@@ -8,10 +8,12 @@ export const getUserFromServer = (ctx: GetServerSidePropsContext<ParsedUrlQuery>
     const userId = cookies(ctx)?.userId || "";
     const firstName = cookies(ctx)?.firstName || "";
     const lastName = cookies(ctx)?.lastName || "";
+    const smallAvatar = cookies(ctx)?.smallAvatar || "";
     const user = {
         userId: Number(userId),
         firstName: firstName,
-        lastName: lastName
+        lastName: lastName,
+        smallAvatar: smallAvatar
     }
     return user
 }

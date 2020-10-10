@@ -4,8 +4,16 @@ import { LeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import Avatar from 'antd/lib/avatar/avatar';
 import { UserOutlined } from '@ant-design/icons';
+import { IChatInfo } from '@/types/chat';
+import LoadImage from '../UI/LoadImage';
 
-const ChatHeader: React.FC = () => {
+interface IChatHeader {
+    chatInfo: IChatInfo | null;
+}
+
+const ChatHeader: React.FC<IChatHeader> = ({ chatInfo }) => {
+    console.log(chatInfo)
+
     return (
         <StyledChatHeader>
             <Link href="/dialogs">
@@ -18,9 +26,14 @@ const ChatHeader: React.FC = () => {
                     </div>
                 </a>
             </Link>
-            <div>Название</div>
+            <div>{`${chatInfo?.companion?.first_name} ${chatInfo?.companion?.last_name}`}</div>
             <div>
-                <Avatar icon={<UserOutlined />} />
+                <LoadImage
+                    src={chatInfo?.companion?.small_avatar}
+                    isCircle={true}
+                    href="/userpage/[userID]" 
+                    as={`/userpage/${chatInfo?.companion?.id}`}
+                />
             </div>
         </StyledChatHeader>
     );

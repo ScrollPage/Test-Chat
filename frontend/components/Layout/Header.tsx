@@ -33,7 +33,7 @@ const Header: React.FC<IHeader> = ({ user }) => {
             <div className="header-avatar">
               <LoadImage
                 isCircle={true}
-                src={Cookie.get('smallAvatar')}
+                src={user.smallAvatar}
                 href="/userpage/[userID]"
                 as={`/userpage/${user?.userId}`}
                 size={'35'}

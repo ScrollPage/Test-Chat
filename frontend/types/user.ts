@@ -1,5 +1,6 @@
 export interface IUser {
   userId: number;
   firstName: string;
-  lastName: string 
+  lastName: string;
+  smallAvatar?: string;
 }

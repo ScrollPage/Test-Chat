@@ -25,3 +25,9 @@ export interface IChat {
   messages: Array<IChatMessage>;
   participants: Array<IChatParticipiant>;
 }
+
+export interface IChatInfo {
+  id: number;
+  participants: IChatParticipiant[];
+  companion: IChatParticipiant;
+}

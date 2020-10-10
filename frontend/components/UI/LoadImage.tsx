@@ -25,7 +25,7 @@ const LoadImage: React.FC<ILoadImage> = ({ size = '35', src, isCircle, href, as 
     <StyledLoadImage size={size} isCircle={isCircle}>
       {src ? (
         loadImage ? (
-          href && as ? (
+        href && as ? (
             <Link href={href} as={as}>
               <a>
                 <img src={src} />
@@ -54,7 +54,7 @@ const StyledLoadImage = styled.div<{ size?: string; isCircle?: boolean }>`
   position: relative;
   ${props => props.size && css`
     height: ${props.size}px;
-    weight: ${props.size}px;
+    width: ${props.size}px;
   `}
   img {
     max-height: 100%;
