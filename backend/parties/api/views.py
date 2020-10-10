@@ -176,11 +176,11 @@ class GroupPostsViewset(PartyPermissionSerializerEmptyViewset):
     def offer_post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = serializer.data
-        data['group_owner'] = Party.objects.get(id=kwargs['pk'])
-        data['published'] = False
-        data['user'] = request.user
-        post = Post.objects.create(**data)
+        post = serializer.save(
+            group_owner=Party.objects.get(id=kwargs['pk']),
+            published=False,
+            user=request.user
+        )
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['put'])

@@ -20,14 +20,6 @@ class TestModels(TestCase):
     def test_post_str(self):
         self.assertEqual(str(self.post), '1')
 
-    def test_comment_str(self):
-        comment = mixer.blend('feed.Comment', id=1, user=self.user, post_id=self.post)
-        self.assertEqual(str(comment), '1')
-
-    def test_like_str(self):
-        like = mixer.blend('feed.Like', user=self.user, post_id=self.post)
-        self.assertEqual(str(like), '1 user likes 1 post')
-
     def test_repost_str(self):
         repost = mixer.blend('feed.RePost', user=self.user, post_id=self.post)
         self.assertEqual(str(repost), '1 user reposts 1 post')

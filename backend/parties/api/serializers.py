@@ -38,9 +38,15 @@ class OfferedPostSerializer(PostSerializer):
     published = serializers.BooleanField(read_only=True)
     id = serializers.IntegerField(read_only=True)
 
+    def create(self, validated_data):
+        post = Post.objects.create(**validated_data)
+        if validated_data['image']:
+            post.image_save()
+        return post
+
     class Meta:
         model = Post
-        exclude = ['parent', 'owner', 'group_owner', 'compressed_image', 'user']
+        exclude = ['parent', 'owner', 'group_owner', 'compressed_image', 'user', 'comments', 'likes']
 
 class PostListSerializer(PostListSerializer):
     '''Сериализция списка постов без группы-владельца'''

@@ -53,10 +53,6 @@ class NotInOwnersBlacklist(BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj):
-        if type(obj) == Post:
-            obj = obj.parent
-        else:
-            obj = obj.post_id
         if obj.owner: 
             return request.user not in obj.owner.blacklist.all()
         if obj.group_owner:

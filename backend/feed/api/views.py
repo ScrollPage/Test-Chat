@@ -8,8 +8,6 @@ from operator import attrgetter
 
 from .service import (
     PermisisonSerializerPostModelViewset, 
-    PermissionSerializerCommentModelViewset,
-    PermissionCreateViewset,
     CreateViewset,
     post_annotations,
 )
@@ -17,12 +15,8 @@ from feed.models import Post, Comment, Like, RePost
 from .serializers import (
     PostSerializer, 
     UpdatePostSerializer, 
-    CommentSerializer, 
-    UpdateCommentSerializer,
-    LikeSerializer,
     RePostSerializer,
     PostListSerializer,
-    CreateCommentSerializer,
 )
 from .permissions import IsRightOwnerOrUser, IsNotLiked, IsRightUser, NotInOwnersBlacklist
 from .exceptions import BadRequestError
@@ -61,62 +55,6 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
         queryset = post_annotations(self.request.user, queryset)
         return queryset.filter(published=True).order_by('-timestamp')
 
-class CommentCustomViewset(PermissionSerializerCommentModelViewset):
-    '''Все про комменты, кроме метода list'''
-    queryset = Comment.objects.all()
-    model = Comment
-    serializer_class = CommentSerializer
-    serializer_class_by_action = {
-        'update': UpdateCommentSerializer,
-        'partial_update': UpdateCommentSerializer,
-        'create': CreateCommentSerializer,
-    }
-    permission_classes = []
-    permission_classes_by_action = {
-        'update': [IsRightUser],
-        'partial_update': [IsRightUser],
-        'destroy': [IsRightUser],
-    }
-    mass_permission_classes = [permissions.IsAuthenticated, NotInOwnersBlacklist]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def get_queryset(self):
-        if self.action == 'list':
-            post_id = self.request.query_params.get('post_id', None)
-            if not post_id:
-                raise BadRequestError('You need to input a query parameter post id in your request.')
-            return Post.objects.get(id=post_id).comments
-        return super().get_queryset()
-
-class LikesCustomViewset(PermissionCreateViewset):
-    '''Создание и удаление лайков'''
-    queryset = Like.objects.all()
-    model = Like
-    serializer_class = LikeSerializer
-    permission_classes = [IsNotLiked]
-    permission_classes_by_action = {
-        'remove': [],
-    }
-    mass_permission_classes = [permissions.IsAuthenticated, NotInOwnersBlacklist]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    @action(detail=False, methods=['post'])
-    def remove(self, request, *args, **kwargs):
-        user = request.user
-        post_id = request.data.get('post_id', None)
-        if not post_id:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        post_id = int(post_id)
-        like = Like.objects.filter(Q(user=user)&Q(post_id=post_id)).first()
-        try:
-            like.delete()
-        except AttributeError:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class RePostMechanicsCustomViewset(CreateViewset):
     '''Создание репоста'''

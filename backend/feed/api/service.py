@@ -40,17 +40,6 @@ class PermisisonSerializerPostModelViewset(PermissionSerializerMixin,
     '''
     pass
 
-class PermissionSerializerCommentModelViewset(PermissionSerializerMixin,
-                                              ModelViewSet):
-    '''Создание, редактирование и удаление с доп классами'''
-    pass
-
-class PermissionCreateViewset(PermissionMixin,
-                              mixins.CreateModelMixin,
-                              GenericViewSet):
-    '''Создание с доп классами'''
-    pass
-
 class CreateViewset(mixins.CreateModelMixin,
                     GenericViewSet):
     '''Создание с доп классами'''
@@ -59,11 +48,6 @@ class CreateViewset(mixins.CreateModelMixin,
 class BaseFeedSerializer(serializers.Serializer):
     '''Базовый класс для сериализаторов'''
     user = LowContactSerializer(read_only=True)
-
-class AbstractPostSerializer(serializers.Serializer):
-    '''Базовый сериализатор для поста и коммента'''
-    num_likes = serializers.IntegerField(read_only=True)
-    timestamp = serializers.DateTimeField(read_only=True)
 
 def post_annotations(user, queryset):
     return queryset.annotate(

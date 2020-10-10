@@ -42,11 +42,14 @@ INSTALLED_APPS = [
     'storages',
     
     'chat',   
+    'comments',
     'community', 
     'contact',
     'feed',
+    'like',
     'notifications',
     'parties',
+    'photos',
     'score',
 ]
 
