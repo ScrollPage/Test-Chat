@@ -5,6 +5,7 @@ export interface IContactUser {
   last_name: string;
   slug: string;
   avatar?: string;
+  small_avatar?: string;
 }
 
 export interface IGlobalUser extends IContactUser {

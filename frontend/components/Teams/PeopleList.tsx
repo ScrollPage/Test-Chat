@@ -1,15 +1,15 @@
 import React from 'react';
-import { IContactUser } from '@/types/people';
 import styled, { css } from 'styled-components';
 import LoadImage from '../UI/LoadImage';
+import { IPartyMember } from '@/types/party';
 
-interface UserFriends {
-  people: Array<IContactUser>;
+interface PeopleList {
+  people: IPartyMember[];
 }
 
-const UserFriends: React.FC<UserFriends> = ({ people }) => {
+const PeopleList: React.FC<PeopleList> = ({ people }) => {
   return (
-    <StyledUserFriends>
+    <StyledPeopleList>
       {people.map((man, index) => (
         <StyledUserFriend
           key={`user-friends__key__${man.id}`}
@@ -18,20 +18,20 @@ const UserFriends: React.FC<UserFriends> = ({ people }) => {
           <div className="user-friends__avatar">
             <LoadImage
               href={'/userpage/[userID]'}
-              as={`/userpage/${man.id}`}
+              as={`/userpage/${man.user.id}`}
               isCircle={true}
-              src={man.avatar}
+              src={man.user.small_avatar}
             />
           </div>
         </StyledUserFriend>
       ))}
-    </StyledUserFriends>
+    </StyledPeopleList>
   );
 };
 
-export default UserFriends;
+export default PeopleList;
 
-const StyledUserFriends = styled.div`
+const StyledPeopleList = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

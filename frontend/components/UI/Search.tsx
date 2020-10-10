@@ -6,7 +6,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { setSearch } from '@/store/actions/search';
 import { getSearch } from '../../store/selectors';
 
-const SearchDialog: React.FC = () => {
+const Search: React.FC = () => {
     const dispatch = useDispatch();
     const search = useSelector(getSearch);
 
@@ -26,7 +26,7 @@ const SearchDialog: React.FC = () => {
     );
 };
 
-export default SearchDialog;
+export default Search;
 
 const StyledSearch = styled.div`
     width: 100%;

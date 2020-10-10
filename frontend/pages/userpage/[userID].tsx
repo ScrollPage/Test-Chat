@@ -12,6 +12,7 @@ import { IPost } from '@/types/post';
 import { IUser } from '@/types/user';
 import { IContact } from '@/types/contact';
 import { GetServerSideProps } from 'next';
+import UserParties from '@/components/Userpage/UserParties';
 
 interface ITeams {
     contact: IContact | null;
@@ -25,6 +26,8 @@ export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
         initialData: contact,
     });
 
+    console.log(data);
+
     return (
         <PrivateLayout user={user}>
             <StyledUser>
@@ -37,9 +40,13 @@ export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
                                 chatId={data.chat_id}
                                 user={user}
                             />
-                            <div className="user-avatar__friends">
+                            <div className="user-avatar__join">
                                 <h4>Друзья: {`(${data.num_friends})`}</h4>
-                                <UserFriends friends={data.my_page.friends} />
+                                <UserFriends people={data.my_page.friends} />
+                            </div>
+                            <div className="user-avatar__join">
+                                <h4>Сообщества: {`(${data.my_page.parties.length})`}</h4>
+                                <UserParties parties={data.my_page.parties} />
                             </div>
                         </>
                     ) : (
@@ -106,7 +113,7 @@ export const getServerSideProps: GetServerSideProps<ITeams> = async ctx => {
 const StyledUser = styled.div`
     margin-top: 10px;
     display: flex;
-    .user-avatar__friends {
+    .user-avatar__join {
         background-color: #f4f4f4;
         display: flex;
         flex-direction: column;

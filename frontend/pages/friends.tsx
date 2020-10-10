@@ -3,7 +3,7 @@ import axios from 'axios';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
 import Friend from '@/components/Friends/Friend';
-import SearchDialog from '@/components/Dialogs/SearchDialog';
+import Search from '@/components/Dialogs/SearchDialog';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { getUserFromServer } from '@/utils/index';
 import { GetServerSideProps } from 'next';
@@ -31,11 +31,11 @@ export default function Friends({ friends, user }: IFriends) {
 
     return (
         <PrivateLayout user={user}>
-            <SearchDialog />
+            <Search />
             <StyledFriends>
                 {data ? (
                     data.length === 0 ? (
-                        <p>У вас нет друзей</p>
+                        <h4>У вас нет друзей</h4>
                     ) : (
                         renderFriends(data)
                     )

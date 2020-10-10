@@ -31,6 +31,8 @@ const ChatHeader: React.FC<IChatHeader> = ({ chatInfo }) => {
                 <LoadImage
                     src={chatInfo?.companion?.small_avatar}
                     isCircle={true}
+                    href="/userpage/[userID]" 
+                    as={`/userpage/${chatInfo?.companion?.id}`}
                 />
             </div>
         </StyledChatHeader>
