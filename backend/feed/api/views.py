@@ -42,14 +42,6 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        res = super().create(request, args, kwargs)
-        if res.data.get('image', None):
-            id = int(res.data.get('id'))
-            post = get_object_or_404(Post, id=id)
-            post.image_save()
-        return res
-
     def get_queryset(self):
         queryset = Post.objects.all()
         queryset = post_annotations(self.request.user, queryset)
