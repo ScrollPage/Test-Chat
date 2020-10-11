@@ -40,7 +40,7 @@ class ContactActivationView(SerializerViewset):
     '''Подтверждение аккаунта пользователя'''
     serializer_class = TokenSerializer
     serializer_class_by_action = {
-        'phone_activation0': CodeSerializer
+        'phone_activation': CodeSerializer
     }
     permission_classes = [permissions.AllowAny]
 

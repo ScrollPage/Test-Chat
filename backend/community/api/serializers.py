@@ -20,7 +20,7 @@ class ContactFriendsSerializer(serializers.ModelSerializer):
     chat_id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Contact 
-        fields = ['id', 'first_name', 'last_name', 'slug', 'avatar', 'chat_id']
+        fields = ['id', 'first_name', 'last_name', 'slug', 'small_avatar', 'chat_id']
 
 class PageSerializer(serializers.ModelSerializer):
     '''Сериализация страницы пользователя'''

@@ -10,7 +10,8 @@ from .serializers import (
     CreateCommentSerializer,
     CommentSerializer
 )
-from feed.api.permissions import IsRightUser, NotInOwnersBlacklist
+from feed.api.permissions import IsRightUser
+from .permissions import NotInBlacklistComments
 from backend.exceptions import ForbiddenError
 from feed.api.exceptions import BadRequestError
 from comments.models import Comment
@@ -30,9 +31,9 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     }
     permission_classes = []
     permission_classes_by_action = {
-        'update': [IsRightUser, NotInOwnersBlacklist],
-        'partial_update': [IsRightUser, NotInOwnersBlacklist],
-        'destroy': [IsRightUser, NotInOwnersBlacklist],
+        'update': [IsRightUser, NotInBlacklistComments],
+        'partial_update': [IsRightUser, NotInBlacklistComments],
+        'destroy': [IsRightUser, NotInBlacklistComments],
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 

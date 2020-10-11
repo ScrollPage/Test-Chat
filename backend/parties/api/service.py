@@ -24,7 +24,7 @@ class PageSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Page
-        fields = ['id', 'user']
+        fields = ['user']
 
 def get_user_and_group(request, kwargs):
     user_id = request.data['some_id']

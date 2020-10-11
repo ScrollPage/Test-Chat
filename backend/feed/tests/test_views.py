@@ -82,6 +82,15 @@ class ContactTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(json.loads(response.content)['text'], '123')
 
+    def test_board_overview(self):
+        response = get_response('/api/v1/post/?id=1', 'get', self.user1, is_url=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_board_ovverview_blacklist(self):
+        response = get_response('/api/v1/post/?id=1', 'get', self.user4, is_url=True)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_post_update_in_blacklist(self):
         self.group.blacklist.add(self.user1)
         response = get_response('post-detail', 'patch', self.user1, {'text': '123'}, {'pk': 2})

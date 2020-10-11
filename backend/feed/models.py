@@ -29,7 +29,7 @@ class Post(AbstractPost):
     )
     group_owner = models.ForeignKey(Party, null=True, default=None, on_delete=models.CASCADE)
     published = models.BooleanField(default=True)
-    comments = models.ManyToManyField(Comment)
+    comments = models.ManyToManyField(Comment, related_name='post_owner')
 
     class Meta:
         verbose_name = 'Пост'
