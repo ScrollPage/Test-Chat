@@ -17,6 +17,8 @@ const UserPosts: React.FC<IUserPosts> = ({ serverPosts, pageUserId, user }) => {
     { initialData: serverPosts }
   );
 
+  // console.log(posts);
+
   const renderPosts = (posts: Array<IPost>) => {
     return posts.map(post => (
       <UserPost

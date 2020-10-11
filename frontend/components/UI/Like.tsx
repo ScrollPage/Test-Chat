@@ -4,7 +4,7 @@ import { HeartOutlined, HeartTwoTone } from '@ant-design/icons';
 import { mutate } from 'swr';
 import { IPost } from '@/types/post';
 import { useDispatch } from 'react-redux';
-import { addLike, removeLike } from '@/store/actions/post';
+import { addPostLike, removePostLike } from '@/store/actions/post';
 
 interface ILike {
   isTap: boolean;
@@ -31,7 +31,7 @@ const Like: React.FC<ILike> = ({ isTap, postId, pageUserId }) => {
             is_liked: false,
             num_likes: posts[index].num_likes - 1,
           };
-          dispatch(removeLike(postId));
+          dispatch(removePostLike(postId));
           return newPosts;
         } else {
           newPosts[index] = {
@@ -39,7 +39,7 @@ const Like: React.FC<ILike> = ({ isTap, postId, pageUserId }) => {
             is_liked: true,
             num_likes: posts[index].num_likes + 1,
           };
-          dispatch(addLike(postId));
+          dispatch(addPostLike(postId));
           return newPosts;
         }
       },

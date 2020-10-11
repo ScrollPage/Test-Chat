@@ -38,7 +38,9 @@ const PostCreate: React.FC<IPostCreate> = ({
       }
       if (isRepost && parent && setClose) {
         setClose();
-        addRepostMutate(postText, mutatedImage, parent, user, postUrl);
+        if (pageUserId === user.userId) {
+          addRepostMutate(postText, mutatedImage, parent, user, postUrl);
+        }
         dispatch(rePost(postText, image, parent.id, postUrl));
       } else {
         addPostMutate(postText, mutatedImage, user, postUrl);

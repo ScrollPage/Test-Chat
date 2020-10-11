@@ -24,13 +24,12 @@ export const addPostMutate = (postText: string, mutatedImage: any, user: IUser, 
     num_comments: 0,
     compressed_image: mutatedImage
   };
-  console.log(Cookie.get('avatar'))
   mutate(postUrl, async (posts: IPost[]) => {
     if (posts) {
+      console.log('post mutate');
       return [addNewPost, ...posts];
     }
   }, false);
-  console.log('post mutate');
 };
 
 export const addRepostMutate = (postText: string, mutatedImage: any, parent: IPost, user: IUser, postUrl: string): void => {
@@ -53,7 +52,7 @@ export const addRepostMutate = (postText: string, mutatedImage: any, parent: IPo
         small_avatar: parent.user.small_avatar
       },
       parent: null,
-      compressed_image: mutatedImage
+      compressed_image: parent.image
     },
     text: postText,
     user: {
@@ -68,10 +67,10 @@ export const addRepostMutate = (postText: string, mutatedImage: any, parent: IPo
   };
   mutate(postUrl, async (posts: IPost[]) => {
     if (posts) {
+      console.log('post mutate');
       return [addNewPost, ...posts];
     }
   }, false);
-  console.log('post mutate');
 };
 
 // if (pageUserId === user.userId) {

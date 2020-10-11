@@ -29,7 +29,7 @@ const CommentInput: React.FC<ICommentInput> = ({ postId, user, pageUserId }) => 
       let parent = null;
       addCommentMutate(commentText, postId, user, commentUrl);
       commentAmountMutate(postId, true, postUrl);
-      dispatch(addComment(commentText, user.userId, postId, parent, commentUrl));
+      dispatch(addComment(commentText, postId, parent, commentUrl));
       setCommentText('');
     }
   };

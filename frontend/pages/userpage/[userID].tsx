@@ -26,8 +26,6 @@ export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
         initialData: contact,
     });
 
-    console.log(data);
-
     return (
         <PrivateLayout user={user}>
             <StyledUser>
