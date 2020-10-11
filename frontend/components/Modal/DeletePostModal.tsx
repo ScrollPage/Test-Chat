@@ -21,13 +21,10 @@ const DeleteCommentModal: React.FC = () => {
     if (modalProps.pageUserId) {
       postUrl = `/api/v1/post/?id=${modalProps.pageUserId}`;
     }
-    console.log(postUrl);
     mutate(
       postUrl,
       async (posts: IPost[]) => {
-        console.log(posts);
         if (posts) {
-          console.log(posts.filter(post => post.id !== modalProps.postId));
           return posts.filter(post => post.id !== modalProps.postId);
         }
       },

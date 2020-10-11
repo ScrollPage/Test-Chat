@@ -3,14 +3,13 @@ import { ThunkType } from '@/types/thunk';
 import axios from 'axios';
 import { show } from './alert';
 
-export const addComment = (commentText: string, userId: number, postId: number, parent: number | null, triggerUrl: string): ThunkType => async dispatch => {
+export const addComment = (commentText: string, postId: number, parent: number | null, triggerUrl: string): ThunkType => async dispatch => {
     await axios
-        .post('/api/v1/comment/', {
+        .post('/api/v1/comment/post/', {
             text: commentText,
             image: null,
-            user: userId,
             parent: parent,
-            post_id: postId
+            id: postId
         })
         .then(res => {
             trigger(triggerUrl);

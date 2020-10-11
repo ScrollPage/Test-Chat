@@ -41,6 +41,8 @@ export const deletePost = (postId: number): ThunkType => async dispatch => {
 };
 
 export const rePost = (text: string, image: any, parent: number, triggerUrl: string): ThunkType => async dispatch => {
+    console.log(image);
+
     let form_data = new FormData();
     if (image) {
         form_data.append('image', image, image.name);
@@ -50,6 +52,7 @@ export const rePost = (text: string, image: any, parent: number, triggerUrl: str
     // form_data.append('user', userId);
     form_data.append('owner', userId);
     form_data.append('parent', String(parent));
+
     await axios
         .post('/api/v1/repost/', form_data)
         .then(res => {
@@ -62,10 +65,10 @@ export const rePost = (text: string, image: any, parent: number, triggerUrl: str
         });
 };
 
-export const addLike = (postId: number): ThunkType => async dispatch => {
+export const addPostLike = (postId: number): ThunkType => async dispatch => {
     await axios
-        .post('/api/v1/like/add/', {
-            post_id: postId,
+        .post('/api/v1/like/post/add/', {
+            some_id: postId,
         })
         .then(res => {
             dispatch(show('Лайк успешно добавлен!', 'success'));
@@ -75,10 +78,10 @@ export const addLike = (postId: number): ThunkType => async dispatch => {
         });
 };
 
-export const removeLike = (postId: number): ThunkType => async dispatch => {
+export const removePostLike = (postId: number): ThunkType => async dispatch => {
     await axios
-        .post('/api/v1/like/remove/', {
-            post_id: postId,
+        .post('/api/v1/like/post/remove/', {
+            some_id: postId,
         })
         .then(res => {
             dispatch(show('Лайк успешно убран!', 'success'));

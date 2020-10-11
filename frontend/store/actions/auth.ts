@@ -21,9 +21,8 @@ export const authInfo = (token: string): ThunkType => async dispatch => {
             Cookie.set('slug', res.data.slug);
             Cookie.set('avatar', res.data.avatar);
             Cookie.set('smallAvatar', res.data.small_avatar);
-            Cookie.set('phoneNumber', res.data.phoneNumber);
+            Cookie.set('phoneNumber', res.data.phone_number);
             console.log('Информация успешно занесена в куки');
-            console.log(res.data);
             Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });
         })
         .catch(err => {
@@ -90,7 +89,7 @@ export const authCheckState = (): ThunkType => dispatch => {
 
 export const authActivate = (token: string): ThunkType => async dispatch => {
     await axios
-        .post('/api/v1/activate/ ', {
+        .post('/api/v1/activation/email/ ', {
             token,
         })
         .then(res => {
