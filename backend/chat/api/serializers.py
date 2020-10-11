@@ -33,7 +33,7 @@ class ChatOverviewSerializer(ChatSerializer):
     participants = ContactSerializer(many=True)
 
     def to_representation(self, value):
-        user = self.context['request'].user
+        companion = user = self.context['request'].user
         for participant in value.participants.all():
             if participant != user:
                 companion = participant
@@ -48,6 +48,7 @@ class ChatOverviewSerializer(ChatSerializer):
             'id': companion.id,
             'first_name': companion.first_name,
             'last_name': companion.last_name,
+            'phone_number': companion.phone_number,
             'slug': companion.slug,
             'small_avatar': small_avatar,
         }

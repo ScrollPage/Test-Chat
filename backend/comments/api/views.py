@@ -12,6 +12,7 @@ from .serializers import (
 )
 from feed.api.permissions import IsRightUser, NotInOwnersBlacklist
 from backend.exceptions import ForbiddenError
+from feed.api.exceptions import BadRequestError
 from comments.models import Comment
 from feed.models import Post
 from photos.models import Photo
@@ -29,9 +30,9 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     }
     permission_classes = []
     permission_classes_by_action = {
-        'update': [IsRightUser],
-        'partial_update': [IsRightUser],
-        'destroy': [IsRightUser],
+        'update': [IsRightUser, NotInOwnersBlacklist],
+        'partial_update': [IsRightUser, NotInOwnersBlacklist],
+        'destroy': [IsRightUser, NotInOwnersBlacklist],
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
@@ -77,6 +78,7 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
     def get_queryset(self):
         if self.action == 'list':
             post_id = self.request.query_params.get('post_id', None)
+            photo_id = self.request.query_params.get('photo_id', None)
             if post_id:
                 post = get_object_or_404(Post, id=post_id)
                 return post.comments

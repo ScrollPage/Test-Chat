@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from .exceptions import BadRequestError
 from backend.exceptions import ForbiddenError
 from feed.models import Post
+from contact.models import Contact
 
 class IsRightUser(BasePermission):
     '''ТОт ли пользователь?'''
@@ -57,3 +58,10 @@ class NotInOwnersBlacklist(BasePermission):
             return request.user not in obj.owner.blacklist.all()
         if obj.group_owner:
             return request.user not in obj.group_owner.blacklist.all()
+
+class NotInBlacklistByQuery(BasePermission):
+    '''Можно ли просматривать записи?'''
+    def has_permission(self, request, view):
+        id = request.query_params.get('id', None)
+        user = get_object_or_404(Contact, id=id)
+        return request.user not in user.my_page.blacklist.all()

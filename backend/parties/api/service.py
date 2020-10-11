@@ -6,6 +6,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from backend.service import PermissionSerializerMixin, LowReadContactSerializer
 from community.models import Page
 from contact.models import Contact
+from parties.models import Party
 
 class PartyPermissionSerializerModelViewset(PermissionSerializerMixin,
                                             ModelViewSet):

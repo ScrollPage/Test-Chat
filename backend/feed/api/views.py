@@ -18,7 +18,12 @@ from .serializers import (
     RePostSerializer,
     PostListSerializer,
 )
-from .permissions import IsRightOwnerOrUser, IsNotLiked, IsRightUser, NotInOwnersBlacklist
+from .permissions import (
+    IsRightOwnerOrUser, 
+    IsRightUser, 
+    NotInOwnersBlacklist, 
+    NotInBlacklistByQuery
+)
 from .exceptions import BadRequestError
 from notifications.service import send_repost_notification
 
@@ -36,6 +41,8 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
         'update': [IsRightUser],
         'partial_update': [IsRightUser],
         'destroy': [IsRightOwnerOrUser],
+        'retrieve': [NotInOwnersBlacklist],
+        'list': [NotInBlacklistByQuery]
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
