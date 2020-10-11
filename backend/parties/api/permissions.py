@@ -13,12 +13,11 @@ class IsGroupAdminOrStaff(BasePermission):
         ])
     
     def has_permission(self, request, view):
-        if request.method == 'POST':
-            group = get_object_or_404(Party, id=view.kwargs['pk'])
-            return any([
-                request.user == group.admin,
-                request.user in group.staff.all()
-            ])
+        group = get_object_or_404(Party, id=view.kwargs['pk'])
+        return any([
+            request.user == group.admin,
+            request.user in group.staff.all()
+        ])
         return True
 
 class IsGroupAdmin(BasePermission):

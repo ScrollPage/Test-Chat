@@ -113,7 +113,7 @@ class Contact(AbstractBaseUser, PermissionsMixin):
         output.seek(0)
         self.small_avatar = save_image(output, self.avatar.name, format)
 
-        super().save()
+        self.save()
 
     def __str__(self):
         return str(self.id)

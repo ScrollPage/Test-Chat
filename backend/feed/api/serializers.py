@@ -67,6 +67,12 @@ class PostSerializer(BasePostSerialzier):
             return super().validate(attrs)
         raise BadRequestError('You need either image or text.')
 
+    def create(self, validated_data):
+        post = super().create(validated_data)
+        if validated_data.get('image', None):
+            post.image_save()
+        return post
+
 class PostListSerializer(BasePostSerialzier):
     '''Сериализация списка постов'''
     user = LowReadContactSerializer(read_only=True)
@@ -90,3 +96,9 @@ class RePostSerializer(BasePostSerialzier):
             return super().validate(attrs)
         else:
             raise BadRequestError('You need a parent and owner.')
+
+    def create(self, validated_data):
+        post = super().create(validated_data)
+        if validated_data.get('image', None):
+            post.image_save()
+        return post

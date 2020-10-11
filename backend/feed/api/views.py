@@ -18,7 +18,12 @@ from .serializers import (
     RePostSerializer,
     PostListSerializer,
 )
-from .permissions import IsRightOwnerOrUser, IsNotLiked, IsRightUser, NotInOwnersBlacklist
+from .permissions import (
+    IsRightOwnerOrUser, 
+    IsRightUser, 
+    NotInOwnersBlacklist, 
+    NotInBlacklistByQuery
+)
 from .exceptions import BadRequestError
 from notifications.service import send_repost_notification
 
@@ -36,19 +41,13 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
         'update': [IsRightUser],
         'partial_update': [IsRightUser],
         'destroy': [IsRightOwnerOrUser],
+        'retrieve': [NotInOwnersBlacklist],
+        'list': [NotInBlacklistByQuery]
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        res = super().create(request, args, kwargs)
-        if res.data.get('image', None):
-            id = int(res.data.get('id'))
-            post = get_object_or_404(Post, id=id)
-            post.image_save()
-        return res
 
     def get_queryset(self):
         queryset = Post.objects.all()

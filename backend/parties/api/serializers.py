@@ -39,8 +39,8 @@ class OfferedPostSerializer(PostSerializer):
     id = serializers.IntegerField(read_only=True)
 
     def create(self, validated_data):
-        post = Post.objects.create(**validated_data)
-        if validated_data['image']:
+        post = super().create(validated_data)
+        if validated_data.get('image', None):
             post.image_save()
         return post
 

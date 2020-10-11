@@ -15,6 +15,7 @@ class MeSerializer(serializers.ModelSerializer):
             'email',
             'first_name',
             'last_name',
+            'phone_number',
             'slug',
             'avatar',
             'compressed_avatar',

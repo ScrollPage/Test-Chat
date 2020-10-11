@@ -107,6 +107,7 @@ class AbstractPost(models.Model):
             im.save(output, format='PNG', quality=0)
             format = 'png'
 
+        print('asd')
         output.seek(0)
         self.compressed_image = save_image(output, self.image.name, format)
 
@@ -120,7 +121,7 @@ class AbstractPost(models.Model):
         self.compressed_image.delete(save=False)
 
     def delete(self):
-        self.delete_images(s)
+        self.delete_images()
         super().delete()
 
     class Meta:

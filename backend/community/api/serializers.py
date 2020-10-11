@@ -57,6 +57,12 @@ class ContactDetailSerializer(ContactFriendsSerializer):
             'activation_type',
         ]
 
+    def update(self, instance, validated_data):
+        user = super().update(instance, validated_data)
+        if validated_data.get('avatar', None):
+            user.image_save()
+        return user
+
 class FriendActionsSerializer(serializers.Serializer):
     sender = serializers.IntegerField()
     receiver = serializers.IntegerField()
