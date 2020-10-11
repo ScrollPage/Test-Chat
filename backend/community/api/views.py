@@ -172,11 +172,11 @@ class ContactFriendsView(generics.ListAPIView):
         id = self.request.query_params.get('id', None)
         if id:
             try:
-                int(id)
+                id = int(id)
             except ValueError:
-                user = Contact.objects.get(id=id)
-            else:
                 user = self.request.user
+            else:
+                user = Contact.objects.get(id=id)
         else:
             user = self.request.user
         queryset = user.my_page.friends.all()

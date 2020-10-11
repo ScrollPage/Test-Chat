@@ -8,6 +8,8 @@ from community.models import AddRequest, Page, UserInfo
 from notifications.service import send_addrequest_notification
 from feed.api.exceptions import BadRequestError
 from parties.api.serializers import PartyShortSerializer
+from photos.models import Photo
+from feed.models import Post
 
 class UserInfoSerializer(serializers.ModelSerializer):
     '''Сериализация информациио пользователе'''
@@ -61,6 +63,20 @@ class ContactDetailSerializer(ContactFriendsSerializer):
         user = super().update(instance, validated_data)
         if validated_data.get('avatar', None):
             user.image_save()
+            photo = Photo.objects.create(
+                picture=user.avatar.url,
+                small_picture=user.small_avatar.url,
+                compressed_picture=user.compressed_avatar.url,
+                owner = user.my_page
+            )
+            post = Post.objects.create(
+                image=user.avatar.url,
+                compressed_image=user.compressed_avatar.url,
+                owner = user.my_page,
+                text=f'{user.get_full_name()} изменил аватарку!',
+                user=user,
+            )
+
         return user
 
 class FriendActionsSerializer(serializers.Serializer):
