@@ -3,12 +3,13 @@ from django.shortcuts import get_object_or_404
 
 from chat.models import Chat, Message
 from contact.models import Contact
+from photos.models import Photo
 
 class ContactSerializer(serializers.ModelSerializer):
     '''Сериализация контакта'''
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'slug', 'small_avatar']
+        fields = ['id', 'first_name', 'last_name', 'slug']
 
 class ContactIDSerializer(serializers.StringRelatedField):
     '''Сериализация id контакта'''
@@ -39,8 +40,8 @@ class ChatOverviewSerializer(ChatSerializer):
                 companion = participant
                 break
         
-        if companion.small_avatar:
-            small_avatar = companion.small_avatar.url
+        if companion.avatar_id:
+            small_avatar = Photo.objects.get(id=companion.avatar_id).url
         else:
             small_avatar = None
         

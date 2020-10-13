@@ -89,27 +89,8 @@ class Contact(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return str(self.id)
 
-    def get_url(self):
-        try:
-            return self.avatar.url
-        except ValueError:
-            return None
-
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
-
-    def delete_avatars(self):
-        self.avatar.delete(save=False)
-        self.avatar = None
-        self.compressed_avatar.delete(save=False)
-        self.compressed_avatar = None
-        self.small_avatar.delete(save=False)
-        self.small_avatar = None
-        self.save()
-
-    def delete(self):
-        self.delete_avatars()
-        super().delete()
 
     class Meta:
         verbose_name = 'Контакт'

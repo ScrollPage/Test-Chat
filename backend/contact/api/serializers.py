@@ -3,6 +3,7 @@ from django.db import models
 
 from contact.models import Contact, MyToken, ContactCounter, Code
 from feed.api.exceptions import BadRequestError
+from community.api.serializers import ContactDetailSerializer
 from photos.models import Photo
 from feed.models import Post
 
@@ -19,12 +20,9 @@ class MeSerializer(serializers.ModelSerializer):
             'last_name',
             'phone_number',
             'slug',
-            'avatar',
-            'compressed_avatar',
-            'small_avatar'
         ]
 
-class CreateContactSerializer(serializers.ModelSerializer):
+class CreateContactSerializer(ContactDetailSerializer):
     '''Создание пользоватля'''
     class Meta:
         model = Contact
