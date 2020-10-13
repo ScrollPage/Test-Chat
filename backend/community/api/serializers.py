@@ -45,6 +45,7 @@ class ContactDetailSerializer(ContactFriendsSerializer):
     info = UserInfoSerializer(read_only=True)
     compressed_avatar = serializers.ImageField(read_only=True)
     small_avatar = serializers.ImageField(read_only=True)
+    photo_id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Contact
@@ -64,14 +65,14 @@ class ContactDetailSerializer(ContactFriendsSerializer):
         if validated_data.get('avatar', None):
             user.image_save()
             photo = Photo.objects.create(
-                picture=user.avatar.url,
-                small_picture=user.small_avatar.url,
-                compressed_picture=user.compressed_avatar.url,
+                picture=user.avatar,
+                small_picture=user.small_avatar,
+                compressed_picture=user.compressed_avatar,
                 owner = user.my_page
             )
             post = Post.objects.create(
-                image=user.avatar.url,
-                compressed_image=user.compressed_avatar.url,
+                image=user.avatar,
+                compressed_image=user.compressed_avatar,
                 owner = user.my_page,
                 text=f'{user.get_full_name()} изменил аватарку!',
                 user=user,

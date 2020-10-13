@@ -11,6 +11,7 @@ from comments.models import Comment
 from like.models import Like
 from photos.models import Photo
 from backend.exceptions import ForbiddenError
+from notifications.service import send_like_notification 
 
 class LikesCustomViewset(GenericViewSet):
     '''Создание и удаление лайков'''
@@ -48,6 +49,11 @@ class LikesCustomViewset(GenericViewSet):
         self.not_liked(inst)
         like = Like.objects.create(user=self.request.user)
         inst.likes.add(like)
+        try:
+            owner = inst.user
+        except AttributeError:
+            owner = inst.owner.user
+        send_like_notification(owner, self.request.user, inst.get_type(), id)
         return Response(status=status.HTTP_200_OK)
 
     def like_remove(self, instance):
@@ -62,25 +68,25 @@ class LikesCustomViewset(GenericViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     @action(detail=False, methods=['post'])
-    def post_like_add(self, request, *arags, **kwargs):
+    def post_like_add(self, request, *args, **kwargs):
         return self.like_add(Post)
 
     @action(detail=False, methods=['post'])
-    def post_like_remove(self, request, *arags, **kwargs):
+    def post_like_remove(self, request, *args, **kwargs):
         return self.like_remove(Post)
 
     @action(detail=False, methods=['post'])
-    def comment_like_add(self, request, *arags, **kwargs):
+    def comment_like_add(self, request, *args, **kwargs):
         return self.like_add(Comment)
 
     @action(detail=False, methods=['post'])
-    def comment_like_remove(self, request, *arags, **kwargs):
+    def comment_like_remove(self, request, *args, **kwargs):
         return self.like_remove(Comment)
 
     @action(detail=False, methods=['post'])
-    def photo_like_add(self, request, *arags, **kwargs):
+    def photo_like_add(self, request, *args, **kwargs):
         return self.like_add(Photo)
 
     @action(detail=False, methods=['post'])
-    def photo_like_remove(self, request, *arags, **kwargs):
+    def photo_like_remove(self, request, *args, **kwargs):
         return self.like_remove(Photo)

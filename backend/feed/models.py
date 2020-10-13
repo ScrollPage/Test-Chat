@@ -31,6 +31,9 @@ class Post(AbstractPost):
     published = models.BooleanField(default=True)
     comments = models.ManyToManyField(Comment, related_name='post_owner')
 
+    def get_type(self):
+        return 'post'
+
     class Meta:
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'

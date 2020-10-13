@@ -129,8 +129,12 @@ class Contact(AbstractBaseUser, PermissionsMixin):
 
     def delete_avatars(self):
         self.avatar.delete(save=False)
+        self.avatar = None
         self.compressed_avatar.delete(save=False)
+        self.compressed_avatar = None
         self.small_avatar.delete(save=False)
+        self.small_avatar = None
+        self.save()
 
     def delete(self):
         self.delete_avatars()

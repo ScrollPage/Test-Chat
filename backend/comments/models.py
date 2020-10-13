@@ -16,3 +16,6 @@ class Comment(AbstractPost):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
+    def get_type(self):
+        return 'comment'

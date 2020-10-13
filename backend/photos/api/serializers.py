@@ -10,6 +10,8 @@ class PhotoSerializer(serializers.ModelSerializer):
     compressed_picture = serializers.ImageField(read_only=True)
     picture = serializers.ImageField(required=True)
     owner = PageSerializer(read_only=True)
+    num_likes = serializers.IntegerField(read_only=True)
+    num_comments = serializers.IntegerField(read_only=True)
 
     def create(self, validated_data):
         photo = super().create(validated_data)
