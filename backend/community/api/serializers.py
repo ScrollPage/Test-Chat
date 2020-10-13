@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from chat.models import Chat
 from contact.models import Contact
-from backend.service import ContactSerializer, LowContactSerializer
+from backend.service import ContactSerializer, LowReadContactSerializer
 from community.models import AddRequest, Page, UserInfo
 from notifications.service import send_addrequest_notification
 from feed.api.exceptions import BadRequestError
@@ -17,12 +17,12 @@ class UserInfoSerializer(serializers.ModelSerializer):
         model = UserInfo
         exclude = ['user']
 
-class ContactFriendsSerializer(serializers.ModelSerializer):
+class ContactFriendsSerializer(LowReadContactSerializer):
     '''Менее развернутый контакт'''
     chat_id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Contact 
-        fields = ['id', 'first_name', 'last_name', 'slug', 'small_avatar', 'chat_id']
+        fields = ['id', 'first_name', 'last_name', 'slug', 'chat_id']
 
 class PageSerializer(serializers.ModelSerializer):
     '''Сериализация страницы пользователя'''
@@ -30,7 +30,7 @@ class PageSerializer(serializers.ModelSerializer):
     parties = PartyShortSerializer(many=True, read_only=True)
     class Meta:
         model = Page
-        exclude = ['user']
+        exclude = ['id', 'user', 'blacklist']
         ref_name = 'community'
 
 class ContactDetailSerializer(ContactFriendsSerializer):
@@ -43,9 +43,7 @@ class ContactDetailSerializer(ContactFriendsSerializer):
     is_sent_to_you = serializers.BooleanField(read_only=True)
     my_page = PageSerializer(read_only=True)
     info = UserInfoSerializer(read_only=True)
-    compressed_avatar = serializers.ImageField(read_only=True)
-    small_avatar = serializers.ImageField(read_only=True)
-    photo_id = serializers.IntegerField(read_only=True)
+    avatar_id =serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Contact
@@ -60,25 +58,24 @@ class ContactDetailSerializer(ContactFriendsSerializer):
             'activation_type',
         ]
 
-    def update(self, instance, validated_data):
-        user = super().update(instance, validated_data)
-        if validated_data.get('avatar', None):
-            user.image_save()
-            photo = Photo.objects.create(
-                picture=user.avatar,
-                small_picture=user.small_avatar,
-                compressed_picture=user.compressed_avatar,
-                owner = user.my_page
-            )
-            post = Post.objects.create(
-                image=user.avatar,
-                compressed_image=user.compressed_avatar,
-                owner = user.my_page,
-                text=f'{user.get_full_name()} изменил аватарку!',
-                user=user,
-            )
-
-        return user
+    def to_representation(self, value):
+        photo_id = value.avatar_id
+        if photo_id:
+            photo = Photo.objects.get(id=photo_id)
+            d = {
+                'avatar': photo.picture.url,
+                'small_avatar': photo.small_picture.url,
+                'compressed_avatar': photo.compressed_picture.url
+            }
+        else:
+            d = {
+                'avatar': None,
+                'small_avatar': None,
+                'compressed_avatar': None
+            }
+        res = super().to_representation(value)
+        res.update(d)
+        return res
 
 class FriendActionsSerializer(serializers.Serializer):
     sender = serializers.IntegerField()

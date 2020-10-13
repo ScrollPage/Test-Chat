@@ -6,7 +6,7 @@ from io import BytesIO
 from contact.models import Contact
 from community.models import Page
 from parties.models import Party
-from backend.service import save_image, AbstractPost
+from comments.service import AbstractPost
 from like.models import Like
 from comments.models import Comment
 

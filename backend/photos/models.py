@@ -5,7 +5,7 @@ from io import BytesIO
 from community.models import Page
 from like.models import Like
 from comments.models import Comment
-from backend.service import save_image
+from .service import save_image
 from feed.models import Post
 
 class Photo(models.Model):
@@ -56,8 +56,9 @@ class Photo(models.Model):
 
     def delete(self):
         user = self.owner.user
-        if user.avatar == self.picture:
-            user.delete_avatars()
+        if user.avatar_id == self.id:
+            user.avatar_id = None
+            user.save()
             post = Post.objects.filter(user=user, image=self.picture).delete()
         self.delete_images()
         super().delete()

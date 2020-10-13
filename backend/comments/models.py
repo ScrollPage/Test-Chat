@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.service import AbstractPost
+from comments.service import AbstractPost
 
 class Comment(AbstractPost):
     '''Комментарий куда угодно'''

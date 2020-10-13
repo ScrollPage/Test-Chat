@@ -4,11 +4,26 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
 
-from .serializers import CreateContactSerializer, TokenSerializer, CodeSerializer, MeSerializer
+from .serializers import (
+    CreateContactSerializer, 
+    TokenSerializer, 
+    CodeSerializer, 
+    MeSerializer, 
+    AvatarSerializer
+)
 from contact.models import Contact, MyToken, ContactCounter, Code
 from community.models import Page
 from feed.api.exceptions import BadRequestError
 from .service import SerializerViewset, make_active
+from photos.models import Photo
+
+class AvatarChangeView(generics.CreateAPIView):
+    '''Смена аватарки'''
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = AvatarSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user.my_page)
 
 class RegistrationView(generics.CreateAPIView):
     '''Создание пользователя'''

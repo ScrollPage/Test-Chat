@@ -3,14 +3,14 @@ from rest_framework.test import APIClient
 from django.shortcuts import reverse
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
-from PIL import Image
-from io import BytesIO
+from django.shortcuts import get_object_or_404
 import sys
 
 from contact.models import Contact
 from .exceptions import ForbiddenError
 from parties.models import Party
 from like.models import Like
+from photos.models import Photo
 
 def save_image(output, name, format):
     return InMemoryUploadedFile(
@@ -74,13 +74,27 @@ class LowContactSerializer(serializers.ModelSerializer):
     '''Базовая сриализация контакта'''
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'slug', 'small_avatar',]
+        fields = ['id', 'first_name', 'last_name', 'slug', 'avatar_id',]
 
 class LowReadContactSerializer(LowContactSerializer):
     '''Все поля для чтения, кроме slug'''
     first_name = serializers.CharField(read_only=True)
     last_name = serializers.CharField(read_only=True)
-    small_avatar = serializers.ImageField(read_only=True)
+
+    def to_representation(self, value):
+        photo_id = value.avatar_id
+        if photo_id:
+            photo = Photo.objects.get(id=photo_id)
+            d = {
+                'small_avatar': photo.small_picture.url
+            }
+        else:
+            d = {
+                'small_avatar': None
+            }
+        res = super().to_representation(value)
+        res.update(d)
+        return res
 
 class PartyShortSerializer(serializers.ModelSerializer):
     '''Коротенькая сериализация групп'''
@@ -88,44 +102,7 @@ class PartyShortSerializer(serializers.ModelSerializer):
         model = Party
         fields = ['id', 'name', 'image', 'slug']
 
-class AbstractPost(models.Model):
-    '''Абстрактный пост'''
-    user = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    text = models.TextField(max_length=1000, blank=True, default='')
-    image = models.ImageField(upload_to='user_posts/%Y/%m/%d', blank=True, null=True)
-    compressed_image = models.ImageField(upload_to='compressed_user_posts/%Y/%m/%d', blank=True, null=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(Like)
 
-    def image_save(self, *args, **kwargs):
-        im = Image.open(self.image)
-        output = BytesIO()
-        try:
-            im.save(output, format='JPEG', quality=0)
-            format = 'jpeg'
-        except OSError:
-            im.save(output, format='PNG', quality=0)
-            format = 'png'
-
-        print('asd')
-        output.seek(0)
-        self.compressed_image = save_image(output, self.image.name, format)
-
-        super().save()
-
-    def __str__(self):
-        return str(self.id)
-
-    def delete_images(self):
-        self.image.delete(save=False)
-        self.compressed_image.delete(save=False)
-
-    def delete(self):
-        self.delete_images()
-        super().delete()
-
-    class Meta:
-        abstract = True
 
 class AbstractPostSerializer(serializers.Serializer):
     '''Базовый сериализатор для поста и коммента'''

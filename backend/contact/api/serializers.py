@@ -3,6 +3,8 @@ from django.db import models
 
 from contact.models import Contact, MyToken, ContactCounter, Code
 from feed.api.exceptions import BadRequestError
+from photos.models import Photo
+from feed.models import Post
 
 class MeSerializer(serializers.ModelSerializer):
     '''Обзор самого себя'''
@@ -75,3 +77,25 @@ class CodeSerializer(serializers.ModelSerializer):
         if data.get('code', None):
             return super().validate(data)
         return BadRequestError('You need a code.')
+
+class AvatarSerializer(serializers.ModelSerializer):
+    '''Сериализатор смены аватарки'''
+    id = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = Photo
+        fields = ['id', 'picture']
+
+    def create(self, validated_data):
+        photo = super().create(validated_data)
+        photo.image_save()
+        user = self.context['request'].user
+        user.avatar_id = photo.id
+        user.save()
+        Post.objects.create(
+            user=user,
+            owner=user.my_page,
+            image=photo.picture,
+            compressed_image=photo.compressed_picture,
+            text=f'{user.get_full_name()} сменил аватарку!'
+        )
+        return photo

@@ -36,7 +36,18 @@ class ContactTestCase(APITestCase):
             password='very_strong_psw',
         )
 
-        Contact.objects.all().update(is_active=True)
+        self.user4 = Contact.objects.create_user(
+            email='test4@case.test',
+            first_name='staff',
+            last_name='staff',
+            phone_number=0,
+            slug='test_case',
+            password='very_strong_psw',
+        )
+        self.user1.my_page.blacklist.add(self.user4)
+
+        Contact.objects.update(is_active=True)
+
 
     def test_retrieve_unauth(self):
         response = get_response('contact-detail', 'get', kwargs={'pk': 1})
@@ -46,6 +57,10 @@ class ContactTestCase(APITestCase):
         response = get_response('contact-detail', 'get', self.user1, kwargs={'pk': 1})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['email'], 'test1@case.test')
+
+    # def test_retrieve_blacklist(self):
+    #     response = get_response('contact-detail', 'get', self.user4, kwargs={'pk': 1})
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_by_owner(self):
         response = get_response('contact-detail', 'patch', self.user1, {'phone_number': 234980}, {'pk': 1})
@@ -139,7 +154,7 @@ class ContactTestCase(APITestCase):
     def test_people_list_auth(self):
         response = get_response('people', 'get', self.user3)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 3)
 
     def test_people_list_auth_query(self):
         response = get_response('/api/v1/people/?query_name=user', 'get', self.user3, is_url=True)

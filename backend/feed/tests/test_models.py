@@ -20,6 +20,9 @@ class TestModels(TestCase):
     def test_post_str(self):
         self.assertEqual(str(self.post), '1')
 
+    def test_post_get_type(self):
+        self.assertEqual(self.post.get_type(), 'post')
+
     def test_repost_str(self):
         repost = mixer.blend('feed.RePost', user=self.user, post_id=self.post)
         self.assertEqual(str(repost), '1 user reposts 1 post')

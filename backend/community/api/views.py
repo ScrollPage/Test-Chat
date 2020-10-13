@@ -70,15 +70,7 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
         ).annotate(
             chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user))
         )
-        avatar = Contact.objects.get(id=pk).avatar
-        if avatar:
-            queryset = queryset.annotate(
-                photo_id=Sum('my_page__photos__id', filter=Q(my_page__photos__picture=avatar))
-            )
-        else:
-            queryset = queryset.annotate(
-                photo_id=Sum('avatar')
-            )
+
         if self.request.user.id == pk:
             queryset = queryset.annotate(
                 num_notes=Count('notifications', filter=Q(notifications__seen=False))

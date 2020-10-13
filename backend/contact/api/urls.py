@@ -1,10 +1,11 @@
 from rest_framework.urlpatterns import format_suffix_patterns
 from django.urls import path
 
-from .views import RegistrationView, ContactActivationView, MeViewset
+from .views import RegistrationView, ContactActivationView, MeViewset, AvatarChangeView
 
 urlpatterns = [
     path('register/', RegistrationView.as_view(), name='register'),
+    path('avatar/', AvatarChangeView.as_view(), name='avatar-change')
 ]
 
 me = MeViewset.as_view({
