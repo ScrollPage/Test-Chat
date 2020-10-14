@@ -52,7 +52,7 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
     def get_queryset(self):
         queryset = Post.objects.all()
         queryset = post_annotations(self.request.user, queryset)
-        return queryset.filter(published=True).order_by('-timestamp')
+        return queryset.order_by('-timestamp')
 
 
 class RePostMechanicsCustomViewset(CreateViewset):
