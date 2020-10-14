@@ -41,7 +41,7 @@ class ChatConsumer(WebsocketConsumer):
     def message_to_json(self, message):
         user = message.contact
         if user.avatar_id:
-            small_avatar = Photo.objects.get(id=user.avatar_id).small_picture
+            small_avatar = Photo.objects.get(id=user.avatar_id).small_picture.url
         else:
             small_avatar = None
         return {

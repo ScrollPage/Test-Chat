@@ -6,8 +6,9 @@ from feed.api.exceptions import BadRequestError
 from community.api.serializers import ContactDetailSerializer
 from photos.models import Photo
 from feed.models import Post
+from backend.service import LowReadContactSerializer
 
-class MeSerializer(serializers.ModelSerializer):
+class MeSerializer(LowReadContactSerializer):
     '''Обзор самого себя'''
     id = serializers.IntegerField()
 
