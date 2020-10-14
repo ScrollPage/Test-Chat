@@ -1,14 +1,13 @@
 import PrivateLayout from '@/components/Layout/PrivateLayout';
-import UserPost from '@/components/Userpage/UserPost';
+import UserPost from '@/components/Post/PostItem';
 import { IPost } from '@/types/post';
 import { IUser } from '@/types/user';
 import { getUserFromServer } from '@/utils/index';
-import axios from 'axios';
+import { instanceWithSSR } from '@/api/api';
 import { GetServerSideProps } from 'next';
-import cookies from 'next-cookies';
 import useSWR from 'swr';
 import styled from 'styled-components';
-import PostCreate from '@/components/Userpage/PostCreate';
+import PostCreate from '@/components/Post/PostCreate';
 
 interface INews {
   user: IUser;
@@ -47,16 +46,9 @@ export default function News({ user, serverPosts }: INews) {
 }
 
 export const getServerSideProps: GetServerSideProps<INews> = async ctx => {
-  const token = cookies(ctx)?.token || null;
-
-  axios.defaults.headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Token ${token}`,
-  };
-
   let posts: Array<IPost> = [];
 
-  await axios
+  await instanceWithSSR(ctx)
     .get(`/api/v1/feed/`)
     .then(response => {
       posts = response?.data;

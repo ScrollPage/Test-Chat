@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import axios from 'axios';
+import { instanceWithSSR } from '@/api/api';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
-import Friend from '@/components/Friends/Friend';
-import Search from '@/components/Dialogs/SearchDialog';
+import Friend from '@/components/Friend/FriendItem';
+import Search from '@/components/Dialog/DialogSearch';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { getUserFromServer } from '@/utils/index';
 import { GetServerSideProps } from 'next';
@@ -25,7 +25,7 @@ export default function Friends({ friends, user }: IFriends) {
                 name={`${friend.first_name} ${friend.last_name}`}
                 friendId={friend.id}
                 chatId={friend.chat_id}
-                src={friend.avatar}
+                src={friend.small_avatar}
             />
         ));
 
@@ -48,25 +48,9 @@ export default function Friends({ friends, user }: IFriends) {
 }
 
 export const getServerSideProps: GetServerSideProps<IFriends> = async (ctx) => {
-    const token = cookies(ctx)?.token || null;
-
-    axios.defaults.headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
-    };
-
-    if (!ctx?.req) {
-        return {
-            props: {
-                friends: [],
-                user: getUserFromServer(ctx)
-            },
-        };
-    }
-
     let friends: Array<IGlobalUser> = [];
 
-    await axios
+    await instanceWithSSR(ctx)
         .get(`/api/v1/friends/`)
         .then(response => {
             friends = response?.data;

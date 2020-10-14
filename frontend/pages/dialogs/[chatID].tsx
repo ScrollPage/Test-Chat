@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { message as actionMessage } from '@/store/actions/message';
 import WebSocketInstance from '@/websocket';
 import ChatItem from '@/components/Chat/ChatItem';
-import ChatInput from '@/components/Chat/ChatInput';
+import ChatInput from '@/components/Chat/ChatInput/ChatInput';
 import ChatHeader from '@/components/Chat/ChatHeader';
 import Loading from '@/components/UI/Loading';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
@@ -15,13 +15,12 @@ import { getMessages, getMessagesLoading } from '../../store/selectors';
 import { IUser } from '@/types/user';
 import { GetServerSideProps } from 'next';
 import { IMessages } from '@/types/message';
-import axios from 'axios';
-import cookies from 'next-cookies';
-import { IChatInfo, IChatParticipiant } from '@/types/chat';
+import { instanceWithSSR } from '@/api/api';
+import { IChatInfo } from '@/types/chat';
 
 interface ChatPage {
     user: IUser;
-    chatInfo: IChatInfo | null;
+    chatInfo?: IChatInfo;
 }
 
 export default function ChatPage({ user, chatInfo }: ChatPage) {
@@ -35,7 +34,7 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
 
     const [message, setMessage] = useState('');
 
-    let messagesEnd = useRef();
+    let messagesEnd = useRef<HTMLDivElement>();
 
     useEffect(() => {
         scrollToBottom();
@@ -91,8 +90,6 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
     };
 
     const renderMessages = (messages: IMessages) => {
-        console.log(messages)
-
         return messages.map(message => {
             return (
                 <ChatItem
@@ -100,7 +97,6 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
                     name={`${message.first_name} ${message.last_name}`}
                     time={message.timestamp}
                     message={message.content}
-                    isUsername={message.author === Number(user.userId)}
                     messageUserId={message.author}
                     avatar={message.small_avatar}
                 />
@@ -111,9 +107,9 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
     return (
         <PrivateLayout user={user}>
             <StyledChat>
-                <ChatHeader chatInfo={chatInfo} />
+                {chatInfo && <ChatHeader chatInfo={chatInfo} />}
                 <StyledChatInner>
-                    {loading ? (
+                    {!messages && loading ? (
                         <Loading />
                     ) : messages.length === 0 ? (
                         <p className="not-messages">У вас нет сообщений</p>
@@ -137,17 +133,10 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
 }
 
 export const getServerSideProps: GetServerSideProps<ChatPage> = async (ctx) => {
-    const token = cookies(ctx)?.token || null;    
     const chatId = ctx?.params?.chatID?.[0];
+    let chatInfo: (IChatInfo | undefined) = undefined;
 
-    axios.defaults.headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
-    };
-
-    let chatInfo: (IChatInfo | null) = null;
-
-    await axios
+    await instanceWithSSR(ctx)
         .get(`/api/v1/chat/?id=${chatId}`)
         .then(response => {
             chatInfo = response?.data?.[0];

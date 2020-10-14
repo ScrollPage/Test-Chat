@@ -1,11 +1,12 @@
 import Cookie from 'js-cookie';
 import { ThunkType } from '@/types/thunk';
-import axios from 'axios';
+import { instance } from '@/api/api';
 import Router from 'next/router';
 import { show } from './alert';
 
 export const addFriend = (friendId: number, userId: number): ThunkType => async dispatch => {
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/request/add/', {
             sender: userId,
             receiver: friendId
@@ -19,7 +20,8 @@ export const addFriend = (friendId: number, userId: number): ThunkType => async 
 };
 
 export const recieveFriend = (friendId: number, userId: number): ThunkType => async dispatch => {
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/friends/add/', {
             sender: friendId,
             receiver: userId,
@@ -33,7 +35,8 @@ export const recieveFriend = (friendId: number, userId: number): ThunkType => as
 };
 
 export const removeAddFriend = (friendId: number, userId: number): ThunkType => async dispatch => {
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/request/remove/', {
             sender: userId,
             receiver: friendId,
@@ -47,7 +50,8 @@ export const removeAddFriend = (friendId: number, userId: number): ThunkType => 
 };
 
 export const removeFriend = (friendId: number, userId: number): ThunkType => async dispatch => {
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/friends/remove/', {
             sender: userId,
             receiver: friendId,
@@ -61,7 +65,8 @@ export const removeFriend = (friendId: number, userId: number): ThunkType => asy
 };
 
 export const createChat = (friendId: number): ThunkType => async dispatch => {
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/chat/', {
             participants: [Cookie.get('userId'), String(friendId)],
         })

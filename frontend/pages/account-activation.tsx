@@ -2,23 +2,29 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { useDispatch } from 'react-redux';
-import { authActivate } from '@/store/actions/auth';
+import { emailActivate } from '@/store/actions/auth';
 
 import VisitorLayout from '@/components/Layout/VisitorLayout';
+import { getAsString } from '@/utils';
+import { GetServerSideProps } from 'next';
 
-export default function Activation() {
+interface IActivation {
+    token?: string; 
+}
+
+export default function Activation({ token }: IActivation) {
     const dispatch = useDispatch();
 
-    const { query, push } = useRouter();
+    const { push } = useRouter();
 
     useEffect(() => {
-        if (query.token !== undefined && query.token !== null) {
-            dispatch(authActivate(query.token?.[0]));
+        if (token) {
+            dispatch(emailActivate(token));
             setTimeout(() => {
                 push({ pathname: '/' }, undefined, { shallow: true });
             }, 5000);
         }
-    }, [query]);
+    }, [token]);
 
     return (
         <VisitorLayout>
@@ -26,3 +32,14 @@ export default function Activation() {
         </VisitorLayout>
     );
 }
+
+export const getServerSideProps: GetServerSideProps<IActivation> = async ctx => {
+    let token = getAsString(ctx.query.token);
+    return {
+        props: {
+            token
+        },
+    };
+};
+
+

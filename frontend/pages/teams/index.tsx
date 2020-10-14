@@ -2,13 +2,12 @@ import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { ITeam } from '@/types/contact';
 import { IUser } from '@/types/user';
 import { getUserFromServer } from '@/utils/index';
-import axios from 'axios';
 import { GetServerSideProps } from 'next';
-import cookies from 'next-cookies';
 import useSWR from 'swr';
 import SearchDialog from '@/components/UI/Search';
 import styled from 'styled-components';
-import Team from '@/components/Teams/Team';
+import Team from '@/components/Party/PartyItem';
+import { instanceWithSSR } from '@/api/api';
 
 interface ITeamsFC {
   user: IUser;
@@ -49,12 +48,6 @@ export default function Teams({ user, parties }: ITeamsFC) {
 }
 
 export const getServerSideProps: GetServerSideProps<ITeamsFC> = async ctx => {
-  const token = cookies(ctx)?.token || null;
-
-  axios.defaults.headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Token ${token}`,
-  };
 
   if (!ctx?.req) {
     return {
@@ -67,7 +60,7 @@ export const getServerSideProps: GetServerSideProps<ITeamsFC> = async ctx => {
 
   let parties: ITeam[] = [];
 
-  await axios
+  await instanceWithSSR(ctx)
     .get(`/api/v1/group/`)
     .then(response => {
       parties = response?.data;

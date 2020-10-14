@@ -1,5 +1,5 @@
 import { ThunkType } from '@/types/thunk';
-import axios from 'axios';
+import { instance } from '@/api/api';
 import Cookie from 'js-cookie';
 import { show } from './alert';
 import { trigger } from 'swr';
@@ -17,7 +17,8 @@ export const addPost = (text: string, image: any, triggerUrl: string, pageUserId
         owner = pageUserId;
     }
     form_data.append('owner', String(owner));
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/post/', form_data)
         .then(res => {
             dispatch(show('Пост успешно добавлен!', 'success'));
@@ -30,7 +31,8 @@ export const addPost = (text: string, image: any, triggerUrl: string, pageUserId
 };
 
 export const deletePost = (postId: number): ThunkType => async dispatch => {
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .delete(`/api/v1/post/${postId}/`)
         .then(res => {
             dispatch(show('Пост успешно удален!', 'success'));
@@ -52,8 +54,8 @@ export const rePost = (text: string, image: any, parent: number, triggerUrl: str
     // form_data.append('user', userId);
     form_data.append('owner', userId);
     form_data.append('parent', String(parent));
-
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/repost/', form_data)
         .then(res => {
             dispatch(show('Вы успешно репостнули пост!', 'success'));
@@ -66,7 +68,8 @@ export const rePost = (text: string, image: any, parent: number, triggerUrl: str
 };
 
 export const addPostLike = (postId: number): ThunkType => async dispatch => {
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/like/post/add/', {
             some_id: postId,
         })
@@ -79,7 +82,8 @@ export const addPostLike = (postId: number): ThunkType => async dispatch => {
 };
 
 export const removePostLike = (postId: number): ThunkType => async dispatch => {
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/like/post/remove/', {
             some_id: postId,
         })

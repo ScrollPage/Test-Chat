@@ -1,17 +1,15 @@
 import { trigger } from 'swr';
-import axios from 'axios';
 import Cookie from 'js-cookie';
 import Router from 'next/router';
 import WebSocketInstance from '@/websocket';
 import { show } from './alert';
 import { ThunkType } from '@/types/thunk';
+import { instance, instanceWithOutHeaders } from '@/api/api';
 
-export const authInfo = (token: string): ThunkType => async dispatch => {
-    axios.defaults.headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`
-    }
-    await axios
+export const authInfo = (isRouterPush: boolean, token?: string): ThunkType => async dispatch => {
+    const userId = Cookie.get('userId');
+    const token = Cookie.get('token');
+    await instance(token)
         .get('/api/v1/me/')
         .then(res => {
             Cookie.set('userId', res.data.id);
@@ -23,7 +21,11 @@ export const authInfo = (token: string): ThunkType => async dispatch => {
             Cookie.set('smallAvatar', res.data.small_avatar);
             Cookie.set('phoneNumber', res.data.phone_number);
             console.log('Информация успешно занесена в куки');
-            Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });
+            if (isRouterPush) {
+                Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });
+            } else {
+                Router.push('/userpage/[userID]', `/userpage/${userId}`, { shallow: true });
+            }
         })
         .catch(err => {
             dispatch(show('Ошибка при взятии информации о пользователе!', 'warning'));
@@ -31,7 +33,7 @@ export const authInfo = (token: string): ThunkType => async dispatch => {
 };
 
 export const authLogin = (email: string, password: string): ThunkType => async dispatch => {
-    await axios
+    await instanceWithOutHeaders
         .post('/auth/jwt/create/', {
             email,
             password,
@@ -39,8 +41,11 @@ export const authLogin = (email: string, password: string): ThunkType => async d
         .then(res => {
             const expirationDate = new Date(new Date().getTime() + 3600 * 1000 * 24);
             Cookie.set('token', res.data.access);
+            console.log(res.data.access)
+            console.log(email);
+            console.log(password);
             Cookie.set('expirationDate', expirationDate);
-            dispatch(authInfo(res.data.access));
+            dispatch(authInfo(true));
             dispatch(checkAuthTimeout(3600 * 24));
             dispatch(show('Вы успешно вошли!', 'success'));
         })
@@ -54,18 +59,25 @@ export const authSignup = (
     firstName: string,
     lastName: string,
     phoneNumber: string,
-    password: string
+    password: string,
+    confirmMethod: 'email' | 'phone'
 ): ThunkType => async dispatch => {
-    await axios
+    await instanceWithOutHeaders
         .post('/api/v1/register/ ', {
             email,
             first_name: firstName,
             last_name: lastName,
             phone_number: phoneNumber,
             password,
+            activation_type: confirmMethod
         })
         .then(res => {
-            dispatch(show('На ваш E-mail пришло подтверждение!', 'success'));
+            let message = 'На ваш E-mail пришло подтверждение!';
+            if (confirmMethod === 'phone') {
+                message = 'На ваш телефон пришел код!';
+            }
+            dispatch(show(message, 'success'));
+            Router.push({ pathname: '/register-success', query: { confirmMethod } }, undefined, { shallow: true });
         })
         .catch(err => {
             dispatch(show('Что-то пошло не так!', 'warning'));
@@ -87,16 +99,32 @@ export const authCheckState = (): ThunkType => dispatch => {
     }
 };
 
-export const authActivate = (token: string): ThunkType => async dispatch => {
-    await axios
+export const emailActivate = (token: string): ThunkType => async dispatch => {
+    await instanceWithOutHeaders
         .post('/api/v1/activation/email/ ', {
             token,
         })
         .then(res => {
-            dispatch(show('Активация прошла успешно!', 'success'));
+            dispatch(show('Активация прошла успешно! Можете войти в аккаунт!', 'success'));
         })
         .catch(err => {
             dispatch(show('Ошибка активации!', 'warning'));
+        });
+};
+
+export const phoneActivate = (code: string): ThunkType => async dispatch => {
+    await instanceWithOutHeaders
+        .post('/api/v1/activation/phone/ ', {
+            code
+        })
+        .then(res => {
+            dispatch(show('Активация прошла успешно! Можете войти в аккаунт!', 'success'));
+            setTimeout(() => {
+                Router.push({ pathname: '/' }, undefined, { shallow: true });
+            }, 3000)
+        })
+        .catch(err => {
+            dispatch(show('Неверный код!', 'warning'));
         });
 };
 
@@ -125,12 +153,10 @@ export const authChange = (
     lastName: string,
     phoneNumber: string
 ): ThunkType => async dispatch => {
-    axios.defaults.headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${Cookie.get('token')}`
-    }
-    await axios
-        .patch(`/api/v1/contact/${Cookie.get('userId')}/`, {
+    const userId = Cookie.get('userId');
+    const token = Cookie.get('token');
+    await instance(token)
+        .patch(`/api/v1/contact/${userId}/`, {
             email,
             first_name: firstName,
             last_name: lastName,
@@ -141,7 +167,7 @@ export const authChange = (
             Cookie.set('firstName', firstName);
             Cookie.set('lastName', lastName);
             Cookie.set('phoneNumber', phoneNumber);
-            Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });
+            Router.push('/userpage/[userID]', `/userpage/${userId}`, { shallow: true });
             dispatch(show('Вы успешно сменили данные!', 'success'));
         })
         .catch(err => {
@@ -153,19 +179,18 @@ export const avatarChange = (
     image: any,
     triggerUrl: string
 ): ThunkType => async dispatch => {
-    axios.defaults.headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${Cookie.get('token')}`
-    }
-    const postUrl = `/api/v1/post/?id=${Cookie.get('userId')}`
+    const userId = Cookie.get('userId');
+    const postUrl = `/api/v1/post/?id=${userId}`
     let form_data = new FormData();
     form_data.append('avatar', image, image.name);
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .patch(triggerUrl, form_data)
         .then(res => {
             dispatch(show('Вы успешно сменили аватар!', 'success'));
-            trigger(triggerUrl);
-            trigger(postUrl);
+            // trigger(triggerUrl);
+            // trigger(postUrl);
+            dispatch(authInfo(false));
         })
         .catch(err => {
             dispatch(show('Ошибка смены аватара!', 'warning'));

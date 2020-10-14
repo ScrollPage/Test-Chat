@@ -1,18 +1,17 @@
-import axios from 'axios';
-import cookies from 'next-cookies';
+import { instanceWithSSR } from '@/api/api';
 import useSWR from 'swr';
-import { getUserFromServer } from '@/utils/index';
+import { getAsString, getUserFromServer } from '@/utils/index';
 import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
-import UserInfo from '@/components/Userpage/UserInfo';
-import UserAvatar from '@/components/Userpage/UserAvatar';
-import UserFriends from '@/components/Userpage/UserFriends';
-import UserPosts from '@/components/Userpage/UserPosts';
+import UserInfo from '@/components/User/UserInfo';
+import UserAvatar from '@/components/User/UserAvatar';
+import UserFriends from '@/components/User/UserFriends';
+import UserPosts from '@/components/Post/Posts';
 import { IPost } from '@/types/post';
 import { IUser } from '@/types/user';
 import { IContact } from '@/types/contact';
 import { GetServerSideProps } from 'next';
-import UserParties from '@/components/Userpage/UserParties';
+import UserParties from '@/components/User/UserParties';
 
 interface ITeams {
     contact: IContact | null;
@@ -69,18 +68,12 @@ export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
 }
 
 export const getServerSideProps: GetServerSideProps<ITeams> = async ctx => {
-    const pageUserId = ctx?.params?.userID?.[0];
-    const token = cookies(ctx)?.token || null;
-
-    axios.defaults.headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
-    };
+    const pageUserId = getAsString(ctx?.params?.userID);
 
     let contact: IContact | null = null;
     let posts: Array<IPost> = [];
 
-    await axios
+    await instanceWithSSR(ctx)
         .get(`/api/v1/contact/${pageUserId}/`)
         .then(response => {
             contact = response?.data;
@@ -89,7 +82,7 @@ export const getServerSideProps: GetServerSideProps<ITeams> = async ctx => {
             console.log(error);
         });
 
-    await axios
+    await instanceWithSSR(ctx)
         .get(`/api/v1/post/?id=${pageUserId}`)
         .then(response => {
             posts = response?.data;
