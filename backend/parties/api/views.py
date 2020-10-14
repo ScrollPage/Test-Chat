@@ -140,10 +140,21 @@ class GroupPostsViewset(PartyPermissionSerializerEmptyViewset):
     def offer_list(self, request, *args, **kwargs):
         pk = kwargs['pk']
         group = get_object_or_404(Party, id=pk)
-        queryset = self.get_queryset().filter(
-            published=False, 
-            group_owner=group
-        ).order_by('-timestamp')
+        if any([
+            request.user == group.admin,
+            request.user in group.staff.all()
+        ]):
+            queryset = self.get_queryset().filter(
+                published=False, 
+                group_owner=group
+            )
+        else:
+            queryset = self.get_queryset().filter(
+                published=False,
+                group_owner=group,
+                user=request.user
+            )
+        queryset = queryset.order_by('-timestamp')
         serializer = self.get_serializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -156,18 +167,6 @@ class GroupPostsViewset(PartyPermissionSerializerEmptyViewset):
             group_owner=group
         ).order_by('-timestamp')
         queryset = post_annotations(request.user, queryset)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=['get'])
-    def my_offerings(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        group = get_object_or_404(Party, id=pk)
-        queryset = self.get_queryset().filter(
-            published=False, 
-            group_owner=group,
-            user=request.user
-        ).order_by('-timestamp')
         serializer = self.get_serializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     
