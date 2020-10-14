@@ -132,7 +132,6 @@ class GroupPostsViewset(PartyPermissionSerializerEmptyViewset):
             IsGroupAdminOrStaff, 
             RightPostGroupOwner,
         ],
-        'offer_list': [IsGroupAdminOrStaff]
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
