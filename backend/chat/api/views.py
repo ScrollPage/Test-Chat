@@ -13,7 +13,6 @@ class ChatModelPermissionViewSet(PermissionModelCustomViewSet):
     serializer_class = ChatCreateSerializer
     permission_classes = []
     permission_classes_by_action = {
-        'list': [IsOwner],
         'retrieve': [IsOwner],
     }
     serializer_class_by_action = {
