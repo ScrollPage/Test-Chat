@@ -33,6 +33,7 @@ class PostParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     parent = RecursivePostSerialzier(read_only=True)
     user = LowReadContactSerializer(read_only=True)
     compressed_image = serializers.ImageField(read_only=True)
+    group_owner = PartyShortSerializer(read_only=True)
     class Meta:
         model = Post
         fields = [
@@ -43,6 +44,7 @@ class PostParentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
             'text', 
             'image', 
             'timestamp',
+            'group_owner',
             'compressed_image'
         ]
 
