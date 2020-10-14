@@ -4,6 +4,7 @@ from io import BytesIO
 
 from contact.models import Contact
 from like.models import Like
+from parties.service import save_image 
 
 class AbstractPost(models.Model):
     '''Абстрактный пост'''
