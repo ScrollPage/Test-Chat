@@ -4,16 +4,17 @@ import { IUser } from '@/types/user';
 import { IPost } from '@/types/post';
 
 export interface IPostRepostModalProps {
-    pageUserId: number | undefined;
     user: IUser;
     parent: IPost;
+    pageUserId?: number;
+    partyId?: number;
 }
 
 interface IPostRepostModal extends IPostRepostModalProps {
     setClose: () => void;
 }
 
-const PostRepostModal: React.FC<IPostRepostModal> = ({ pageUserId, user, parent, setClose }) => {
+const PostRepostModal: React.FC<IPostRepostModal> = ({ pageUserId, user, parent, setClose, partyId }) => {
     return (
         <PostCreate
             isRepost={true}
@@ -21,6 +22,7 @@ const PostRepostModal: React.FC<IPostRepostModal> = ({ pageUserId, user, parent,
             user={user}
             parent={parent}
             setClose={setClose}
+            partyId={partyId}
         />
     );
 };

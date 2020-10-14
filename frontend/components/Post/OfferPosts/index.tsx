@@ -1,30 +1,18 @@
 import React from 'react';
 import PostItem from '../PostItem';
-import PostCreate from '../PostCreate';
 import useSWR from 'swr';
-import { IGroupOwner, IPost } from '@/types/post';
+import { IPost } from '@/types/post';
 import { IUser } from '@/types/user';
-import { whereAreThePostLink } from '@/utils';
+import Loading from '@/components/UI/Loading';
 
-interface IPosts {
-    serverPosts?: IPost[];
+interface IOfferPosts {
     pageUserId?: number;
     user: IUser;
     partyId?: number;
-    partyOwner: IGroupOwner;
 }
 
-const Posts: React.FC<IPosts> = ({
-    serverPosts,
-    pageUserId,
-    user,
-    partyId,
-    partyOwner
-}) => {
- 
-    const { data: posts = [] } = useSWR<IPost[]>(whereAreThePostLink(pageUserId, partyId), {
-        initialData: serverPosts,
-    });
+const OfferPosts: React.FC<IOfferPosts> = ({ pageUserId, user, partyId }) => {
+    const { data: posts } = useSWR<IPost[]>(`/api/v1/group/offer/${partyId}/`);
 
     const renderPosts = (posts: Array<IPost>) => {
         return posts.map(post => (
@@ -40,8 +28,7 @@ const Posts: React.FC<IPosts> = ({
 
     return (
         <>
-            <PostCreate isRepost={false} pageUserId={pageUserId} user={user} partyId={partyId} partyOwner={partyOwner} />
-            <div style={{ marginTop: '20px' }}>
+            <div>
                 {posts ? (
                     posts.length === 0 ? (
                         <h2>Нет постов</h2>
@@ -49,11 +36,13 @@ const Posts: React.FC<IPosts> = ({
                         renderPosts(posts)
                     )
                 ) : (
-                    'Загрузка'
+                    <div style={{ width: '100%', height: '200px' }}>
+                        <Loading />
+                    </div>
                 )}
             </div>
         </>
     );
 };
 
-export default Posts;
+export default OfferPosts;

@@ -4,8 +4,18 @@ import cookies from 'next-cookies';
 import { GetServerSidePropsContext } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 
+export const whereAreThePostLink = (pageUserId?: number, partyId?: number) => {
+    if (pageUserId) {
+        return `/api/v1/post/?id=${pageUserId}`;
+    }
+    if (partyId) {
+        return `/api/v1/group/accept/${partyId}/`;
+    }
+    return '/api/v1/feed/';
+};
+
 export function getAsString(value: string | string[] | undefined): string | undefined {
-    if(Array.isArray(value)) {
+    if (Array.isArray(value)) {
         return value[0];
     }
     return value;
@@ -47,34 +57,34 @@ export const renderTimestamp = (timestamp: string): string => {
 
 export const isImageLoaded = (src: string) => {
 
-    const [loadImage, setLoadImage] = useState(false); 
+    const [loadImage, setLoadImage] = useState(false);
 
     const loadImageWithPromiseTimeout = (src: string) =>
-    new Promise((resolve, reject) => {
-        const image = new Image();
+        new Promise((resolve, reject) => {
+            const image = new Image();
 
-        const timeout = setTimeout(() => {
-            image.onload = null;
-            reject();
-        }, 1000);
+            const timeout = setTimeout(() => {
+                image.onload = null;
+                reject();
+            }, 1000);
 
-        image.onload = () => {
-            clearTimeout(timeout);
-            resolve();
-        };
+            image.onload = () => {
+                clearTimeout(timeout);
+                resolve();
+            };
 
-        image.src = src;
-    });
+            image.src = src;
+        });
 
     const awaitImage = async () => {
         try {
-          await loadImageWithPromiseTimeout(src);
-          setLoadImage(true);
+            await loadImageWithPromiseTimeout(src);
+            setLoadImage(true);
         } catch {
-          console.error(`Unable to load ${src} in 1s`);
-          setLoadImage(true);
+            console.error(`Unable to load ${src} in 1s`);
+            setLoadImage(true);
         }
-      };
+    };
 
     useEffect(() => {
         awaitImage();

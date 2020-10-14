@@ -5,21 +5,20 @@ import { IPost } from '@/types/post';
 import { useDispatch } from 'react-redux';
 import { addPostLike, removePostLike } from '@/store/actions/post';
 import { StyledLike } from './styles';
+import { whereAreThePostLink } from '@/utils';
 
 interface ILike {
     isTap: boolean;
     postId: number;
     pageUserId?: number;
+    partyId?: number;
 }
 
-const Like: React.FC<ILike> = ({ isTap, postId, pageUserId }) => {
+const Like: React.FC<ILike> = ({ isTap, postId, pageUserId, partyId }) => {
     const dispatch = useDispatch();
 
     const likeMutate = (postId: number): void => {
-        let postUrl = '/api/v1/feed/';
-        if (pageUserId) {
-            postUrl = `/api/v1/post/?id=${pageUserId}`;
-        }
+        const postUrl = whereAreThePostLink(pageUserId, partyId);
         mutate(
             postUrl,
             async (posts: IPost[]) => {

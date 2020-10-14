@@ -1,6 +1,8 @@
+import { instance } from '@/api/api';
 import { mutate } from 'swr';
 import { IUser } from '@/types/user';
-import { IPost } from '@/types/post';
+import { IGroupOwner, IPost } from '@/types/post';
+import axios from 'axios';
 import Cookie from 'js-cookie';
 
 export const addPostMutate = (postText: string, mutatedImage: any, user: IUser, postUrl: string): void => {
@@ -45,6 +47,7 @@ export const addRepostMutate = (postText: string, mutatedImage: any, parent: IPo
       id: parent.id,
       text: parent.text,
       image: parent.image,
+      group_owner: null,
       user: {
         id: parent.user.id,
         first_name: parent.user.first_name,
@@ -73,5 +76,16 @@ export const addRepostMutate = (postText: string, mutatedImage: any, parent: IPo
   }, false);
 };
 
-// if (pageUserId === user.userId) {
+export const deletePostMutate = (postId: number, postUrl: string) => {
+  mutate(
+    postUrl,
+    async (posts: IPost[]) => {
+      if (posts) {
+        console.log('asdasd')
+          return posts.filter(post => post.id !== postId);          
+        }
+    },
+    false
+);
+}
 

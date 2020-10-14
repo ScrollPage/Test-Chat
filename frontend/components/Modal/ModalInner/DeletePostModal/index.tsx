@@ -6,35 +6,27 @@ import { mutate } from 'swr';
 import { deletePost } from '@/store/actions/post';
 import { IPost } from '@/types/post';
 import { StyledDeletePostModal } from './styles';
+import { whereAreThePostLink } from '@/utils';
+import { deletePostMutate } from '@/mutates/post';
 
 export interface IDeletePostModalProps {
-    pageUserId: number | undefined;
+    pageUserId?: number;
     postId: number;
+    partyId?: number;
 }
 
 interface IDeletePostModal extends IDeletePostModalProps {
     setClose: () => void;
 }
 
-const DeletePostModal: React.FC<IDeletePostModal> = ({ pageUserId, postId, setClose }) => {
+const DeletePostModal: React.FC<IDeletePostModal> = ({ pageUserId, postId, setClose, partyId }) => {
     const dispatch = useDispatch();
 
     const deleteHanlder = () => {
+        const postUrl = whereAreThePostLink(pageUserId, partyId);
+        deletePostMutate(postId, postUrl);
+        dispatch(deletePost(postId, postUrl));
         setClose();
-        let postUrl = '/api/v1/feed/';
-        if (pageUserId) {
-            postUrl = `/api/v1/post/?id=${pageUserId}`;
-        }
-        mutate(
-            postUrl,
-            async (posts: IPost[]) => {
-                if (posts) {
-                    return posts.filter(post => post.id !== postId);
-                }
-            },
-            false
-        );
-        dispatch(deletePost(postId));
     };
 
     return (

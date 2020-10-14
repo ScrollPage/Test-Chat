@@ -11,10 +11,18 @@ export interface IPostParent {
   user: IPostUser;
   owner?: number | null;
   parent: IPostParent | null;
+  group_owner: IGroupOwner | null;
   text: string;
   image: string | null;
   timestamp?: string;
   compressed_image: string | null;
+}
+
+export interface IGroupOwner {
+  id?: number;
+  name: string;
+  image?: string;
+  slug?: string;
 }
 
 export interface IPost {
@@ -24,13 +32,13 @@ export interface IPost {
   num_reposts: number;
   is_liked: boolean;
   user: IPostUser;
+  group_owner: IGroupOwner | null;
   parent: IPostParent | null;
   is_watched: boolean;
   num_reviews: number;
   text: string;
   image: string | null;
   owner?: number | null;
-  group_owner: number | null;
   num_comments: number;
   compressed_image: string | null;
 }

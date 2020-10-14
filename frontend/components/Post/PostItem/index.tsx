@@ -15,28 +15,30 @@ import { StyledPostItem } from './styles';
 interface IPostItem {
   post: IPost;
   user: IUser;
-  pageUserId: number;
+  pageUserId?: number;
+  partyId?: number;
 }
 
 const PostItem: React.FC<IPostItem> = ({
   post,
   user,
   pageUserId,
+  partyId
 }) => {
   const dispatch = useDispatch();
 
   const [isCommentsOpen, setIsCommentsOpen] = useState<number | null>(null);
 
-  const deletePostHanlder = (postId: number, pageUserId?: number) => {
-    dispatch(modalShow<IDeletePostModalProps>('POST_DELETE_MODAL', { pageUserId, postId }));
+  const deletePostHanlder = (postId: number, pageUserId?: number, partyId?: number) => {
+    dispatch(modalShow<IDeletePostModalProps>('POST_DELETE_MODAL', { pageUserId, postId, partyId }));
   };
 
   return (
     <StyledPostItem>
-      {(post.user.id === user.userId || pageUserId === user.userId) && (
+      {(post.user.id === user.userId || pageUserId === user.userId || post?.group_owner?.id === user.userId) && (
         <div
           className="user-post__close"
-          onClick={() => deletePostHanlder(post.id, pageUserId)}
+          onClick={() => deletePostHanlder(post.id, pageUserId, post?.group_owner?.id)}
         >
           <CloseOutlined />
         </div>
@@ -57,6 +59,7 @@ const PostItem: React.FC<IPostItem> = ({
             isTap={post.is_liked}
             postId={post.id}
             pageUserId={pageUserId}
+            partyId={partyId}
           />
           <h2>{post.num_likes}</h2>
         </div>

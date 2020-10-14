@@ -4,11 +4,10 @@ import { instance } from '@/api/api';
 import Router from 'next/router';
 import { show } from './alert';
 
-export const addFriend = (friendId: number, userId: number): ThunkType => async dispatch => {
+export const addFriend = (friendId: number): ThunkType => async dispatch => {
     const token = Cookie.get('token');
     await instance(token)
         .post('/api/v1/request/add/', {
-            sender: userId,
             receiver: friendId
         })
         .then(res => {
