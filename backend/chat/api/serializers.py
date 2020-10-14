@@ -41,7 +41,7 @@ class ChatOverviewSerializer(ChatSerializer):
                 break
         
         if companion.avatar_id:
-            small_avatar = Photo.objects.get(id=companion.avatar_id).url
+            small_avatar = Photo.objects.get(id=companion.avatar_id).small_picture.url
         else:
             small_avatar = None
         

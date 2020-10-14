@@ -72,24 +72,21 @@ class ContactTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_add_add_request_unauth(self):
-        response = get_response('request-add', 'post', data={'sender': 1, 'receiver': 2})
+        response = get_response('request-add', 'post', data={'receiver': 2})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_add_add_request_bad_request(self):
-        response = get_response('request-add', 'post', self.user1)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_add_request_perm_wrong_user(self):
-        response = get_response('request-add', 'post', self.user1, data={'sender': 2, 'receiver': 1})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_add_request_perm_current_user(self):
-        response = get_response('request-add', 'post', self.user1, data={'sender': 1, 'receiver': 1})
+    def test_add_request_perm_himself(self):
+        response = get_response('request-add', 'post', self.user1, data={'receiver': 1})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_add_request_perm_not_sent(self):
         AddRequest.objects.create(sender=self.user1, receiver=self.user2)
-        response = get_response('request-add', 'post', self.user1, data={'sender': 1, 'receiver': 2})
+        response = get_response('request-add', 'post', self.user1, data={'receiver': 2})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_add_request_in_blacklist(self):
+        self.user1.my_page.blacklist.add(self.user2)
+        response = get_response('request-add', 'post', self.user2, data={'receiver': 1})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_add_request_perm_already_friends(self):
