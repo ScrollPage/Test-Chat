@@ -14,10 +14,17 @@ class IsRightUser(BasePermission):
 class IsRightOwnerOrUser(BasePermission):
     '''Создатель или владелец?'''
     def has_object_permission(self, request, view, obj):
-        return any([
-            request.user==obj.user,
-            request.user.my_page==obj.owner,
-        ])
+        if obj.owner:
+            return any([
+                request.user==obj.user,
+                request.user.my_page==obj.owner,
+            ])
+        else:
+            return any([
+                request.user==obj.user,
+                request.user==obj.group_owner.admin,
+                request.user in obj.group_owner.staff.all()
+            ])
 
 class IsNotLiked(BasePermission):
     '''Нет ли лайка?'''
