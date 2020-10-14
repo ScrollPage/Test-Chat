@@ -10,7 +10,7 @@ from feed.models import Post
 from comments.models import Comment
 from like.models import Like
 from photos.models import Photo
-from backend.exceptions import ForbiddenError
+from backend.exceptions import ForbiddenError, NotFoundError
 from notifications.service import send_like_notification 
 
 class LikesCustomViewset(GenericViewSet):
@@ -40,12 +40,22 @@ class LikesCustomViewset(GenericViewSet):
             return
         raise ForbiddenError('You are in blacklist')
 
+    def is_published(self, inst):
+        if type(inst) == Post:
+            if not inst.published:
+                raise NotFoundError('Maybe this post is not published yet.')
+        return
+
+    def validate(self, inst):
+        self.not_in_blacklist(inst)
+        self.is_published(inst)
+
     def like_add(self, instance):
         serializer = self.get_serializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
         id = serializer.data['some_id']
         inst = get_object_or_404(instance, id=id)
-        self.not_in_blacklist(inst)
+        self.validate(inst)
         self.not_liked(inst)
         like = Like.objects.create(user=self.request.user)
         inst.likes.add(like)
@@ -61,7 +71,7 @@ class LikesCustomViewset(GenericViewSet):
         serializer.is_valid(raise_exception=True)
         id = serializer.data['some_id']
         inst = get_object_or_404(instance, id=id)
-        self.not_in_blacklist(inst)
+        self.validate(inst)
         self.liked(inst)
         like = inst.likes.get(user=self.request.user)
         like.delete()

@@ -4,12 +4,7 @@ from django.shortcuts import get_object_or_404
 from chat.models import Chat, Message
 from contact.models import Contact
 from photos.models import Photo
-
-class ContactSerializer(serializers.ModelSerializer):
-    '''Сериализация контакта'''
-    class Meta:
-        model = Contact
-        fields = ['id', 'first_name', 'last_name', 'slug']
+from backend.service import LowReadContactSerializer
 
 class ContactIDSerializer(serializers.StringRelatedField):
     '''Сериализация id контакта'''
@@ -18,7 +13,7 @@ class ContactIDSerializer(serializers.StringRelatedField):
 
 class MessageSerializer(serializers.ModelSerializer):
     '''Message serializer'''
-    contact = ContactSerializer(read_only=True)
+    contact = LowReadContactSerializer(read_only=True)
     class Meta:
         model = Message
         fields = '__all__'
@@ -31,7 +26,7 @@ class ChatSerializer(serializers.ModelSerializer):
 
 class ChatOverviewSerializer(ChatSerializer):
     '''Сериализация контакта при обзоре'''
-    participants = ContactSerializer(many=True)
+    participants = LowReadContactSerializer(many=True)
 
     def to_representation(self, value):
         companion = user = self.context['request'].user

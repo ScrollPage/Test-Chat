@@ -71,6 +71,13 @@ class TestViews(APITestCase):
             text='123'
         )
 
+        self.post2 = Post.objects.create(
+            user=self.user1,
+            owner=self.user1.my_page,
+            text='123',
+            published=False
+        )
+
     def test_post_like_add_unauth(self):
         response = get_response('post-like-add', 'post', data={'some_id': 1})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -98,5 +105,9 @@ class TestViews(APITestCase):
         self.comment.likes.add(like)
         response = get_response('comment-like-remove', 'post', self.user2, {'some_id': 1})
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_post_like_unpublished(self):
+        response = get_response('post-like-add', 'post', self.user1, {'some_id': 3})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     

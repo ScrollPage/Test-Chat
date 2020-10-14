@@ -4,6 +4,7 @@ from rest_framework import status
 from backend.service import get_response
 from feed.models import Post
 from contact.models import Contact
+from score.models import Score
 
 class TestViews(APITestCase):
 
@@ -30,8 +31,10 @@ class TestViews(APITestCase):
         response = get_response('score-create', 'post')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_score_create_auth_bad_request(self):
-        response1 = get_response('score-create', 'post', self.user, {'user': self.user})
-        response2 = get_response('score-create', 'post', self.user, {'post_id': self.post})
-        self.assertEqual(response1.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_score_create_already_created(self):
+        Score.objects.create(
+            user=self.user,
+            post_id=self.post
+        )
+        response = get_response('score-create', 'post', self.user, {'post_id': self.post.id})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

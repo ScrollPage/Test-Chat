@@ -12,7 +12,7 @@ from .serializers import (
 )
 from feed.api.permissions import IsRightUser
 from .permissions import NotInBlacklistComments
-from backend.exceptions import ForbiddenError
+from backend.exceptions import ForbiddenError, NotFoundError
 from feed.api.exceptions import BadRequestError
 from comments.models import Comment
 from feed.models import Post
@@ -53,10 +53,17 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
                 return
             raise ForbiddenError('Wrong parent.')
         return None
+        
+    def is_published(self, inst):
+        if type(inst) == Post:
+            if not inst.published:
+                raise NotFoundError('Maybe this post is not published yet.')
+        return
 
     def validate(self, inst, data):
         self.not_in_blacklist(inst)
         self.parent_is_here(inst, data)
+        self.is_published(inst)
 
     def create_comment(self, instance):
         serializer = self.get_serializer(data=self.request.data)

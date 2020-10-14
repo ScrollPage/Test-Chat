@@ -61,6 +61,7 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
             raise ForbiddenError('This is an admin.')
         group.members.remove(user.my_page)
         group.blacklist.add(user)
+        Post.objects.filter(group_owner=group, user=user, published=False).delete()
         return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
@@ -68,7 +69,6 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
         self.get_serializer(data=request.data).is_valid(raise_exception=True)
         user, group = get_user_and_group(request, kwargs)
         group.blacklist.add(user)
-        Post.objects.filter(group_owner=group, user=user, published=False).delete()
         return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
@@ -168,6 +168,8 @@ class GroupPostsViewset(PartyPermissionSerializerEmptyViewset):
             group_owner=group,
             user=request.user
         ).order_by('-timestamp')
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['post'])
     def offer_post(self, request, *args, **kwargs):
