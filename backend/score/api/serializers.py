@@ -5,12 +5,13 @@ from django.shortcuts import get_object_or_404
 from contact.models import Contact
 from score.models import Score
 from feed.models import Post
+from backend.exceptions import ForbiddenError
 
 class ScoreCreateSerializer(serializers.ModelSerializer):
     '''Сериализация просмотра'''
     class Meta:
         model = Score
-        fields = '__all__'
+        exclude = ['user']
 
     def create(self, validated_data):
         try:

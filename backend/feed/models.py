@@ -27,7 +27,7 @@ class Post(AbstractPost):
         default=None, 
         related_name='my_board_posts'
     )
-    group_owner = models.ForeignKey(Party, null=True, default=None, on_delete=models.CASCADE)
+    group_owner = models.ForeignKey(Party, null=True, default=None, on_delete=models.CASCADE, related_name='group_posts')
     published = models.BooleanField(default=True)
     comments = models.ManyToManyField(Comment, related_name='post_owner')
 

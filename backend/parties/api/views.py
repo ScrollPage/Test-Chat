@@ -22,6 +22,7 @@ from parties.models import Party
 from .permissions import IsGroupAdminOrStaff, IsGroupAdmin, NotInBlacklist, RightPostGroupOwner
 from contact.models import Contact
 from feed.models import Post
+from feed.api.service import post_annotations
 from backend.service import ForbiddenError
 from community.api.permissions import IsRightUser
 
@@ -50,22 +51,6 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
     def perform_create(self, serializer):
         serializer.save(admin=self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        res = super().create(request, args, kwargs)
-        if res.data.get('image', None):
-            id = int(res.data.get('id'))
-            post = get_object_or_404(Party, id=id)
-            post.image_save()
-        return res
-
-    def update(self, request, *args, **kwargs):
-        res = super().update(request, args, kwargs)
-        if request.data.get('image', None):
-            id = int(kwargs['pk'])
-            post = get_object_or_404(Party, id=id)
-            post.image_save()
-        return res
-
     @action(detail=False, methods=['post'])
     def add_blacklist(self, request, *args, **kwargs):
         self.get_serializer(data=request.data).is_valid(raise_exception=True)
@@ -83,6 +68,7 @@ class GroupViewSet(PartyPermissionSerializerModelViewset):
         self.get_serializer(data=request.data).is_valid(raise_exception=True)
         user, group = get_user_and_group(request, kwargs)
         group.blacklist.add(user)
+        Post.objects.filter(group_owner=group, user=user, published=False).delete()
         return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
@@ -169,8 +155,19 @@ class GroupPostsViewset(PartyPermissionSerializerEmptyViewset):
             published=True, 
             group_owner=group
         ).order_by('-timestamp')
+        queryset = post_annotations(request.user, queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def my_offerings(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        group = get_object_or_404(Party, id=pk)
+        queryset = self.get_queryset().filter(
+            published=False, 
+            group_owner=group,
+            user=request.user
+        ).order_by('-timestamp')
     
     @action(detail=False, methods=['post'])
     def offer_post(self, request, *args, **kwargs):
@@ -181,7 +178,7 @@ class GroupPostsViewset(PartyPermissionSerializerEmptyViewset):
             group_owner=party,
             published=any([
                 request.user in party.staff.all(),
-                reuqest.user == party.admin
+                request.user == party.admin
             ]),
             user=request.user
         )

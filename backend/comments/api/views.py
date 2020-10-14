@@ -81,11 +81,19 @@ class CommentCustomViewset(PermissionSerializerCommentModelViewset):
             post_id = self.request.query_params.get('post_id', None)
             photo_id = self.request.query_params.get('photo_id', None)
             if post_id:
+                try:
+                    post_id = int(post_id)
+                except ValueError:
+                    raise BadRequestError('Input a number.')
                 post = get_object_or_404(Post, id=post_id)
                 return post.comments
             elif photo_id:
+                try:
+                    photo_id = int(photo_id)
+                except ValueError:
+                    raise BadRequestError('Input a number.')
                 photo = get_object_or_404(Photo, id=photo_id)
                 return photo.comments
             else:
-                raise BadRequestError('You need to input a query parameter post id in your request.')
+                raise BadRequestError('You need to input a query parameter post or photo id in your request.')
         return super().get_queryset()

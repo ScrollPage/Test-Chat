@@ -25,6 +25,20 @@ class PartyCreateSerializer(serializers.ModelSerializer):
         model = Party
         exclude = ['blacklist', 'staff', 'compressed_image', 'small_image', 'admin']
 
+    def create(self, validated_data):
+        party = super().create(validated_data)
+        if validated_data.get('image', None):
+            party.image_save()
+        party.members.add(self.context['request'].user.my_page)
+        return party
+
+    def update(self, instance, validated_data):
+        party = super().update(instance, validated_data)
+        if validated_data.get('image', None):
+            party.image_save()
+        return party
+
+
 class IntegerFieldSerializer(serializers.Serializer):
     '''Вход и выход из группы'''
     some_id = serializers.IntegerField(required=True)
@@ -55,5 +69,5 @@ class PostListSerializer(PostListSerializer):
     parent = None
     class Meta:
         model = Post
-        exclude = ['parent', 'published', 'owner']
+        exclude = ['parent', 'published', 'owner', 'comments', 'likes']
         ref_name = 'group_post_list_serialzier'
