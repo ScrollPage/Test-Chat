@@ -1,6 +1,6 @@
-import { ThunkType } from '@/types/thunk';
-import axios from 'axios';
 import Cookie from 'js-cookie';
+import { ThunkType } from '@/types/thunk';
+import { instance } from '@/api/api';
 import { show } from './alert';
 import { trigger } from 'swr';
 
@@ -9,7 +9,8 @@ export const joinGroup = (partyId: number, isJoin: boolean, triggerLink: string)
   if (isJoin) {
     joinLink = `/api/v1/group/leave/${partyId}/`
   }
-  await axios
+  const token = Cookie.get('token');
+  await instance(token)
     .post(joinLink)
     .then(res => {
       dispatch(show('Вы успешно добавились в группу!', 'success'));

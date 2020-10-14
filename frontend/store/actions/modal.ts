@@ -5,7 +5,7 @@ type ModalShowType<T> = {
   modalProps: T
 }
 
-export type ModalNameType = 'post_modal' | 'comment_modal' | 'repost_modal' | 'avatar_modal' | null;
+export type ModalNameType = 'POST_REPOST_MODAL' | 'AVATAR_CHANGE_MODAL' | 'COMMENT_DELETE_MODAL' | 'POST_DELETE_MODAL' | null;
 
 export function modalShow<T>(modalName: ModalNameType, modalProps: T): ModalShowType<T> {
   return { type: 'MODAL_SHOW', modalName, modalProps } as const

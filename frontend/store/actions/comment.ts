@@ -1,14 +1,16 @@
+import Cookie from 'js-cookie';
 import { trigger } from 'swr';
 import { ThunkType } from '@/types/thunk';
-import axios from 'axios';
+import { instance } from '@/api/api';
 import { show } from './alert';
 
-export const addComment = (commentText: string, postId: number, parent: number | null, triggerUrl: string): ThunkType => async dispatch => {
-    await axios
+export const addComment = (commentText: string, postId: number, triggerUrl: string): ThunkType => async dispatch => {
+    const token = Cookie.get('token');
+    await instance(token)
         .post('/api/v1/comment/post/', {
             text: commentText,
             image: null,
-            parent: parent,
+            parent: null,
             id: postId
         })
         .then(res => {
@@ -21,7 +23,8 @@ export const addComment = (commentText: string, postId: number, parent: number |
 };
 
 export const deleteComment = (commentId: number): ThunkType => async dispatch => {
-    await axios
+    const token = Cookie.get('token');
+    await instance(token)
         .delete(`/api/v1/comment/${commentId}/`)
         .then(res => {
             dispatch(show('Вы успешно удалили комментарий!', 'success'));

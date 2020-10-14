@@ -1,15 +1,14 @@
 import { IUser } from '@/types/user';
-import { getUserFromServer } from '@/utils/index';
+import { getAsString, getUserFromServer } from '@/utils/index';
 import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { GetServerSideProps } from 'next';
-import axios from 'axios';
+import { instanceWithSSR } from '@/api/api';
 import { IParty } from '@/types/party';
-import cookies from 'next-cookies';
 import useSWR from 'swr';
-import PeopleList from '@/components/Teams/PeopleList';
+import PeopleList from '@/components/Team/TeamList';
 import Link from 'next/link';
-import PartyHeader from '@/components/Teams/PartyHeader';
+import PartyHeader from '@/components/Team/TeamHeader';
 
 interface IPartyFC {
   user: IUser;
@@ -19,6 +18,8 @@ interface IPartyFC {
 
 export default function Party({ user, party, partyId }: IPartyFC) {
   const { data } = useSWR(`/api/v1/group/${partyId}/`, { initialData: party });
+
+  console.log(data)
 
   // const renderPosts = (posts: Array<IPost>) => {
   //   return posts.map(post => (
@@ -73,19 +74,13 @@ export default function Party({ user, party, partyId }: IPartyFC) {
 }
 
 export const getServerSideProps: GetServerSideProps<IPartyFC> = async ctx => {
-  const token = cookies(ctx)?.token || null;
-  const partyId = Number(ctx?.params?.partyID?.[0]);
-
-  axios.defaults.headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Token ${token}`,
-  };
+  const partyId = getAsString(ctx?.params?.partyID);
 
   let party: IParty | undefined = undefined;
 
   // let posts: Array<IPost> = [];
 
-  await axios
+  await instanceWithSSR(ctx)
     .get(`/api/v1/group/${partyId}/`)
     .then(response => {
       party = response?.data;
@@ -94,7 +89,7 @@ export const getServerSideProps: GetServerSideProps<IPartyFC> = async ctx => {
       console.log(error);
     });
 
-  // await axios
+  // await instanceWithSSR
   //   .get(`/api/v1/group/accept/${partyId}/`)
   //   .then(response => {
   //     posts = response?.data;
@@ -107,7 +102,7 @@ export const getServerSideProps: GetServerSideProps<IPartyFC> = async ctx => {
     props: {
       user: getUserFromServer(ctx),
       party,
-      partyId,
+      partyId: Number(partyId),
     },
   };
 };
