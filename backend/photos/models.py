@@ -5,7 +5,8 @@ from io import BytesIO
 from community.models import Page
 from like.models import Like
 from comments.models import Comment
-from backend.service import save_image
+from .service import save_image
+from feed.models import Post
 
 class Photo(models.Model):
     '''Фотография'''
@@ -20,6 +21,9 @@ class Photo(models.Model):
     def __str__(self):
         return f"{self.owner} owner's picture"
 
+    def get_type(self):
+        return 'photo'
+
     def image_save(self, *args, **kwargs):
         im1 = im2 = Image.open(self.picture)
         output = BytesIO()
@@ -33,7 +37,7 @@ class Photo(models.Model):
         self.compressed_picture = save_image(output, self.picture.name, format)
 
         output = BytesIO()
-        im2 = im2.resize((50, 50))
+        im2 = im2.resize((150, 150))
         try:
             im2.save(output, format='JPEG', quality=100)
             format = 'jpeg'
@@ -44,6 +48,21 @@ class Photo(models.Model):
         self.small_picture = save_image(output, self.picture.name, format)
 
         super().save()
+
+    def delete_images(self):
+        self.picture.delete(save=False)
+        self.compressed_picture.delete(save=False)
+        self.small_picture.delete(save=False)
+
+    def delete(self):
+        user = self.owner.user
+        if user.avatar_id == self.id:
+            user.avatar_id = None
+            user.save()
+            post = Post.objects.filter(user=user, image=self.picture).delete()
+        self.delete_images()
+        super().delete()
+
 
         class Meta:
             verbose_name = 'Фотография'

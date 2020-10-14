@@ -41,7 +41,7 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
     serializer_class = ContactDetailSerializer
     permission_classes = [IsRightUser]
     permission_classes_by_action = {
-        'retrieve': []
+        'retrieve': [NotInBlackList]
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
@@ -68,8 +68,9 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
                 )
             )
         ).annotate(
-            chat_id=Avg('chats__id', filter=Q(chats__participants=self.request.user))
+            chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user))
         )
+
         if self.request.user.id == pk:
             queryset = queryset.annotate(
                 num_notes=Count('notifications', filter=Q(notifications__seen=False))
@@ -172,11 +173,11 @@ class ContactFriendsView(generics.ListAPIView):
         id = self.request.query_params.get('id', None)
         if id:
             try:
-                int(id)
+                id = int(id)
             except ValueError:
-                user = Contact.objects.get(id=id)
-            else:
                 user = self.request.user
+            else:
+                user = Contact.objects.get(id=id)
         else:
             user = self.request.user
         queryset = user.my_page.friends.all()

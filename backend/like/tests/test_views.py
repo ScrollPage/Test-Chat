@@ -87,11 +87,15 @@ class TestViews(APITestCase):
         response = get_response('post-like-add', 'post', self.user3, {'some_id': 1})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_comment_like_add_(self):
+    def test_comment_like_add(self):
         response = get_response('comment-like-add', 'post', self.user2, {'some_id': 1})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_comment_like_remove(self):
+        like = Like.objects.create(
+            user=self.user2
+        )
+        self.comment.likes.add(like)
         response = get_response('comment-like-remove', 'post', self.user2, {'some_id': 1})
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 

@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.service import AbstractPost
+from comments.service import AbstractPost
 
 class Comment(AbstractPost):
     '''Комментарий куда угодно'''
@@ -16,3 +16,6 @@ class Comment(AbstractPost):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
+    def get_type(self):
+        return 'comment'

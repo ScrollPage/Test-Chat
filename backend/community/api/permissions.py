@@ -130,3 +130,6 @@ class NotInBlackList(InBlackList):
             id=int(id)
             user = get_object_or_404(Contact, id=id)
             return bool(user not in request.user.my_page.blacklist.all())
+
+    def has_object_permission(self, request, view, obj):
+        return request.user not in obj.my_page.blacklist.all()

@@ -8,12 +8,10 @@ from django.contrib.auth.models import (
     BaseUserManager, 
     PermissionsMixin
 )
-from PIL import Image
-from io import BytesIO
 from random import randint
 import requests
 
-from .service import generate_token, save_image
+from .service import generate_token
 
 class ContactManager(BaseUserManager):
     '''Мэнэджер кастомного пользователя'''
@@ -79,9 +77,7 @@ class Contact(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    avatar = models.ImageField(upload_to='user_avatars/%Y/%m/%d', blank=True)
-    compressed_avatar = models.ImageField(upload_to='compressed_user_avatars/%Y/%m/%d', blank=True)
-    small_avatar = models.ImageField(upload_to='small_user_avatars/%Y/%m/%d', blank=True)
+    avatar_id = models.PositiveIntegerField(default=None, null=True, blank=True)
     is_active = models.BooleanField(default=False)
     activation_type = models.CharField(default='', max_length=10, null=True)
     
@@ -90,51 +86,11 @@ class Contact(AbstractBaseUser, PermissionsMixin):
 
     objects = ContactManager()
 
-    def image_save(self, *args, **kwargs):
-        im1 = im2 = Image.open(self.avatar)
-        output = BytesIO()
-        try:
-            im1.save(output, format='JPEG', quality=0)
-            format = 'jpeg'
-        except OSError:
-            im1.save(output, format='PNG', quality=0)
-            format = 'png'
-        output.seek(0)
-        self.compressed_avatar = save_image(output, self.avatar.name, format)
-
-        output = BytesIO()
-        im2 = im2.resize((50, 50))
-        try:
-            im2.save(output, format='JPEG', quality=100)
-            format = 'jpeg'
-        except OSError:
-            im2.save(output, format='PNG', quality=100)
-            format = 'png'
-        output.seek(0)
-        self.small_avatar = save_image(output, self.avatar.name, format)
-
-        self.save()
-
     def __str__(self):
         return str(self.id)
 
-    def get_url(self):
-        try:
-            return self.avatar.url
-        except ValueError:
-            return None
-
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
-
-    def delete_avatars(self):
-        self.avatar.delete(save=False)
-        self.compressed_avatar.delete(save=False)
-        self.small_avatar.delete(save=False)
-
-    def delete(self):
-        self.delete_avatars()
-        super().delete()
 
     class Meta:
         verbose_name = 'Контакт'

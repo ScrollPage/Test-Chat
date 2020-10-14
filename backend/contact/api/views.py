@@ -4,11 +4,26 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
 
-from .serializers import CreateContactSerializer, TokenSerializer, CodeSerializer, MeSerializer
+from .serializers import (
+    CreateContactSerializer, 
+    TokenSerializer, 
+    CodeSerializer, 
+    MeSerializer, 
+    AvatarSerializer
+)
 from contact.models import Contact, MyToken, ContactCounter, Code
 from community.models import Page
 from feed.api.exceptions import BadRequestError
 from .service import SerializerViewset, make_active
+from photos.models import Photo
+
+class AvatarChangeView(generics.CreateAPIView):
+    '''Смена аватарки'''
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = AvatarSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user.my_page)
 
 class RegistrationView(generics.CreateAPIView):
     '''Создание пользователя'''
@@ -24,14 +39,6 @@ class MeViewset(viewsets.GenericViewSet):
     @action(detail=True, methods=['get'])
     def me(self, request, *args, **kwargs):
         user = model_to_dict(request.user)
-        if not user['avatar']:
-            user['avatar'] = None
-            user['compressed_avatar'] = None
-            user['small_avatar'] = None
-        else:
-            user['avatar'] = request.user.avatar.url
-            user['compressed_avatar'] = request.user.compressed_avatar.url
-            user['small_avatar'] = request.user.small_avatar.url
         serializer = self.get_serializer(data=user)
         serializer.is_valid()
         return Response(data=serializer.data, status=status.HTTP_200_OK)

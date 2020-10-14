@@ -49,12 +49,12 @@ def new_friend_notification(sender_id, receiver_id):
         event=3,
     )
 
-def send_like_notification(owner, liker, post_id):
+def send_like_notification(owner, liker, kind, inst_id):
     if owner != liker:
         pusher.trigger(
             f'notifications{owner.id}', 
             'new_like', 
-            {'liker': liker.id, 'post': post_id, 'name': liker.get_full_name()}
+            {'liker': liker.id, 'type': kind, 'id': inst_id, 'name': liker.get_full_name()}
         )
         create_notification(liker, owner, 4)
 

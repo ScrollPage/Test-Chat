@@ -18,7 +18,7 @@ class RetrieveUpdateDestroyPermissionViewset(PermissionMixin,
     pass
 
 class CustomListModelMixin(mixins.ListModelMixin):
-    '''Фильтрация запросовв зависимости от пользователя'''
+    '''Фильтрация запросов зависимости от пользователя'''
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset().filter(receiver=request.user)
