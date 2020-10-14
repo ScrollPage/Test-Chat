@@ -38,10 +38,8 @@ class MeViewset(viewsets.GenericViewSet):
 
     @action(detail=True, methods=['get'])
     def me(self, request, *args, **kwargs):
-        user = model_to_dict(request.user)
-        serializer = self.get_serializer(data=user)
-        serializer.is_valid()
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        serializer = self.get_serializer()
+        return Response(data=serializer.to_representation(request.user), status=status.HTTP_200_OK)
 
 class ContactActivationView(SerializerViewset):
     '''Подтверждение аккаунта пользователя'''

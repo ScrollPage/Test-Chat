@@ -14,15 +14,16 @@ from .serializers import (
     IntegerFieldSerializer
 )
 from .permissions import (
-    NotCurrentAndNotFriends, 
+    NotCurrentUser,
+    NotFriends, 
     IsNotSent,
     IsReceiver,
     IsFriends,
     OneOfUsers,
-    IsSender,
     IsRightUser,
     InBlackList,
-    NotInBlackList
+    NotInBlackList,
+    NotInBlacklistFriends
 )
 from .service import (
     RetrieveUpdateDestroyPermissionViewset,
@@ -84,20 +85,23 @@ class AddRequestCustomViewset(ListCreatePermissionViewset):
     permission_classes = []
     permission_classes_by_action = {
         'create': [
-            IsSender, 
-            NotCurrentAndNotFriends, 
+            NotCurrentUser,
+            NotInBlacklistFriends,
+            NotFriends, 
             IsNotSent, 
         ],
-        'destroy': [IsSender]
+        'destroy': []
     }
     mass_permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(sender=self.request.user)
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):
         data = request.data
-        sender_id = data['sender']
+        sender_contact = request.user
         receiver_id = data['receiver']
-        sender_contact = get_object_or_404(Contact, id=sender_id)
         receiver_contact = get_object_or_404(Contact, id=receiver_id)
         add_request = get_object_or_404(
             AddRequest,
@@ -154,6 +158,8 @@ class BlacklistViewset(ViewSetPermission):
         id = request.data.get('user_id', None)
         user = get_object_or_404(Contact, id=int(id))
         request.user.my_page.blacklist.add(user)
+        user.my_page.friends.remove(request.user)
+        request.user.my_page.blacklist.remove(user)
         return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])

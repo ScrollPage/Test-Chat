@@ -86,16 +86,11 @@ class AddRequestSerializer(serializers.ModelSerializer):
     timestamp = serializers.DateTimeField(read_only=True)
     class Meta:
         model = AddRequest
-        exclude = ['id']
+        exclude = ['id', 'sender']
 
     def create(self, validated_data):
-        send_addrequest_notification(sender, receiver)
+        send_addrequest_notification(self.context['request'].user, validated_data['receiver'])
         return super().create(validated_data)
-
-    def validate(self, data):
-        if data.get('receiver', None) and data.get('sender', None):
-            return super().validate(data)
-        raise BadRequestError('You need sender and receiver.')
 
 class IntegerFieldSerializer(serializers.Serializer):
     user_id = serializers.IntegerField(required=True)

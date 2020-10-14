@@ -17,46 +17,47 @@ class IsRightUser(BasePermission):
         elif type(obj) == Party:
             return request. user == obj.admin
 
-class NotCurrentAndNotFriends(BasePermission):
-    '''Не тот же самый, и не друг ли уже?'''
+class NotInBlacklistFriends(BasePermission):
+    '''Не в черном списке'''
     def has_permission(self, request, view):
-        data = request.data
-        try:
-            sender_id = data['sender']
-            receiver_id = data['receiver']
-        except KeyError:
-            return True
-        sender_page = get_object_or_404(Contact, id=sender_id).my_page
-        receiver_page = get_object_or_404(Contact, id=receiver_id).my_page
+        sender = request.user
+        serializer = view.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        receiver = get_object_or_404(Contact, id=serializer.data['receiver'])
         return all([
-            (sender_page!=receiver_page),
-            (receiver_page.user not in sender_page.friends.all()),
-            (sender_page.user not in receiver_page.friends.all()),
+            sender not in receiver.my_page.blacklist.all(),
+            receiver not in sender.my_page.blacklist.all(),
         ])
 
-class IsSender(BasePermission):
-    '''Отправитель ли'''
+class NotFriends(BasePermission):
+    '''Не друг ли уже?'''
     def has_permission(self, request, view):
-        if request.method == 'POST':
-            view.get_serializer(data=request.data).is_valid(raise_exception=True)
-            data = request.data
-            sender_id = data['sender']
-            sender_contact = get_object_or_404(Contact, id=sender_id)
-            return request.user==sender_contact
-        return True
+        sender = request.user
+        serializer = view.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        receiver = get_object_or_404(Contact, id=serializer.data['receiver'])
+        return all([
+            sender not in receiver.my_page.friends.all(),
+            receiver not in sender.my_page.friends.all(),
+        ])
+
+class NotCurrentUser(BasePermission):
+    def has_permission(self, request, view):
+        sender = request.user
+        serializer = view.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return sender.id != serializer.data['receiver']
 
 class IsNotSent(BasePermission):
     '''Запрос еще не был отправлен'''
     def has_permission(self, request, view):
-        data = request.data
-        try:
-            sender_id = data['sender']
-            receiver_id = data['receiver']
-        except KeyError:
-            return True
+        sender = request.user
+        serializer = view.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        receiver_id = serializer.data['receiver']
         try:
             add_request = AddRequest.objects.get(
-                sender=sender_id, 
+                sender=sender.id, 
                 receiver=receiver_id
             )
         except AddRequest.DoesNotExist:
