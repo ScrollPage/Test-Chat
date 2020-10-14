@@ -7,6 +7,7 @@ from .models import Message
 from .service import get_last_10_messages, get_current_chat
 from contact.models import Contact
 from notifications.service import send_message_notifications
+from photos.models import Photo
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -39,8 +40,8 @@ class ChatConsumer(WebsocketConsumer):
 
     def message_to_json(self, message):
         user = message.contact
-        if user.small_avatar:
-            small_avatar = user.small_avatar.url
+        if user.avatar_id:
+            small_avatar = Photo.objects.get(id=user.avatar_id).small_picture
         else:
             small_avatar = None
         return {

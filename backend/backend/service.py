@@ -74,7 +74,7 @@ class LowContactSerializer(serializers.ModelSerializer):
     '''Базовая сриализация контакта'''
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'slug', 'avatar_id',]
+        fields = ['id', 'first_name', 'last_name', 'slug']
 
 class LowReadContactSerializer(LowContactSerializer):
     '''Все поля для чтения, кроме slug'''
