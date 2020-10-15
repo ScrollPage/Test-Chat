@@ -57,7 +57,7 @@ class PageSerializer(serializers.ModelSerializer):
         exclude = ['id', 'user', 'blacklist']
         ref_name = 'community'
 
-class ContactDetailSerializer(ContactFriendsSerializer):
+class ContactDetailSerializer(serializers.ModelSerializer):
     '''Выводит профиль пользователя'''
     is_friend = serializers.BooleanField(read_only=True)
     num_friends = serializers.IntegerField(read_only=True)

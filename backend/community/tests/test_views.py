@@ -175,8 +175,4 @@ class ContactTestCase(APITestCase):
 
     def test_info_create(self):
         response = get_response('create-info', 'post', data={'user': 2})
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_info_create_no_header(self):
-        response = get_response('create-info', 'post', data={'user': 2})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
