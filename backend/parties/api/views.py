@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from .service import (
     PartyPermissionSerializerModelViewset, 
@@ -188,5 +189,8 @@ class GroupPostsViewset(PartyPermissionSerializerEmptyViewset):
     def accept_post(self, request, *args, **kwargs):
         self.get_serializer(data=request.data).is_valid(raise_exception=True)
         post_id = request.data['some_id']
-        post = Post.objects.filter(id=post_id).update(published=True)
+        post = Post.objects.filter(id=post_id).update(
+            published=True,
+            timestamp=timezone.now()
+        )
         return Response(status=status.HTTP_200_OK)

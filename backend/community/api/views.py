@@ -216,4 +216,4 @@ class UserInfoUpdate(generics.UpdateAPIView, generics.RetrieveAPIView):
     '''Обнвление информации о пользователе'''
     queryset = UserInfo.objects.all()
     serializer_class = UserInfoSerializer
-    permission_classes = [IsRightUser]
+    permission_classes = [permissions.IsAuthenticated, IsRightUser]
