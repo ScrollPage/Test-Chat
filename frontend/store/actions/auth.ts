@@ -6,9 +6,12 @@ import { show } from './alert';
 import { ThunkType } from '@/types/thunk';
 import { instance, instanceWithOutHeaders } from '@/api/api';
 
-export const authInfo = (isRouterPush: boolean, token?: string): ThunkType => async dispatch => {
+export const authInfo = (isRouterPush: boolean, regToken?: string): ThunkType => async dispatch => {
     const userId = Cookie.get('userId');
-    const token = Cookie.get('token');
+    let token = Cookie.get('token');
+    if (regToken) {
+        token = regToken;
+    }
     await instance(token)
         .get('/api/v1/me/')
         .then(res => {
@@ -21,6 +24,7 @@ export const authInfo = (isRouterPush: boolean, token?: string): ThunkType => as
             Cookie.set('smallAvatar', res.data.small_avatar);
             Cookie.set('phoneNumber', res.data.phone_number);
             console.log('Информация успешно занесена в куки');
+            console.log(res.data)
             if (isRouterPush) {
                 Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });
             } else {
@@ -182,19 +186,21 @@ export const avatarChange = (
     const userId = Cookie.get('userId');
     const postUrl = `/api/v1/post/?id=${userId}`
     let form_data = new FormData();
-    form_data.append('avatar', image, image.name);
+    form_data.append('picture', image, image.name);
     const token = Cookie.get('token');
     await instance(token)
-        .patch(triggerUrl, form_data)
+        .post('api/v1/avatar/', form_data)
         .then(res => {
             dispatch(show('Вы успешно сменили аватар!', 'success'));
-            // trigger(triggerUrl);
-            // trigger(postUrl);
+            trigger(triggerUrl);
+            trigger(postUrl);
             dispatch(authInfo(false));
         })
         .catch(err => {
             dispatch(show('Ошибка смены аватара!', 'warning'));
-            trigger(triggerUrl);
-            trigger(postUrl);
+            setTimeout(() => {
+                trigger(triggerUrl);
+                trigger(postUrl);
+            }, 2000)
         });
 };

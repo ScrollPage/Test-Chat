@@ -50,6 +50,18 @@ export const addReCommentMutate = (commentText: string, parent: number, user: IU
   }, false);
 };
 
+export const deleteCommentMutate = (commentId: number, triggerUrl: string) => {
+  mutate(
+    triggerUrl,
+    async (comments: IComment[]) => {
+        if (comments) {
+            return comments.filter(comment => comment.id !== commentId);
+        }
+    },
+    false
+);
+}
+
 export const commentAmountMutate = (postId: number, isAdd: boolean, url: string) => {
   if (isAdd) {
     mutate(url, async (posts: IPost[]) => {
@@ -77,3 +89,4 @@ export const commentAmountMutate = (postId: number, isAdd: boolean, url: string)
     }, false);
   }
 }
+

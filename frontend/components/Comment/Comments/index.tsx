@@ -10,7 +10,7 @@ import { StyledComments } from './styles';
 interface IComments {
   postId: number;
   user: IUser;
-  pageUserId: number;
+  pageUserId?: number;
 }
 
 const Comments: React.FC<IComments> = ({ postId, user, pageUserId }) => {

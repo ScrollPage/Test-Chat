@@ -5,13 +5,15 @@ import { modalHide } from '@/store/actions/modal';
 import { mutate } from 'swr';
 import { IComment } from '@/types/comment';
 import { deleteComment } from '@/store/actions/comment';
-import { commentAmountMutate } from '@/mutates/comment';
+import { commentAmountMutate, deleteCommentMutate } from '@/mutates/comment';
 import { StyledDeleteCommentModal } from './styles';
+import { whereAreThePostLink } from '@/utils';
 
 export interface IDeleteCommentModalProps {
     commentId: number;
     postId: number;
     pageUserId?: number;
+    partyId?: number;
 }
 
 interface IDeleteCommentModal extends IDeleteCommentModalProps {
@@ -23,27 +25,17 @@ const DeleteCommentModal: React.FC<IDeleteCommentModal> = ({
     pageUserId,
     commentId,
     setClose,
+    partyId,
 }) => {
     const dispatch = useDispatch();
 
     const deleteHanlder = () => {
         const commentUrl = `/api/v1/comment/?post_id=${postId}`;
-        let postUrl = '/api/v1/feed/';
-        if (pageUserId) {
-            postUrl = `/api/v1/post/?id=${pageUserId}`;
-        }
-        setClose();
-        mutate(
-            commentUrl,
-            async (comments: IComment[]) => {
-                if (comments) {
-                    return comments.filter(comment => comment.id !== commentId);
-                }
-            },
-            false
-        );
+        const postUrl = whereAreThePostLink(pageUserId, partyId);
+        deleteCommentMutate(commentId, commentUrl)
         commentAmountMutate(postId, false, postUrl);
         dispatch(deleteComment(commentId));
+        setClose();
     };
 
     return (

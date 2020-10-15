@@ -1,4 +1,4 @@
-import { IDeleteCommentModal } from '@/components/Modal/ModalInner/DeleteCommentModal';
+import { IDeleteCommentModalProps } from '@/components/Modal/ModalInner/DeleteCommentModal';
 import ImageLink from '@/components/UI/Image/LinkImage';
 import { modalShow } from '@/store/actions/modal';
 import { IComment } from '@/types/comment';
@@ -12,7 +12,7 @@ interface ICommentItem {
     comment: IComment;
     userId: number;
     postId: number;
-    pageUserId: number;
+    pageUserId?: number;
 }
 
 const CommentItem: React.FC<ICommentItem> = ({
@@ -25,7 +25,7 @@ const CommentItem: React.FC<ICommentItem> = ({
 
     const deleteCommentHanlder = (commentId: number, postId: number) => {
         dispatch(
-            modalShow<IDeleteCommentModal>('COMMENT_DELETE_MODAL', {
+            modalShow<IDeleteCommentModalProps>('COMMENT_DELETE_MODAL', {
                 commentId,
                 postId,
                 pageUserId,

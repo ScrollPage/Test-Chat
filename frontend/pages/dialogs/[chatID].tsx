@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
-import { getUserFromServer } from '@/utils/index';
+import { getAsString, getUserFromServer } from '@/utils/index';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { message as actionMessage } from '@/store/actions/message';
@@ -20,11 +20,10 @@ import { IChatInfo } from '@/types/chat';
 
 interface ChatPage {
     user: IUser;
-    chatInfo?: IChatInfo;
+    chatInfo: IChatInfo | null;
 }
 
 export default function ChatPage({ user, chatInfo }: ChatPage) {
-    
     const dispatch = useDispatch();
 
     const messages = useSelector(getMessages);
@@ -56,7 +55,7 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
     };
 
     const waitForSocketConnection = (callback: () => void): void => {
-        setTimeout(function () {
+        setTimeout(function() {
             if (WebSocketInstance.state() === 1) {
                 console.log('Connection is made');
                 callback();
@@ -67,7 +66,9 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
         }, 100);
     };
 
-    const messageChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void=> {
+    const messageChangeHandler = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ): void => {
         setMessage(e.target.value);
     };
 
@@ -100,7 +101,7 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
                     messageUserId={message.author}
                     avatar={message.small_avatar}
                 />
-            )
+            );
         });
     };
 
@@ -114,8 +115,8 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
                     ) : messages.length === 0 ? (
                         <p className="not-messages">У вас нет сообщений</p>
                     ) : (
-                                renderMessages(messages)
-                            )}
+                        renderMessages(messages)
+                    )}
                     <div
                         className="messages-end"
                         // @ts-ignore: Unreachable code error
@@ -132,14 +133,14 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
     );
 }
 
-export const getServerSideProps: GetServerSideProps<ChatPage> = async (ctx) => {
-    const chatId = ctx?.params?.chatID?.[0];
-    let chatInfo: (IChatInfo | undefined) = undefined;
+export const getServerSideProps: GetServerSideProps<ChatPage> = async ctx => {
+    const chatId = getAsString(ctx?.params?.chatID);
+    let chatInfo: IChatInfo | null = null;
 
     await instanceWithSSR(ctx)
-        .get(`/api/v1/chat/?id=${chatId}`)
+        .get(`/api/v1/chat/${chatId}/`)
         .then(response => {
-            chatInfo = response?.data?.[0];
+            chatInfo = response?.data;
         })
         .catch(error => {
             console.log(error);
@@ -148,10 +149,10 @@ export const getServerSideProps: GetServerSideProps<ChatPage> = async (ctx) => {
     return {
         props: {
             user: getUserFromServer(ctx),
-            chatInfo: chatInfo
-        }
-    }
-}
+            chatInfo: chatInfo || null
+        },
+    };
+};
 
 const StyledChat = styled.div`
     position: relative;

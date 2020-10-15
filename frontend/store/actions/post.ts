@@ -4,22 +4,25 @@ import Cookie from 'js-cookie';
 import { show } from './alert';
 import { trigger } from 'swr';
 
-export const addPost = (text: string, image: any, triggerUrl: string, pageUserId?: number): ThunkType => async dispatch => {
-    let form_data = new FormData();
-    if (image) {
-        form_data.append('image', image, image.name);
-    }
-    form_data.append('text', text);
+export const addPost = (text: string, image: any, triggerUrl: string, pageUserId?: number , partyId?: number,): ThunkType => async dispatch => {
+    const token = Cookie.get('token');
     const userId: any = Cookie.get('userId');
-    form_data.append('user', userId);
     let owner = userId;
     if (pageUserId) {
         owner = pageUserId;
     }
+    let form_data = new FormData();
+    form_data.append('text', text);
     form_data.append('owner', String(owner));
-    const token = Cookie.get('token');
+    if (image) {
+        form_data.append('image', image, image.name);
+    }
+    let url = '/api/v1/post/';
+    if (partyId) {
+        url = `/api/v1/group/offer/${partyId}/`
+    }
     await instance(token)
-        .post('/api/v1/post/', form_data)
+        .post(url, form_data)
         .then(res => {
             dispatch(show('Пост успешно добавлен!', 'success'));
             trigger(triggerUrl);
@@ -30,31 +33,31 @@ export const addPost = (text: string, image: any, triggerUrl: string, pageUserId
         });
 };
 
-export const deletePost = (postId: number): ThunkType => async dispatch => {
+export const deletePost = (postId: number, triggerUrl: string): ThunkType => async dispatch => {
+    console.log(triggerUrl);
     const token = Cookie.get('token');
     await instance(token)
         .delete(`/api/v1/post/${postId}/`)
         .then(res => {
             dispatch(show('Пост успешно удален!', 'success'));
+            trigger(triggerUrl);
         })
         .catch(err => {
             dispatch(show('Ошибка в удалении поста!', 'warning'));
+            trigger(triggerUrl);
         });
 };
 
 export const rePost = (text: string, image: any, parent: number, triggerUrl: string): ThunkType => async dispatch => {
-    console.log(image);
-
+    const token = Cookie.get('token');
+    const userId: any = Cookie.get('userId');
     let form_data = new FormData();
+    form_data.append('text', text);
+    form_data.append('owner', userId);
+    form_data.append('parent', String(parent));
     if (image) {
         form_data.append('image', image, image.name);
     }
-    form_data.append('text', text);
-    const userId: any = Cookie.get('userId');
-    // form_data.append('user', userId);
-    form_data.append('owner', userId);
-    form_data.append('parent', String(parent));
-    const token = Cookie.get('token');
     await instance(token)
         .post('/api/v1/repost/', form_data)
         .then(res => {

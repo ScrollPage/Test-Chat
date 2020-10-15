@@ -41,7 +41,7 @@ const UserAvatar: React.FC<IUserAvatar> = ({
       { ...contact, is_sent: true },
       false
     );
-    dispatch(addFriend(pageUserId, user.userId));
+    dispatch(addFriend(pageUserId));
   };
 
   const removeAddFriendHandler = (): void => {

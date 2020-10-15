@@ -85,6 +85,7 @@ const GlobalStyle = createGlobalStyle`
     overscroll-behavior: none;
     overflow-x: hidden;
     margin-top: -20px;
+    overflow-y: scroll;
     &.no-scroll {
       overflow-y: hidden;
     }
