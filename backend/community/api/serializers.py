@@ -4,18 +4,42 @@ from django.shortcuts import get_object_or_404
 from chat.models import Chat
 from contact.models import Contact
 from backend.service import ContactSerializer, LowReadContactSerializer
+from backend.exceptions import ForbiddenError
 from community.models import AddRequest, Page, UserInfo
 from notifications.service import send_addrequest_notification
 from feed.api.exceptions import BadRequestError
 from parties.api.serializers import PartyShortSerializer
 from photos.models import Photo
 from feed.models import Post
+from contact.models import Contact
 
-class UserInfoSerializer(serializers.ModelSerializer):
+class UserInfoUpdateSerializer(serializers.ModelSerializer):
     '''Сериализация информациио пользователе'''
     class Meta:
         model = UserInfo
         exclude = ['user']
+
+    def update(self, validated_data, instance):
+        return super().update(validated_data, instance)
+
+class UserInfoCreateSerializer(serializers.ModelSerializer):
+    '''Сериализация информациио пользователе'''
+    class Meta:
+        model = UserInfo
+        fields = '__all__'
+
+    def validate(self, attrs):
+        headers = self.context['request'].headers
+        if 'Email' in headers.keys():
+            return super().validate(attrs)
+        raise ForbiddenError('No email header.')
+
+    def create(self, validated_data):
+        user = validated_data.get('user')
+        if user.email == self.context['request'].headers['email']:
+            info = UserInfo.objects.create(**validated_data, id=user.id)
+            return info
+        raise BadRequestError('Wrong email.')
 
 class ContactFriendsSerializer(LowReadContactSerializer):
     '''Менее развернутый контакт'''
@@ -42,7 +66,7 @@ class ContactDetailSerializer(ContactFriendsSerializer):
     is_sent = serializers.BooleanField(read_only=True)
     is_sent_to_you = serializers.BooleanField(read_only=True)
     my_page = PageSerializer(read_only=True)
-    info = UserInfoSerializer(read_only=True)
+    info = UserInfoUpdateSerializer(read_only=True)
     avatar_id =serializers.IntegerField(read_only=True)
 
     class Meta:

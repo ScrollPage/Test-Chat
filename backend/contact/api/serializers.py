@@ -28,6 +28,7 @@ class CreateContactSerializer(ContactDetailSerializer):
     class Meta:
         model = Contact
         fields = [
+            'id',
             'email', 
             'password', 
             'first_name', 

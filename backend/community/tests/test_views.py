@@ -3,7 +3,7 @@ from rest_framework import status
 import json
 
 from contact.models import Contact
-from community.models import AddRequest
+from community.models import AddRequest, UserInfo
 from backend.service import get_response
 
 class ContactTestCase(APITestCase):
@@ -45,6 +45,8 @@ class ContactTestCase(APITestCase):
             password='very_strong_psw',
         )
         self.user1.my_page.blacklist.add(self.user4)
+
+        UserInfo.objects.create(user=self.user1)
 
         Contact.objects.update(is_active=True)
 
@@ -163,10 +165,18 @@ class ContactTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
     def test_update_info_auth(self):
-        response = get_response('update-info', 'patch', self.user1, {'city': 'Moscow'}, {'pk': 1})
+        response = get_response('update-info', 'put', self.user1, {'city': 'Moscow'}, {'pk': 1})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content)['city'], 'Moscow')
     
     def test_update_info_wrong_user(self):
-        response = get_response('update-info', 'patch', self.user2, {'city': 'Moscow'}, {'pk': 1})
+        response = get_response('update-info', 'put', self.user2, {'city': 'Moscow'}, {'pk': 1})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_info_create(self):
+        response = get_response('create-info', 'post', data={'user': 1})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    # def test_info_create_already_created(self):
+    #     response = get_response('create-info', 'post', data={'user': 1})
+    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

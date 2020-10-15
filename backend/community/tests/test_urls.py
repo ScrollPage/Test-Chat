@@ -52,4 +52,9 @@ class TestUrls(TestCase):
         '''Убедиться, что ссылка и вью связаны правильно'''
         path = reverse('update-info', kwargs={'pk': 1})
         self.assertEqual(resolve(path).view_name, 'update-info')
+
+    def test_create_info_url(self):
+        '''Убедиться, что ссылка и вью связаны правильно'''
+        path = reverse('create-info')
+        self.assertEqual(resolve(path).view_name, 'create-info')
     

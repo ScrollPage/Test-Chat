@@ -37,4 +37,5 @@ class TestModels(TestCase):
         self.assertEqual(str(self.user.my_page), "2's page")
 
     def test_user_info_str(self):
-        self.assertEqual(str(UserInfo.objects.get(user=self.admin)), 'info about 1')
+        info = mixer.blend('community.UserInfo', user=self.admin)
+        self.assertEqual(str(info), 'info about 1')

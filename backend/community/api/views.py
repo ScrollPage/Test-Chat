@@ -10,7 +10,8 @@ from .serializers import (
     AddRequestSerializer,
     FriendActionsSerializer,
     ContactFriendsSerializer,
-    UserInfoSerializer,
+    UserInfoUpdateSerializer,
+    UserInfoCreateSerializer,
     IntegerFieldSerializer
 )
 from .permissions import (
@@ -30,7 +31,8 @@ from .service import (
     ListCreatePermissionViewset,
     ViewSetPermission,
     filter_by_query_name,
-    friend_manipulation
+    friend_manipulation,
+    UpdateCreatePermissionViewset
 )
 from contact.models import Contact
 from chat.models import Chat
@@ -212,8 +214,15 @@ class SearchPeopleView(generics.ListAPIView):
         )
         return queryset.filter(is_active=True)
 
-class UserInfoUpdate(generics.UpdateAPIView, generics.RetrieveAPIView):
-    '''Обнвление информации о пользователе'''
+class UserInfoViewset(UpdateCreatePermissionViewset):
+    '''Обнвление и создание информации о пользователе'''
     queryset = UserInfo.objects.all()
-    serializer_class = UserInfoSerializer
+    serializer_class = UserInfoUpdateSerializer
+    serializer_class_by_action = {
+        'create': UserInfoCreateSerializer
+    }
     permission_classes = [permissions.IsAuthenticated, IsRightUser]
+    permission_classes_by_action = {
+        'create': [permissions.AllowAny]
+    }
+    mass_permission_classes = []

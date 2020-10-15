@@ -8,15 +8,23 @@ from .views import (
     FriendPermissionViewset, 
     ContactFriendsView,
     SearchPeopleView,
-    UserInfoUpdate,
+    UserInfoViewset,
     BlacklistViewset,
 )
 
 urlpatterns = [
-    path('update_info/<int:pk>/', UserInfoUpdate.as_view(), name='update-info'),
     path('friends/', ContactFriendsView.as_view(), name='contact-friends'),
     path('people/', SearchPeopleView.as_view(), name='people'),
 ]
+
+update_info = UserInfoViewset.as_view({
+    'put': 'update',
+    'patch': 'partial_update'
+})
+
+create_info = UserInfoViewset.as_view({
+    'post': 'create'
+})
 
 friends_add = FriendPermissionViewset.as_view({
     'post': 'add',
@@ -47,6 +55,8 @@ request_remove = AddRequestCustomViewset.as_view({
 })
 
 urlpatterns += format_suffix_patterns([
+    path('create_info/', create_info, name='create-info'),
+    path('update_info/<int:pk>/', update_info, name='update-info'),
     path('friends/add/', friends_add, name='friends-add'),
     path('friends/remove/', friends_remove, name='friends-remove'),
     path('blacklist/add/', blacklist_add, name='blacklist-add'),

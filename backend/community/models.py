@@ -48,7 +48,6 @@ class UserInfo(models.Model):
 
 @receiver(post_save, sender=Contact)
 def user_instances_create(sender, instance=None, created=False, **kwargs):
-    '''Создает страницу пользователя и информацию о нем'''
+    '''Создает страницу пользователя'''
     if created:
-        UserInfo.objects.create(user=instance)
         Page.objects.create(user=instance)

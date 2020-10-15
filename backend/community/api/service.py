@@ -4,18 +4,27 @@ from rest_framework.response import Response
 from django.db.models import Q
 from django.db.models import Prefetch
 
-from backend.service import PermissionMixin
+from backend.service import PermissionMixin, PermissionSerializerMixin
 from feed.api.exceptions import BadRequestError
 from contact.models import Contact
 
 class RetrieveUpdateDestroyPermissionViewset(PermissionMixin, 
-                                             GenericViewSet,
-                                             mixins.UpdateModelMixin,
-                                             mixins.DestroyModelMixin,
-                                             mixins.RetrieveModelMixin
-                                            ):
+                                     GenericViewSet,
+                                     mixins.UpdateModelMixin,
+                                     mixins.RetrieveModelMixin,
+                                     mixins.DestroyModelMixin,
+                                    ):
     '''Обзор, кастомизцая, удаление'''
     pass
+
+class UpdateCreatePermissionViewset(PermissionSerializerMixin, 
+                                    GenericViewSet,
+                                    mixins.UpdateModelMixin,
+                                    mixins.CreateModelMixin,
+                                ):
+    '''Создание, обновление'''
+    pass
+
 
 class CustomListModelMixin(mixins.ListModelMixin):
     '''Фильтрация запросов зависимости от пользователя'''
