@@ -38,7 +38,6 @@ def get_response(url, method, user=None, data=None, kwargs=None, is_url=False, f
         'delete': client.delete,
         'put': client.put
     }
-
     return method_dict[method](url, data, format=format)
 
 class PermissionMixin:

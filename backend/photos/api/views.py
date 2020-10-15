@@ -24,13 +24,14 @@ class PhotoViewset(ListRetrieveCreateDestroyViewset):
         if self.action != 'list':
             return super().get_queryset()
         id = self.request.query_params.get('user_id', None)
-        queryset = Photo.objects.filter(owner__user=self.request.user)
         if id:
             try:
                 id = int(id)
             except ValueError:
                 queryset = Photo.objects.filter(owner__user=self.request.user)
             queryset = Photo.objects.filter(owner__user__id=id)
+        else:
+            queryset = Photo.objects.filter(owner__user=self.request.user)
         queryset = queryset.annotate(
             num_likes=Count('likes', distinct=True)
         ).annotate(
