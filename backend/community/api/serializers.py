@@ -28,10 +28,18 @@ class UserInfoCreateSerializer(serializers.ModelSerializer):
         model = UserInfo
         fields = '__all__'
 
+    def validate(self, attrs):
+        headers = self.context['request'].META
+        if self.context['request'].META.get('HTTP_EMAIL', None):
+            return super().validate(attrs)
+        raise ForbiddenError('No email header.')
+
     def create(self, validated_data):
         user = validated_data.get('user')
-        info = UserInfo.objects.create(**validated_data, id=user.id)
-        return info
+        if user.email == self.context['request'].META.get('HTTP_EMAIL'):
+            info = UserInfo.objects.create(**validated_data, id=user.id)
+            return info
+        raise BadRequestError('Wrong email.')
 
 class ContactFriendsSerializer(LowReadContactSerializer):
     '''Менее развернутый контакт'''
