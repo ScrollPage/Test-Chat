@@ -25,7 +25,7 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx", "store/actions/auth.ts", "store/actions/friend.ts", "components/Modal/Modal.tsx", "components/Layout/PrivateLayout/index.tsx", "store/actions/message.ts", "components/Layout/Navbar/Navbar.tsx", "store/reducers/alert.ts", "pages/_document.tsx", "pages/teams/teamsindextsx", "next.config.js"
+    "**/*.tsx", "store/actions/auth.ts", "store/actions/friend.ts", "components/Modal/Modal.tsx", "components/Layout/PrivateLayout/index.tsx", "store/actions/message.ts", "components/Layout/Navbar/Navbar.tsx", "store/reducers/alert.ts", "pages/_document.tsx", "pages/teams/teamsindextsx", "next.config.js", "pages/register.jsx"
   ],
   "exclude": [
     "node_modules"

@@ -4,10 +4,13 @@ import { getUserFromServer } from '@/utils/index';
 import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import Search from '@/components/UI/Search';
-import Friend from '@/components/Friend/FriendItem';
+import FriendItem from '@/components/Friend/FriendItem';
 import { IUser } from '@/types/user';
 import { IGlobalUser } from '@/types/people';
 import { GetServerSideProps } from 'next';
+import { getSearch } from '@/store/selectors';
+import { useSelector } from 'react-redux';
+import * as R from 'ramda'
 
 interface IGlobalSearch {
     people: IGlobalUser[];
@@ -15,13 +18,22 @@ interface IGlobalSearch {
 }
 
 export default function GlobalSearch({ people, user }: IGlobalSearch) {
+    
     const { data } = useSWR<IGlobalUser[]>(`/api/v1/people/`, {
         initialData: people,
     });
+    
+    const search = useSelector(getSearch);
+
+    const applySearch = (item: IGlobalUser) => R.contains(
+        search.toUpperCase(), `${item.first_name.toUpperCase()} ${item.last_name.toUpperCase()}`
+    )
 
     const renderPeople = (people: Array<IGlobalUser>) =>
-        people.map(man => (
-            <Friend
+        people
+            .filter(man => applySearch(man))
+            .map(man => (
+            <FriendItem
                 key={`people__key__${man.id}`}
                 name={`${man.first_name} ${man.last_name}`}
                 friendId={man.id}

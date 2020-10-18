@@ -28,9 +28,9 @@ export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
     return (
         <PrivateLayout user={user}>
             <StyledUser>
-                <div>
+                <div className="user-avatar">
                     {data && pageUserId ? (
-                        <>
+                        <div className="user-avatar__inner">
                             <UserAvatar
                                 contact={data}
                                 pageUserId={pageUserId}
@@ -45,7 +45,7 @@ export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
                                 <h4>Сообщества: {`(${data.my_page.parties.length})`}</h4>
                                 <UserParties parties={data.my_page.parties} />
                             </div>
-                        </>
+                        </div>
                     ) : (
                         <h4>Загрузка личных данных ...</h4>
                     )}
@@ -104,6 +104,17 @@ export const getServerSideProps: GetServerSideProps<ITeams> = async ctx => {
 const StyledUser = styled.div`
     margin-top: 10px;
     display: flex;
+    .user {
+        &-avatar {
+            height: auto;
+            &__inner {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 70px;
+            }
+        }
+
+    }
     .user-avatar__join {
         background-color: #f4f4f4;
         display: flex;
@@ -121,5 +132,8 @@ const StyledUser = styled.div`
     }
     @media (max-width: 900px) {
         flex-direction: column;
+    }
+    @media (max-width: 767.98px) {
+        margin-top: 0px;
     }
 `;

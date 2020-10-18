@@ -24,7 +24,6 @@ export const authInfo = (isRouterPush: boolean, regToken?: string): ThunkType =>
             Cookie.set('smallAvatar', res.data.small_avatar);
             Cookie.set('phoneNumber', res.data.phone_number);
             console.log('Информация успешно занесена в куки');
-            console.log(res.data)
             if (isRouterPush) {
                 Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });
             } else {
@@ -64,7 +63,11 @@ export const authSignup = (
     lastName: string,
     phoneNumber: string,
     password: string,
-    confirmMethod: 'email' | 'phone'
+    confirmMethod: 'email' | 'phone',
+    country: string,
+    city: string,
+    date: string,
+    status: string
 ): ThunkType => async dispatch => {
     await instanceWithOutHeaders
         .post('/api/v1/register/ ', {
@@ -74,6 +77,36 @@ export const authSignup = (
             phone_number: phoneNumber,
             password,
             activation_type: confirmMethod
+        })
+        .then(res => {
+            console.log(res.data.id);
+            if (res.data.id) {
+                dispatch(authSignupNext(res.data.id, country, city, date, status, confirmMethod, email))
+            } else {
+                dispatch(show('Что-то пошло не так!', 'warning'));
+            }
+        })
+        .catch(err => {
+            dispatch(show('Что-то пошло не так!', 'warning'));
+        });
+};
+
+export const authSignupNext = (
+    id: number,
+    country: string,
+    city: string,
+    date: string,
+    status: string,
+    confirmMethod: 'email' | 'phone',
+    email: string
+): ThunkType => async dispatch => {
+    await instanceWithOutHeaders
+        .post('/api/v1/create_info/', {
+            id,
+            status,
+            birth_date: date,
+            country,
+            city,
         })
         .then(res => {
             let message = 'На ваш E-mail пришло подтверждение!';
@@ -87,6 +120,7 @@ export const authSignup = (
             dispatch(show('Что-то пошло не так!', 'warning'));
         });
 };
+
 
 export const authCheckState = (): ThunkType => dispatch => {
     const token = Cookie.get('token');
@@ -183,11 +217,14 @@ export const avatarChange = (
     image: any,
     triggerUrl: string
 ): ThunkType => async dispatch => {
+
+    const token = Cookie.get('token');
     const userId = Cookie.get('userId');
     const postUrl = `/api/v1/post/?id=${userId}`
+
     let form_data = new FormData();
     form_data.append('picture', image, image.name);
-    const token = Cookie.get('token');
+
     await instance(token)
         .post('api/v1/avatar/', form_data)
         .then(res => {
@@ -198,9 +235,7 @@ export const avatarChange = (
         })
         .catch(err => {
             dispatch(show('Ошибка смены аватара!', 'warning'));
-            setTimeout(() => {
-                trigger(triggerUrl);
-                trigger(postUrl);
-            }, 2000)
+            trigger(triggerUrl);
+            trigger(postUrl);
         });
 };

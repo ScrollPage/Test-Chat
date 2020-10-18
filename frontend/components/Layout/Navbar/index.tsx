@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    MailOutlined,
+    ReadOutlined,
     SettingOutlined,
     CommentOutlined,
     HomeOutlined,
@@ -26,7 +26,7 @@ interface INavbar {
 const renderIcons = (key: string) => {
     if (key === 'global-search') return <SearchOutlined />;
     if (key === 'userpage/[userID]') return <HomeOutlined />;
-    if (key === 'news') return <MailOutlined />;
+    if (key === 'news') return <ReadOutlined />;
     if (key === 'dialogs') return <CommentOutlined />;
     if (key === 'friends') return <UserOutlined />;
     if (key === 'teams') return <TeamOutlined />;

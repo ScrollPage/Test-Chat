@@ -44,4 +44,7 @@ export const getServerSideProps: GetServerSideProps<INews> = async ctx => {
 const StyledNews = styled.div`
     margin-top: 20px;
     max-width: 500px;
+    @media (max-width: 767.98px) {
+        margin-top: 0px;
+    }
 `;

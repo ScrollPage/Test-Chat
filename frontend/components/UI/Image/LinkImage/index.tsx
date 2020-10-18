@@ -10,11 +10,12 @@ interface ILinkImage {
   isCircle?: boolean;
   href?: string;
   as?: string;
+  isMedia?: boolean;
 }
 
-const LinkImage: React.FC<ILinkImage> = ({ size = '35', src, isCircle = true, href, as }) => {
+const LinkImage: React.FC<ILinkImage> = ({ size = '35', src, isCircle = true, href, as, isMedia }) => {
   return (
-    <StyledLinkImage size={size} isCircle={isCircle}>
+    <StyledLinkImage size={size} isCircle={isCircle} isMedia={isMedia} >
       {src ? (
         href && as ? (
             <Link href={href} as={as}>

@@ -11,7 +11,8 @@ interface IPosts {
     pageUserId?: number;
     user: IUser;
     partyId?: number;
-    partyOwner: IGroupOwner;
+    isOffer?: boolean;
+    partyOwner?: IGroupOwner;
 }
 
 const Posts: React.FC<IPosts> = ({
@@ -19,7 +20,8 @@ const Posts: React.FC<IPosts> = ({
     pageUserId,
     user,
     partyId,
-    partyOwner
+    partyOwner,
+    isOffer
 }) => {
  
     const { data: posts = [] } = useSWR<IPost[]>(whereAreThePostLink(pageUserId, partyId), {
@@ -40,7 +42,7 @@ const Posts: React.FC<IPosts> = ({
 
     return (
         <>
-            <PostCreate isRepost={false} pageUserId={pageUserId} user={user} partyId={partyId} partyOwner={partyOwner} />
+            <PostCreate isRepost={false} pageUserId={pageUserId} user={user} partyId={partyId} partyOwner={partyOwner} isOffer={isOffer} />
             <div style={{ marginTop: '20px' }}>
                 {posts ? (
                     posts.length === 0 ? (

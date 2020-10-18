@@ -97,3 +97,22 @@ export const removePostLike = (postId: number): ThunkType => async dispatch => {
             dispatch(show('Ошибка в убирании лайка!', 'warning'));
         });
 };
+
+export const acceptPost = (partyId: number, postId: number, triggerUrl: string): ThunkType => async dispatch => {
+    const token = Cookie.get('token');
+    const url = `/api/v1/group/accept/${partyId}/`;
+    await instance(token)
+        .put(url, {
+            some_id: postId
+        })
+        .then(res => {
+            dispatch(show('Пост успешно добавлен в группу!', 'success'));
+            trigger(triggerUrl);
+            trigger(url);
+        })
+        .catch(err => {
+            dispatch(show('Ошибка в добавлении поста в группу!', 'warning'));
+            trigger(triggerUrl);
+            trigger(url);
+        });
+};

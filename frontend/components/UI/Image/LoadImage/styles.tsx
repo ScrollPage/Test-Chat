@@ -1,6 +1,9 @@
 import styled, { css } from 'styled-components';
 
-export const StyledLoadImage = styled.div<{ size?: string, isCircle?: boolean }>`
+export const StyledLoadImage = styled.div<{
+    size?: string;
+    isCircle?: boolean;
+}>`
     position: relative;
     ${props =>
         props.size &&

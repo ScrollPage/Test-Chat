@@ -1,13 +1,16 @@
 import styled from 'styled-components';
 import { instanceWithSSR } from '@/api/api';
 import useSWR from 'swr';
-import DialogSearch from '@/components/Dialog/DialogSearch';
 import DialogItem from '@/components/Dialog/DialogItem';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { getUserFromServer } from '@/utils/index';
 import { IUser } from '@/types/user';
 import { IChat, IChatParticipiant } from '@/types/chat';
 import { GetServerSideProps } from 'next';
+import Search from '@/components/UI/Search';
+import { useSelector } from 'react-redux';
+import { getSearch } from '@/store/selectors';
+import * as R from 'ramda';
 
 interface IDialogs {
     chats: IChat[];
@@ -18,6 +21,17 @@ export default function Dialogs({ chats, user }: IDialogs) {
     const { data } = useSWR<IChat[]>(`/api/v1/chat/?id=${user.userId}`, {
         initialData: chats,
     });
+
+    const search = useSelector(getSearch);
+
+    const applySearch = (item: IChat) =>
+        R.contains(
+            search.toUpperCase(),
+            getParticipantName(
+                item.participants[0],
+                item.participants[1]
+            ).toUpperCase()
+        );
 
     const getParticipantName = (
         participant1: IChatParticipiant,
@@ -53,7 +67,9 @@ export default function Dialogs({ chats, user }: IDialogs) {
     };
 
     const renderChats = (chats: Array<IChat>) =>
-        chats.map(chat => (
+        chats
+            .filter(chat => applySearch(chat))
+            .map(chat => (
             <DialogItem
                 key={`chat__key__${chat.id}`}
                 name={
@@ -78,9 +94,9 @@ export default function Dialogs({ chats, user }: IDialogs) {
 
     return (
         <PrivateLayout user={user}>
-            <DialogSearch />
+            <Search />
             <StyledDialogs>
-                {data ?  (
+                {data ? (
                     data.length === 0 ? (
                         <h4>У вас нет диалогов</h4>
                     ) : (

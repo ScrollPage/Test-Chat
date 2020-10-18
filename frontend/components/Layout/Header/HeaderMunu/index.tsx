@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import React, { Dispatch, SetStateAction } from 'react';
-import { StyledAvatarMenu } from './styles';
+import React, { Dispatch, SetStateAction, useRef } from 'react';
+import { StyledAvatarMenu, StyledBackDrop, StyledHeaderMenu } from './styles';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
+import { TweenMax } from 'gsap';
 
 interface IHeaderMenu {
     menuOpen: boolean;
@@ -14,15 +15,21 @@ const HeaderMenu: React.FC<IHeaderMenu> = ({
     setMenuOpen,
     logoutHandler,
 }) => {
+    let menu = useRef<HTMLDivElement | null>(null);
+
+    const menuOpenHandler = () => {
+        setMenuOpen(state => !state);
+    };
+
     return (
-        <div>
+        <StyledHeaderMenu menuOpen={menuOpen} >
             <div
                 className="styled-avatar__arrow"
-                onClick={() => setMenuOpen(state => !state)}
+                onClick={() => menuOpenHandler()}
             >
                 {menuOpen ? <UpOutlined /> : <DownOutlined />}
             </div>
-            {menuOpen ? (
+            <div className="styled-avatar__container">
                 <StyledAvatarMenu>
                     <div>
                         <Link href="/settings">
@@ -31,8 +38,9 @@ const HeaderMenu: React.FC<IHeaderMenu> = ({
                     </div>
                     <div onClick={logoutHandler}>Выйти</div>
                 </StyledAvatarMenu>
-            ) : null}
-        </div>
+            </div>
+            {menuOpen && <StyledBackDrop onClick={() => menuOpenHandler()} />}
+        </StyledHeaderMenu>
     );
 };
 
