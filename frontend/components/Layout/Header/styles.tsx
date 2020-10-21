@@ -34,7 +34,6 @@ export const StyledAvatar = styled.div`
     display: flex;
     align-items: center;
     height: 100%;
-    cursor: pointer !important;
     .header-avatar {
         margin-right: 10px;
     }
@@ -44,6 +43,11 @@ export const StyledAvatar = styled.div`
         }
     }
     p {
+        cursor: pointer;
         margin-bottom: 0px;
+        -ms-user-select: none;
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
     }
 `;

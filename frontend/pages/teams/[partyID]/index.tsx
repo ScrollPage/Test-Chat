@@ -8,10 +8,11 @@ import { IParty } from '@/types/party';
 import useSWR from 'swr';
 import PeopleList from '@/components/Team/TeamList';
 import Link from 'next/link';
-import PartyHeader from '@/components/Team/TeamHeader';
+import PartyHeader from '@/components/Party/PartyHeader';
 import { IPost } from '@/types/post';
-import Posts from '@/components/Post/Posts';
 import PartyTabs from '@/components/Party/PartyTabs';
+import { Button } from 'antd';
+import { useRouter } from 'next/router';
 
 interface IPartyFC {
     user: IUser;
@@ -24,6 +25,12 @@ export default function Party({ user, party, partyId, posts }: IPartyFC) {
     const { data } = useSWR(`/api/v1/group/${partyId}/`, {
         initialData: party,
     });
+    const { push } = useRouter();
+
+    const isStaff = (data: IParty) => {
+        return data.staff.filter(item => item.id === user.userId).length > 0
+    }
+
     return (
         <PrivateLayout user={user}>
             {data ? (
@@ -33,6 +40,8 @@ export default function Party({ user, party, partyId, posts }: IPartyFC) {
                         isJoined={data.joined}
                         groupImage={data.image}
                         partyId={partyId}
+                        isAdmin={data.admin.id === user.userId}
+                        userId={user.userId}
                     />
                     <div className="party__main">
                         <div className="party__posts">
@@ -45,25 +54,44 @@ export default function Party({ user, party, partyId, posts }: IPartyFC) {
                                     name: data.name,
                                     id: data.id,
                                 }}
+                                isAdmin={isStaff(data)}
                             />
                         </div>
                         <div className="party__right">
-                            <div className="party__info">
-                                <h4>О нас:</h4>
-                                <p>{data.info}</p>
-                                <h4>Создатель:</h4>
-                                <Link
-                                    href={'/userpage/[userID]'}
-                                    as={`/userpage/${data.admin.id}`}
-                                >
-                                    <a>
-                                        <p>{`${data.admin.first_name} ${data.admin.last_name}`}</p>
-                                    </a>
-                                </Link>
-                            </div>
-                            <div className="party__members">
-                                <h4>Участники: ({data.num_members})</h4>
-                                <PeopleList people={data.members} />
+                            <div className="party-right__inner">
+                                <div className="party__info">
+                                    <h4>О нас:</h4>
+                                    <p>{data.info}</p>
+                                    <h4>Создатель:</h4>
+                                    <Link
+                                        href={'/userpage/[userID]'}
+                                        as={`/userpage/${data.admin.id}`}
+                                    >
+                                        <a>
+                                            <p>{`${data.admin.first_name} ${data.admin.last_name}`}</p>
+                                        </a>
+                                    </Link>
+                                </div>
+                                <div className="party__members">
+                                    <h4>Участники: ({data.num_members})</h4>
+                                    <PeopleList people={data.members} />
+                                </div>
+                                {data.admin.id === user.userId && (
+                                    <div className="party__change">
+                                        <Button
+                                            type="primary"
+                                            onClick={() =>
+                                                push(
+                                                    '/teams/[partyID]/change',
+                                                    `/teams/${partyId}/change`,
+                                                    { shallow: true }
+                                                )
+                                            }
+                                        >
+                                            Управление
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -89,7 +117,6 @@ export const getServerSideProps: GetServerSideProps<IPartyFC> = async ctx => {
         .catch(error => {
             console.log(error);
         });
-
     await instanceWithSSR(ctx)
         .get(`/api/v1/group/accept/${partyId}/`)
         .then(response => {
@@ -111,20 +138,39 @@ export const getServerSideProps: GetServerSideProps<IPartyFC> = async ctx => {
 
 const StyledParty = styled.div`
     margin: 20px 0;
+    @media (max-width: 575.98px) {
+        margin-top: 0px;
+    }
     .party {
         &__main {
             display: flex;
+            @media (max-width: 991.98px) {
+                flex-direction: column;
+            }
         }
         &__posts {
             /* max-width: 500px; */
             flex: 0 1 500px;
             margin-right: 20px;
+            @media (max-width: 991.98px) {
+                order: 2;
+                margin-top: 20px;
+                margin-right: 0;
+            }
         }
         &__right {
             display: flex;
             flex-direction: column;
-            flex: 1 1 auto;
+            flex: 1;
+            height: auto;
+            @media (max-width: 991.98px) {
+                order: 1;
+            }
             /* margin-left: 20px; */
+        }
+        &-right__inner {
+            position: sticky;
+            top: 80px;
         }
         &__info {
             background-color: #f4f4f4;
@@ -140,6 +186,14 @@ const StyledParty = styled.div`
             align-items: center;
             margin-top: 20px;
             padding: 10px;
+        }
+        &__change {
+            background-color: #f4f4f4;
+            margin-top: 20px;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     }
 `;

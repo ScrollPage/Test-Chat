@@ -1,6 +1,4 @@
 import Link from 'next/link';
-import ImgCrop from 'antd-img-crop';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -9,14 +7,15 @@ import {
     MailOutlined,
     PhoneOutlined,
     TeamOutlined,
+    FireOutlined
 } from '@ant-design/icons';
-import { Upload, Button, Steps, message } from 'antd';
+import { Button, Steps } from 'antd';
 import { authSignup } from '@/store/actions/auth';
 import VisitorLayout from '@/components/Layout/VisitorLayout';
 import { object, string, ref } from 'yup';
-import { Form, Input, Radio } from 'formik-antd';
+import { Form, Input, Radio, Select, DatePicker } from 'formik-antd';
 import { useState, Children } from 'react';
-import { Formik } from 'formik';
+import { Formik} from 'formik';
 
 const DataValidate = object().shape({
     email: string()
@@ -46,67 +45,20 @@ const DataValidate = object().shape({
         .oneOf([ref('password'), ''], 'Пароли должны совпадать'),
 });
 
+const AddValidate = object().shape({
+    country: string()
+        .required('Выберите страну'),
+    city: string()
+        .required('Выберите город'),
+    date: string()
+        .required('Выберите дату рождения'),
+    status: string()
+        .required('Введите статус')
+        .min(3, 'Слишком короткий статус')
+        .max(30, 'Слишком длинная статус')
+});
+
 export default function Register() {
-
-    const [avatarImage, setAvatarImage] = useState<any>(null);
-    const [mutatedImage, setMutatedImage] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
-
-    function getBase64(img: any, callback: any) {
-        const reader = new FileReader();
-        reader.addEventListener('load', () => callback(reader.result));
-        reader.readAsDataURL(img);
-    }
-
-    function beforeUpload(file: any) {
-        const isJpgOrPng =
-            file.type === 'image/jpeg' || file.type === 'image/png';
-        if (!isJpgOrPng) {
-            message.error('You can only upload JPG/PNG file!');
-        }
-        const isLt2M = file.size / 1024 / 1024 < 2;
-        if (!isLt2M) {
-            message.error('Image must smaller than 2MB!');
-        }
-        return isJpgOrPng && isLt2M;
-    }
-
-    const onPreview = async (file: any) => {
-        let src = file.url;
-        if (!src) {
-            src = await new Promise(resolve => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file.originFileObj);
-                reader.onload = () => resolve(reader.result);
-            });
-        }
-        const image = new Image();
-        image.src = src;
-        const imgWindow = window.open(src);
-        imgWindow?.document.write(image.outerHTML);
-    };
-
-    const handleChange = (info: any) => {
-        if (info.file.status === 'uploading') {
-            setLoading(true);
-            return;
-        }
-        if (info.file.status === 'done') {
-            getBase64(info.file.originFileObj, (mutatedImage: any) => {
-                setAvatarImage(info.file.originFileObj);
-                setMutatedImage(mutatedImage);
-                setLoading(false);
-            });
-        }
-    };
-
-    const uploadButton = (
-        <div>
-            {loading ? <LoadingOutlined /> : <PlusOutlined />}
-            <div style={{ marginTop: 8 }}>Загрузить фотографию</div>
-        </div>
-    );
-
     return (
         <VisitorLayout>
             <StyledRegister>
@@ -119,10 +71,17 @@ export default function Register() {
                         password: '',
                         confirmPassword: '',
                         confirmMethod: '',
+                        country: '',
+                        city: '',
+                        status: '',
+                        date: ''
                     }}
                     enableReinitialize={true}
                 >
-                    <FormikStep label="Данные" validationSchema={DataValidate}>
+                    <FormikStep
+                        label="Данные"
+                        validationSchema={DataValidate}
+                    >
                         <Link href="/">
                             <a>
                                 <p>У вас уже есть аккаунт? Войти</p>
@@ -171,29 +130,59 @@ export default function Register() {
                             />
                         </Form.Item>
                     </FormikStep>
-                    <FormikStep label="Аватар">
-                        <h3>Выберите аватар вашего профиля:</h3>
-                        <ImgCrop grid>
-                            <Upload
-                                name="avatar"
-                                listType="picture-card"
-                                className="avatar-uploader"
-                                showUploadList={false}
-                                beforeUpload={beforeUpload}
-                                onChange={handleChange}
-                                onPreview={onPreview}
+                    <FormikStep label="Дополнительно" validationSchema={AddValidate} >
+                        <div className="form-item">
+                            <Select
+                            size="large"
+                                name="country"
+                                style={{ width: '100%' }}
+                                placeholder="Выберите страну"
                             >
-                                {mutatedImage ? (
-                                    <img
-                                        src={mutatedImage}
-                                        alt="avatar"
-                                        style={{ width: '100%' }}
-                                    />
-                                ) : (
-                                    uploadButton
-                                )}
-                            </Upload>
-                        </ImgCrop>
+                                <Select.Option value={'Россия'}>
+                                    Россия
+                                </Select.Option>
+                                <Select.Option value={'Туркеминстан'}>
+                                    Туркеминстан
+                                </Select.Option>
+                                <Select.Option value={'Азербайджан'}>
+                                    Азербайджан
+                                </Select.Option>
+                            </Select>
+                        </div>
+                        <div className="form-item">
+                            <Select
+                            size="large"
+                                name="city"
+                                style={{ width: '100%' }}
+                                placeholder="Выберите город"
+                            >
+                                <Select.Option value={'Чебоксары'}>
+                                    Чебоксары
+                                </Select.Option>
+                                <Select.Option value={'Москва'}>
+                                    Москва
+                                </Select.Option>
+                                <Select.Option value={'Королев'}>
+                                    Королев
+                                </Select.Option>
+                            </Select>
+                        </div>
+                        <div className="form-item">
+                            <DatePicker
+                            size="large"
+                                name="date"
+                                placeholder="Дата рождения"
+                                style={{ width: '100%' }}
+                            />
+                        </div>
+                        <div className="form-item">
+                            <Input
+                            size="large"
+                                name="status"
+                                placeholder="Введите ваш статус"
+                                prefix={<FireOutlined />}
+                            />
+                        </div>
                     </FormikStep>
                     <FormikStep label="Поддтверждение">
                         <h3>Выберите способ подтверждения аккаунта:</h3>
@@ -231,9 +220,10 @@ function FormikStepper({ children, ...stepperProps }) {
         <Formik
             {...stepperProps}
             validationSchema={currentChild.props.validationSchema}
-            onSubmit={async (values, { setSubmitting }) => {
+            onSubmit={(values, { setSubmitting }) => {
                 if (isLastElement()) {
                     setSubmitting(true);
+                    console.log(values);
                     dispatch(
                         authSignup(
                             values.email,
@@ -241,7 +231,11 @@ function FormikStepper({ children, ...stepperProps }) {
                             values.lastName,
                             values.phoneNumber,
                             values.password,
-                            values.confirmMethod
+                            values.confirmMethod,
+                            values.country,
+                            values.city, 
+                            values.date, 
+                            values.status
                         )
                     );
                     setTimeout(() => {
@@ -287,6 +281,24 @@ function FormikStepper({ children, ...stepperProps }) {
     );
 }
 
+// export const getServerSideProps = async ctx => {
+//     let countries = [];
+
+//     await instanceWithSSR(ctx)
+//         .get('https://parseapi.back4app.com/classes/Country/volodya?keys=name,code,capital')
+//         .then(response => {
+//             countries = response?.data;
+//         })
+//         .catch(error => {
+//             console.log(error);
+//         });
+//     return {
+//         props: {
+//             countries
+//         },
+//     };
+// };
+
 const StyledRegister = styled.div`
     display: flex;
     width: 100%;
@@ -320,6 +332,9 @@ const StyledRegister = styled.div`
         .ant-radio-wrapper {
             width: 160px;
         }
+    }
+    .form-item {
+        margin-bottom: 24px;
     }
     h3 {
         text-align: center;

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import LoadImage from '../../UI/Image/LoadImage';
 import { StyledPartyItem } from './styles';
+import LinkImage from '@/components/UI/Image/LinkImage';
 
 interface ITeam {
   name: string;
@@ -13,11 +13,12 @@ const PartyItem: React.FC<ITeam> = ({ name, partyId, image }) => {
   return (
     <StyledPartyItem>
       <div>
-        <LoadImage
+        <LinkImage
           href="/teams/[partyID]"
           as={`/teams/${partyId}`}
           size={'80'}
           src={image}
+          isMedia={true}
         />
       </div>
       <div>

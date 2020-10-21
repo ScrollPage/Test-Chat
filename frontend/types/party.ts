@@ -6,7 +6,7 @@ export interface IPartyMember {
 }
 
 export interface IParty extends IGroupOwner {
-  staff: [];
+  staff: IPostUser[];
   members: IPartyMember[];
   admin: IPostUser;
   num_members: number;

@@ -80,4 +80,7 @@ export const StyledPostItem = styled.div`
     .user-post__avatar {
         margin-right: 10px;
     }
+    .user-post__offer {
+        padding: 20px 20px 20px 0;
+    }
 `;

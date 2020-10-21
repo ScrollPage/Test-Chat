@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import Posts from '@/components/Post/Posts';
 import { IUser } from '@/types/user';
@@ -11,6 +11,7 @@ interface IPartyTabs {
     user: IUser;
     posts?: IPost[];
     partyId?: number;
+    isAdmin?: boolean;
     partyOwner: IGroupOwner;
 }
 
@@ -19,19 +20,19 @@ const PartyTabs: React.FC<IPartyTabs> = ({
     posts,
     partyId,
     partyOwner,
+    isAdmin
 }) => {
-    const changeTab = (key: string) => {
-        console.log(key);
-    };
+
+    const [activeKey, setActiveKey] = useState('1');
 
     return (
         <StyledPartyTabs>
-            <Tabs defaultActiveKey="1" onChange={changeTab}>
-                <TabPane tab="    Записи сообщества" key="1">
-                    <Posts serverPosts={posts} user={user} partyId={partyId} partyOwner={partyOwner} />
+            <Tabs activeKey={activeKey} onChange={(key) => setActiveKey(key)} >
+                <TabPane tab="Записи сообщества" key="1">
+                    <Posts serverPosts={posts} user={user} partyId={partyId} partyOwner={partyOwner} isOffer={!isAdmin} />
                 </TabPane>
-                <TabPane tab="Предложенные посты" key="2">
-                    <OfferPosts user={user} partyId={partyId} />
+                <TabPane tab="Предложенные" key="2" forceRender={true} >
+                    <OfferPosts isAdmin={isAdmin} user={user} partyId={partyId} />
                 </TabPane>
             </Tabs>
         </StyledPartyTabs>

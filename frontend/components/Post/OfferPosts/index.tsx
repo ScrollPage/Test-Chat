@@ -6,12 +6,12 @@ import { IUser } from '@/types/user';
 import Loading from '@/components/UI/Loading';
 
 interface IOfferPosts {
-    pageUserId?: number;
     user: IUser;
     partyId?: number;
+    isAdmin?: boolean;
 }
 
-const OfferPosts: React.FC<IOfferPosts> = ({ pageUserId, user, partyId }) => {
+const OfferPosts: React.FC<IOfferPosts> = ({ user, partyId, isAdmin }) => {
     const { data: posts } = useSWR<IPost[]>(`/api/v1/group/offer/${partyId}/`);
 
     const renderPosts = (posts: Array<IPost>) => {
@@ -20,8 +20,9 @@ const OfferPosts: React.FC<IOfferPosts> = ({ pageUserId, user, partyId }) => {
                 key={`post__key__${post.id}`}
                 user={user}
                 post={post}
-                pageUserId={pageUserId}
                 partyId={partyId}
+                isOffer={true}
+                isAdmin={isAdmin}
             />
         ));
     };
@@ -31,7 +32,9 @@ const OfferPosts: React.FC<IOfferPosts> = ({ pageUserId, user, partyId }) => {
             <div>
                 {posts ? (
                     posts.length === 0 ? (
-                        <h2>Нет постов</h2>
+                        <div>
+                            <h2>Нет предложенных постов</h2>
+                        </div>
                     ) : (
                         renderPosts(posts)
                     )

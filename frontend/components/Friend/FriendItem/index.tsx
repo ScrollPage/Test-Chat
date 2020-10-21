@@ -35,6 +35,7 @@ const FriendItem: React.FC<IFriendItem> = ({ friendId, name, chatId, src }) => {
           size={'80'}
           src={src}
           isCircle={true}
+          isMedia={true}
         />
       </div>
       <div>

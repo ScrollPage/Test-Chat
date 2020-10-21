@@ -14,7 +14,7 @@ interface ILoadImage {
   as?: string;
 }
 
-const LoadImage: React.FC<ILoadImage> = ({ size = '35', src, isCircle = true, href, as }) => {
+const LoadImage: React.FC<ILoadImage> = ({ size = '35', src, isCircle = true, href, as}) => {
   let loadImage: null | boolean = null;
 
   if (src) {
@@ -22,7 +22,7 @@ const LoadImage: React.FC<ILoadImage> = ({ size = '35', src, isCircle = true, hr
   }
 
   return (
-    <StyledLoadImage size={size} isCircle={isCircle}>
+    <StyledLoadImage size={size} isCircle={isCircle} >
       {src ? (
         loadImage ? (
         href && as ? (

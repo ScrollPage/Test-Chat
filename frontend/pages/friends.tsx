@@ -3,12 +3,15 @@ import { instanceWithSSR } from '@/api/api';
 import cookies from 'next-cookies';
 import useSWR from 'swr';
 import Friend from '@/components/Friend/FriendItem';
-import Search from '@/components/Dialog/DialogSearch';
+import Search from '@/components/UI/Search';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { getUserFromServer } from '@/utils/index';
 import { GetServerSideProps } from 'next';
 import { IGlobalUser } from '@/types/people';
 import { IUser } from '@/types/user';
+import { useSelector } from 'react-redux';
+import { getSearch } from '@/store/selectors';
+import * as R from 'ramda'
 
 interface IFriends {
     friends: IGlobalUser[];
@@ -18,8 +21,16 @@ interface IFriends {
 export default function Friends({ friends, user }: IFriends) {
     const { data } = useSWR<IGlobalUser[]>(`/api/v1/friends/`, { initialData: friends });
 
+    const search = useSelector(getSearch);
+
+    const applySearch = (item: IGlobalUser) => R.contains(
+        search.toUpperCase(), `${item.first_name.toUpperCase()} ${item.last_name.toUpperCase()}`
+    )
+
     const renderFriends = (friends: Array<IGlobalUser>) =>
-        friends.map(friend => (
+        friends
+            .filter(friend => applySearch(friend))
+            .map(friend => (
             <Friend
                 key={`friend__key__${friend.id}`}
                 name={`${friend.first_name} ${friend.last_name}`}

@@ -16,6 +16,7 @@ interface IPostCreate {
     parent?: IPost;
     setClose?: () => void;
     partyId?: number;
+    isOffer?: boolean;
     partyOwner?: IGroupOwner;
 }
 
@@ -27,6 +28,7 @@ const PostCreate: React.FC<IPostCreate> = ({
     setClose,
     partyId,
     partyOwner,
+    isOffer
 }) => {
     const dispatch = useDispatch();
 
@@ -37,7 +39,8 @@ const PostCreate: React.FC<IPostCreate> = ({
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (postText.trim() !== '' || mutatedImage) {
-            const postUrl = whereAreThePostLink(pageUserId, partyId);
+            const postUrl = whereAreThePostLink(pageUserId, partyId, isOffer);
+            console.log(postUrl)
             if (isRepost && parent && setClose) {
                 if (pageUserId && pageUserId === user.userId) {
                     addRepostMutate(

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import useSWR from 'swr';
 import cookies from 'next-cookies';
 import { GetServerSidePropsContext } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 
-export const whereAreThePostLink = (pageUserId?: number, partyId?: number) => {
+export const whereAreThePostLink = (pageUserId?: number, partyId?: number, isOffer?: boolean) => {
     if (pageUserId) {
         return `/api/v1/post/?id=${pageUserId}`;
+    }
+    if (isOffer && partyId) {
+        return `/api/v1/group/offer/${partyId}/`
     }
     if (partyId) {
         return `/api/v1/group/accept/${partyId}/`;

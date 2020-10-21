@@ -14,4 +14,7 @@ export const StyledSearch = styled.div`
             flex: 1;
         }
     }
+    @media (max-width: 575.98px) {
+        height: 40px;
+    }
 `;
