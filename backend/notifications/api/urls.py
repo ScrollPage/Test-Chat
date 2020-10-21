@@ -9,5 +9,5 @@ notifications = NoificationsListView.as_view({
 })
 
 urlpatterns = [
-    path('notifications/<int:pk>/', notifications, name='notifications')
+    path('notifications/', notifications, name='notifications')
 ]

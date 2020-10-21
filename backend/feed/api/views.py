@@ -36,11 +36,10 @@ class PostsCustomViewset(PermisisonSerializerPostModelViewset):
         'partial_update': UpdatePostSerializer,
         'create': PostSerializer,
     }
-    permission_classes = []
+    permission_classes = [IsRightUser, NotInOwnersBlacklist]
     permission_classes_by_action = {
-        'update': [IsRightUser],
-        'partial_update': [IsRightUser],
-        'destroy': [IsRightOwnerOrUser],
+        'create': [],
+        'destroy': [IsRightOwnerOrUser, NotInOwnersBlacklist],
         'retrieve': [NotInOwnersBlacklist],
         'list': [NotInBlacklistByQuery]
     }

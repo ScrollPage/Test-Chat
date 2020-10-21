@@ -1,6 +1,8 @@
 from mixer.backend.django import mixer
 from django.test import TestCase
 
+from contact.models import Contact
+
 class TestModels(TestCase):
 
     def setUp(self):
