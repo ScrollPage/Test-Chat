@@ -9,7 +9,7 @@ import useSWR from 'swr';
 import PeopleList from '@/components/Team/TeamList';
 import Link from 'next/link';
 import PartyHeader from '@/components/Party/PartyHeader';
-import { IPost } from '@/types/post';
+import { IPost, IPostUser } from '@/types/post';
 import PartyTabs from '@/components/Party/PartyTabs';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
@@ -27,8 +27,8 @@ export default function Party({ user, party, partyId, posts }: IPartyFC) {
     });
     const { push } = useRouter();
 
-    const isStaff = (data: IParty) => {
-        return data.staff.filter(item => item.id === user.userId).length > 0
+    const isStaff = (staff: IPostUser[]) => {
+        return staff.filter(item => item.id === user.userId).length > 0
     }
 
     return (
@@ -54,7 +54,7 @@ export default function Party({ user, party, partyId, posts }: IPartyFC) {
                                     name: data.name,
                                     id: data.id,
                                 }}
-                                isAdmin={isStaff(data)}
+                                isAdmin={isStaff(data.staff) || data.admin.id === user.userId }
                             />
                         </div>
                         <div className="party__right">

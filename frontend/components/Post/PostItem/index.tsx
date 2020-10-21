@@ -12,6 +12,7 @@ import PostItemBody from '../PostItemBody';
 import { IDeletePostModalProps } from '../../Modal/ModalInner/DeletePostModal';
 import { StyledPostItem } from './styles';
 import { Button } from 'antd';
+import Views from '@/components/UI/Icons/Views';
 
 interface IPostItem {
     post: IPost;
@@ -98,30 +99,41 @@ const PostItem: React.FC<IPostItem> = ({
             ) : (
                 <>
                     <div className="user-post__footer">
-                        <div>
-                            <Like
-                                isTap={post.is_liked}
+                        <div className="user-post__tap">
+                            <div>
+                                <Like
+                                    isTap={post.is_liked}
+                                    postId={post.id}
+                                    pageUserId={pageUserId}
+                                    partyId={partyId}
+                                />
+                                <h2>{post.num_likes}</h2>
+                            </div>
+                            <div>
+                                <Repost
+                                    post={post}
+                                    pageUserId={pageUserId}
+                                    user={user}
+                                />
+                                <h2>{post.num_reposts}</h2>
+                            </div>
+                            <div>
+                                <ShowComment
+                                    postId={post.id}
+                                    setIsCommentsOpen={setIsCommentsOpen}
+                                    isCommentsOpen={isCommentsOpen}
+                                />
+                                <h2>{post.num_comments}</h2>
+                            </div>
+                        </div>
+                        <div className="user-post__views">
+                            <Views
+                                isWatched={post.is_watched}
                                 postId={post.id}
                                 pageUserId={pageUserId}
                                 partyId={partyId}
                             />
-                            <h2>{post.num_likes}</h2>
-                        </div>
-                        <div>
-                            <Repost
-                                post={post}
-                                pageUserId={pageUserId}
-                                user={user}
-                            />
-                            <h2>{post.num_reposts}</h2>
-                        </div>
-                        <div>
-                            <ShowComment
-                                postId={post.id}
-                                setIsCommentsOpen={setIsCommentsOpen}
-                                isCommentsOpen={isCommentsOpen}
-                            />
-                            <h2>{post.num_comments}</h2>
+                            <h2>{post.num_reviews}</h2>
                         </div>
                     </div>
                     <hr />

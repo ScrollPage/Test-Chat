@@ -36,35 +36,35 @@ const UserAvatar: React.FC<IUserAvatar> = ({
     const { push } = useRouter();
 
     const addFriendHandler = (): void => {
-        mutate(
-            `/api/v1/contact/${pageUserId}/`,
-            { ...contact, is_sent: true },
-            false
-        );
-        dispatch(addFriend(pageUserId));
+        const url = `/api/v1/contact/${pageUserId}/`;
+        mutate(url, { ...contact, is_sent: true }, false);
+        dispatch(addFriend(pageUserId, url));
     };
 
     const removeAddFriendHandler = (): void => {
+        const url = `/api/v1/contact/${pageUserId}/`;
         mutate(
-            `/api/v1/contact/${pageUserId}/`,
+            url,
             { ...contact, is_sent: false },
             false
         );
-        dispatch(removeAddFriend(pageUserId, user.userId));
+        dispatch(removeAddFriend(pageUserId, user.userId, url));
     };
 
     const removeFriendHandler = (): void => {
+        const url = `/api/v1/contact/${pageUserId}/`;
         mutate(
-            `/api/v1/contact/${pageUserId}/`,
+            url,
             { ...contact, is_friend: false, is_sent: false },
             false
         );
-        dispatch(removeFriend(pageUserId, user.userId));
+        dispatch(removeFriend(pageUserId, user.userId, url));
     };
 
     const recieveFriendHandler = () => {
+        const url = `/api/v1/contact/${pageUserId}/`;
         mutate(
-            `/api/v1/contact/${pageUserId}/`,
+            url,
             {
                 ...contact,
                 is_friend: true,
@@ -73,7 +73,7 @@ const UserAvatar: React.FC<IUserAvatar> = ({
             },
             false
         );
-        dispatch(recieveFriend(pageUserId, user.userId));
+        dispatch(recieveFriend(pageUserId, user.userId, url));
     };
 
     const chatIsNull = () => {

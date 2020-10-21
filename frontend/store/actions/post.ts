@@ -3,8 +3,9 @@ import { instance } from '@/api/api';
 import Cookie from 'js-cookie';
 import { show } from './alert';
 import { trigger } from 'swr';
+import { Dispatch } from 'redux';
 
-export const addPost = (text: string, image: any, triggerUrl: string, pageUserId?: number , partyId?: number,): ThunkType => async dispatch => {
+export const addPost = (text: string, image: any, triggerUrl: string, pageUserId?: number, partyId?: number,): ThunkType => async (dispatch: Dispatch) => {
     const token = Cookie.get('token');
     const userId: any = Cookie.get('userId');
     let owner = userId;
@@ -33,7 +34,7 @@ export const addPost = (text: string, image: any, triggerUrl: string, pageUserId
         });
 };
 
-export const deletePost = (postId: number, triggerUrl: string): ThunkType => async dispatch => {
+export const deletePost = (postId: number, triggerUrl: string): ThunkType => async (dispatch: Dispatch) => {
     console.log(triggerUrl);
     const token = Cookie.get('token');
     await instance(token)
@@ -48,7 +49,7 @@ export const deletePost = (postId: number, triggerUrl: string): ThunkType => asy
         });
 };
 
-export const rePost = (text: string, image: any, parent: number, triggerUrl: string): ThunkType => async dispatch => {
+export const rePost = (text: string, image: any, parent: number, triggerUrl: string): ThunkType => async (dispatch: Dispatch) => {
     const token = Cookie.get('token');
     const userId: any = Cookie.get('userId');
     let form_data = new FormData();
@@ -70,7 +71,7 @@ export const rePost = (text: string, image: any, parent: number, triggerUrl: str
         });
 };
 
-export const addPostLike = (postId: number): ThunkType => async dispatch => {
+export const addPostLike = (postId: number): ThunkType => async (dispatch: Dispatch) => {
     const token = Cookie.get('token');
     await instance(token)
         .post('/api/v1/like/post/add/', {
@@ -84,7 +85,7 @@ export const addPostLike = (postId: number): ThunkType => async dispatch => {
         });
 };
 
-export const removePostLike = (postId: number): ThunkType => async dispatch => {
+export const removePostLike = (postId: number): ThunkType => async (dispatch: Dispatch) => {
     const token = Cookie.get('token');
     await instance(token)
         .post('/api/v1/like/post/remove/', {
@@ -98,7 +99,7 @@ export const removePostLike = (postId: number): ThunkType => async dispatch => {
         });
 };
 
-export const acceptPost = (partyId: number, postId: number, triggerUrl: string): ThunkType => async dispatch => {
+export const acceptPost = (partyId: number, postId: number, triggerUrl: string): ThunkType => async (dispatch: Dispatch) => {
     const token = Cookie.get('token');
     const url = `/api/v1/group/accept/${partyId}/`;
     await instance(token)
@@ -114,5 +115,20 @@ export const acceptPost = (partyId: number, postId: number, triggerUrl: string):
             dispatch(show('Ошибка в добавлении поста в группу!', 'warning'));
             trigger(triggerUrl);
             trigger(url);
+        });
+};
+
+export const addViewPost = (postId: number): ThunkType => async (dispatch: Dispatch) => {
+    const token = Cookie.get('token');
+    const url = `/api/v1/score/`;
+    await instance(token)
+        .post(url, {
+            post_id: postId
+        })
+        .then(res => {
+            console.log('Пост просмотрен')
+        })
+        .catch(err => {
+            console.log('Ошибка в просмотре поста')
         });
 };

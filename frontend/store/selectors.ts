@@ -8,6 +8,10 @@ export const getAlertText = (state: AppStateType) => {
   return state.alert.text
 }
 
+export const getAlertIsNotClose = (state: AppStateType) => {
+  return state.alert.IsNotClose
+}
+
 export const getSearch = (state: AppStateType) => {
   return state.search.search
 }
@@ -26,4 +30,8 @@ export const getModalName = (state: AppStateType) => {
 
 export const getModalProps = (state: AppStateType) => {
   return state.modal.modalProps
+}
+
+export const getNotify = (state: AppStateType) => {
+  return state.notify.notify
 }
