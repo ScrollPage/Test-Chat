@@ -102,8 +102,6 @@ class PartyShortSerializer(serializers.ModelSerializer):
         model = Party
         fields = ['id', 'name', 'image', 'slug']
 
-
-
 class AbstractPostSerializer(serializers.Serializer):
     '''Базовый сериализатор для поста и коммента'''
     num_likes = serializers.IntegerField(read_only=True)

@@ -86,6 +86,10 @@ class Contact(AbstractBaseUser, PermissionsMixin):
 
     objects = ContactManager()
 
+    def delete(self):
+        self.chat_refs.delete()
+        super().delete()
+
     def __str__(self):
         return str(self.id)
 

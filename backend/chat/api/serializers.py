@@ -1,10 +1,13 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 
-from chat.models import Chat, Message
+from chat.models import Chat, Message, ChatRef
 from contact.models import Contact
 from photos.models import Photo
 from backend.service import LowReadContactSerializer
+from feed.api.exceptions import BadRequestError
+from .service import make_refs
+from backend.exceptions import ForbiddenError
 
 class ContactIDSerializer(serializers.StringRelatedField):
     '''Сериализация id контакта'''
@@ -29,40 +32,89 @@ class ChatOverviewSerializer(ChatSerializer):
     participants = LowReadContactSerializer(many=True)
 
     def to_representation(self, value):
-        companion = user = self.context['request'].user
-        for participant in value.participants.all():
-            if participant != user:
-                companion = participant
-                break
-        
-        if companion.avatar_id:
-            small_avatar = Photo.objects.get(id=companion.avatar_id).small_picture.url
-        else:
-            small_avatar = None
-        
-        d = {
-            'id': companion.id,
-            'first_name': companion.first_name,
-            'last_name': companion.last_name,
-            'phone_number': companion.phone_number,
-            'slug': companion.slug,
-            'small_avatar': small_avatar,
-        }
-
         response = super().to_representation(value)
-        response.update({'companion': d})
+        if value.is_chat:
+            companion = user = self.context['request'].user
+            for participant in value.participants.all():
+                if participant != user:
+                    companion = participant
+                    break
+            
+            if companion.avatar_id:
+                small_avatar = Photo.objects.get(id=companion.avatar_id).small_picture.url
+            else:
+                small_avatar = None
+            
+            d = {
+                'id': companion.id,
+                'first_name': companion.first_name,
+                'last_name': companion.last_name,
+                'phone_number': companion.phone_number,
+                'slug': companion.slug,
+                'small_avatar': small_avatar,
+            }
+
+            response.update({'companion': d})
+        else:
+            name = ''
+            if not value.name:
+                for participant in value.participants.all():
+                    name += f'{participant.first_name},'
+            response.update({'name': name[:-1]})
         return response
+
+class ChatRefSerializer(serializers.ModelSerializer):
+    chat = ChatOverviewSerializer(read_only=True)
+    class Meta:
+        model = ChatRef
+        fields = ['id', 'chat']
+
+class ChatRefCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatRef
+        fields = ['chat']
 
 class ChatCreateSerializer(ChatSerializer):
     '''Сериализация контакта при создании'''
     participants = ContactIDSerializer(many=True)
     id = serializers.IntegerField(read_only=True)
-    
-    def create(self, validated_data):
-        participants = validated_data.pop('participants', None)
-        chat = Chat()
-        chat.save()
+
+    class Meta:
+        model = Chat
+        exclude = ['messages', 'creator', 'name']
+
+    def check_participant_blacklist(self, participants):
+        user = self.context['request'].user
+        arr = []
         for id in participants:
-            chat.participants.add(get_object_or_404(Contact, id=id))
-        chat.save()
+            part = get_object_or_404(Contact, id=id)
+            if user in part.my_page.blacklist.all():
+                raise ForbiddenError('You are in blacklist.')
+            else:
+                arr.append(part)
+
+        return arr
+
+    def validate(self, data):
+        participants = data.pop('participants', None)
+        if data.get('is_chat'):
+            if len(participants) != 2:
+                raise BadRequestError('Number of participants must be equal 2.')
+        else:
+            if len(participants) < 2:
+                raise BadRequestError('Number of participants must be greater then 2.')
+        return super().validate(data)
+
+    def create(self, validated_data):
+        participants = validated_data.pop('participants')
+        participants = self.check_participant_blacklist(participants)
+        chat = Chat()
+        if validated_data.get('is_chat'):
+            chat.save()
+        else:
+            chat.save(
+                is_chat=False, 
+                creator=self.context['request'].user
+            )
+        chat = make_refs(chat, participants)
         return chat

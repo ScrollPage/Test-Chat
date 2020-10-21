@@ -59,7 +59,8 @@ class ContactDetailSerializer(serializers.ModelSerializer):
     is_sent_to_you = serializers.BooleanField(read_only=True)
     my_page = PageSerializer(read_only=True)
     info = UserInfoUpdateSerializer(read_only=True)
-    avatar_id =serializers.IntegerField(read_only=True)
+    avatar_id = serializers.IntegerField(read_only=True)
+    chat_id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Contact

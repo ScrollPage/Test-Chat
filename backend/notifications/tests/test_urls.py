@@ -5,5 +5,5 @@ class TestUrls(TestCase):
 
     def test_notifications_url(self):
         '''Убедиться, что ссылка и вью связаны правильно'''
-        path = reverse('notifications', kwargs={'pk': 1})
+        path = reverse('notifications')
         self.assertEqual(resolve(path).view_name, 'notifications')

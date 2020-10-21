@@ -3,38 +3,29 @@ from rest_framework import mixins, serializers
 from django.shortcuts import get_object_or_404
 from django.db.models import Q, Count
 
-from chat.models import Chat
+from chat.models import Chat, ChatRef
 from contact.models import Contact
-from backend.service import PermissionMixin, SerializerMixin
+from backend.service import PermissionSerializerMixin, SerializerMixin
 
-class CustomListModelMixin(mixins.ListModelMixin):
-    '''Custom list mixin'''
+class PermissionCreateRetrieveUpdate(PermissionSerializerMixin,
+                                     mixins.CreateModelMixin, 
+                                     mixins.RetrieveModelMixin,
+                                     mixins.UpdateModelMixin,
+                                     GenericViewSet, 
+                                    ):
+    '''Создание, обзор, обновление'''
 
-    def get_queryset(self):
-        contact = self.request.user
-        query_name = self.request.query_params.get('query_name', None)
-        queryset = contact.chats.all()
-        if query_name:
-            query_name = query_name.split('_')[:2]
-            queryset1 = []
-            for chat in queryset:
-                for part in chat.participants.all():
-                    if part != self.request.user:
-                        for term in query_name:
-                            if (term in part.first_name.lower() or term in part.last_name.lower()):
-                                queryset1.append(chat)
-                                break
-            queryset = queryset1
-            
-        return queryset
+class ListDestroyCreateViewset(PermissionSerializerMixin,
+                               GenericViewSet, 
+                               mixins.ListModelMixin,
+                               mixins.DestroyModelMixin,
+                               mixins.CreateModelMixin,
+                            ):
+    '''Список, удаление'''
+    pass
 
-class PermissionModelCustomViewSet(SerializerMixin,
-                                   mixins.CreateModelMixin, 
-                                   mixins.DestroyModelMixin,
-                                   mixins.RetrieveModelMixin,
-                                   mixins.UpdateModelMixin,
-                                   PermissionMixin,
-                                   CustomListModelMixin,
-                                   GenericViewSet, 
-                                ):
-    '''Model viewset с переделанный list методом'''
+def make_refs(chat, participants):
+    for participant in participants:
+        chat.participants.add(participant)
+        ChatRef.objects.create(chat=chat, user=participant)
+    chat.save()

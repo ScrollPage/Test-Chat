@@ -71,7 +71,8 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
                 )
             )
         ).annotate(
-            chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user))
+            chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user) &
+                                            Q(chats__is_chat=True))
         )
 
         if self.request.user.id == pk:
@@ -194,7 +195,8 @@ class ContactFriendsView(generics.ListAPIView):
 
         if id == self.request.user.id or not id:
             queryset = queryset.annotate(
-                chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user))
+                chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user) & 
+                                                Q(chats__is_chat=True))
             )
         return queryset
 

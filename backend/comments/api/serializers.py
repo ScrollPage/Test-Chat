@@ -19,7 +19,7 @@ class RecursiveCommentSerialzier(serializers.Serializer):
 class FilterCommentSerializer(serializers.ListSerializer):
     '''Фильтр комментариев, только с parent'''
     def to_representation(self, data):
-        data = data.filter(parent = None)
+        data = data.filter(parent=None)
         return super().to_representation(data)
 
 class CreateCommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
