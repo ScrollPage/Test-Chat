@@ -7,10 +7,17 @@ from community.api.serializers import ContactDetailSerializer
 from photos.models import Photo
 from feed.models import Post
 from backend.service import LowReadContactSerializer
+from notifications.models import Notice
 
 class MeSerializer(LowReadContactSerializer):
     '''Обзор самого себя'''
     id = serializers.IntegerField()
+
+    def to_representation(self, value):
+        res = super().to_representation(value)
+        num_notifications = Notice.objects.filter(receiver=value, seen=False).count()
+        res.update({'num_notifications': num_notifications})
+        return res
 
     class Meta:
         model = Contact

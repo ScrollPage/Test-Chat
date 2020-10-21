@@ -39,13 +39,13 @@ def send_addrequest_notification(sender, receiver):
 
 def new_friend_notification(sender_id, receiver_id):
     pusher.trigger(
-        f'notifications{receiver_id}', 
+        f'notifications{sender_id}', 
         'new_friend', 
-        {'sender': sender_id, 'name': get_object_or_404(Contact, id=sender_id).get_full_name()}
+        {'sender': receiver_id, 'name': get_object_or_404(Contact, id=receiver_id).get_full_name()}
     )
     create_notification(
-        get_object_or_404(Contact,id=receiver_id), 
-        get_object_or_404(Contact,id=sender_id), 
+        get_object_or_404(Contact, id=sender_id), 
+        get_object_or_404(Contact, id=receiver_id), 
         event=3,
     )
 
@@ -58,11 +58,11 @@ def send_like_notification(owner, liker, kind, inst_id):
         )
         create_notification(liker, owner, 4)
 
-def send_repost_notification(owner, reposter, post_id):
+def send_repost_notification(owner, reposter, post):
     if owner != reposter:
         pusher.trigger(
             f'notifications{owner.id}', 
             'new_repost', 
-            {'reposter': reposter.id, 'post': post_id, 'name': reposter.get_full_name()}
+            {'reposter': reposter.id, 'post': post.id, 'name': reposter.get_full_name()}
         )
-        create_notification(reposter, owner, 5)
+        create_notification(owner, reposter, 5)

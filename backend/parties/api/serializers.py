@@ -11,6 +11,7 @@ class PartyDetailSerializer(serializers.ModelSerializer):
     '''Сериализация списка групп'''
     staff = LowReadContactSerializer(many=True, read_only=True)
     members = PageSerializer(many=True, read_only=True)
+    blacklist = PageSerializer(many=True, read_only=True)
     admin = LowReadContactSerializer(read_only=True)
     num_members = serializers.IntegerField(read_only=True)
     joined = serializers.BooleanField(read_only=True)

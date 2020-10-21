@@ -64,16 +64,12 @@ class RePostMechanicsCustomViewset(CreateViewset):
     def perform_create(self, serializer):
         user = self.request.user
         parent = serializer.validated_data.get('parent', None)
-        try:
-            RePost.objects.get(
-                post_id=parent, 
-                user=user
-            )
-        except (RePost.DoesNotExist, TypeError):
-            RePost.objects.create(
-                post_id=parent,
-                user=user
-            )
+        _, fl = RePost.objects.get_or_create(
+            post_id=parent, 
+            user=user
+        )
+        print(fl)
+        if fl:
             send_repost_notification(parent.user, user, parent)
 
         serializer.save(user=self.request.user)
