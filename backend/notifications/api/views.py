@@ -13,13 +13,11 @@ class NoificationsListView(NotificationView):
     serializer_class_by_action = {
         'list': NotificationSerializer
     }
-    permission_classes = [permissions.IsAuthenticated, UsersNotes]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        pk = self.kwargs['pk']
-        return Notice.objects.filter(receiver__id=pk).order_by('timestamp')
+        return Notice.objects.filter(receiver=self.request.user).order_by('timestamp')
 
     def update(self, request, *args, **kwargs):
-        pk = self.kwargs['pk']
         self.get_queryset().update(seen=True)
         return Response(status=status.HTTP_200_OK)
