@@ -1,3 +1,4 @@
+import { setNotify } from './notify';
 import { trigger } from 'swr';
 import Cookie from 'js-cookie';
 import Router from 'next/router';
@@ -23,6 +24,9 @@ export const authInfo = (isRouterPush: boolean, regToken?: string): ThunkType =>
             Cookie.set('avatar', res.data.avatar);
             Cookie.set('smallAvatar', res.data.small_avatar);
             Cookie.set('phoneNumber', res.data.phone_number);
+            if (res.data.num_notifications) {
+                dispatch(setNotify(res.data.num_notifications))
+            }
             console.log('Информация успешно занесена в куки');
             if (isRouterPush) {
                 Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });

@@ -133,7 +133,7 @@ const StyledUser = styled.div`
     @media (max-width: 900px) {
         flex-direction: column;
     }
-    @media (max-width: 767.98px) {
+    @media (max-width: 575.98px) {
         margin-top: 0px;
     }
 `;

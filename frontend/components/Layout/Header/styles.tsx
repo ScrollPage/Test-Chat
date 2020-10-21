@@ -34,9 +34,15 @@ export const StyledAvatar = styled.div`
     display: flex;
     align-items: center;
     height: 100%;
-    .header-avatar {
-        margin-right: 10px;
+    .header {
+        &__avatar {
+            margin-right: 10px;
+        }
+        &__notify {
+            margin-left: 30px;
+        }
     }
+    
     @media (max-width: 500px) {
         p {
             display: none;

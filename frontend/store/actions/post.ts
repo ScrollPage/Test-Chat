@@ -116,3 +116,18 @@ export const acceptPost = (partyId: number, postId: number, triggerUrl: string):
             trigger(url);
         });
 };
+
+export const addViewPost = (postId: number): ThunkType => async dispatch => {
+    const token = Cookie.get('token');
+    const url = `/api/v1/score/`;
+    await instance(token)
+        .post(url, {
+            post_id: postId
+        })
+        .then(res => {
+            console.log('Пост просмотрен')
+        })
+        .catch(err => {
+            console.log('Ошибка в просмотре поста')
+        });
+};

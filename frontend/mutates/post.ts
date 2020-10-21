@@ -82,10 +82,29 @@ export const deletePostMutate = (postId: number, postUrl: string) => {
     async (posts: IPost[]) => {
       if (posts) {
         console.log('asdasd')
-          return posts.filter(post => post.id !== postId);          
-        }
+        return posts.filter(post => post.id !== postId);
+      }
     },
     false
-);
+  );
+}
+
+export const addViewPostMutate = (postUrl: string, postId: number) => {
+  mutate(
+    postUrl,
+    async (posts: IPost[]) => {
+      if (posts) {
+        const index = posts.findIndex(post => post.id === postId);
+        let newPosts = [...posts];
+        newPosts[index] = {
+          ...posts[index],
+          is_watched: true,
+          num_reviews: posts[index].num_reviews + 1,
+        };
+        return newPosts;
+      }
+    },
+    false
+  );
 }
 

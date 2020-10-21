@@ -31,6 +31,7 @@ export const StyledBackDrop = styled.div`
     left: 0;
     bottom: 0;
     right: 0;
+    cursor: default;
 `;
 
 export const StyledHeaderMenu = styled.div<{ menuOpen: boolean }>`

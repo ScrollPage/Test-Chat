@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { createChat } from '@/store/actions/friend';
 import { StyledFriendItem } from './styles';
-import ImageLink from '@/components/UI/Image/LinkImage';
+import LinkImage from '@/components/UI/Image/LinkImage';
 
 interface IFriendItem {
   friendId: number;
@@ -29,7 +29,7 @@ const FriendItem: React.FC<IFriendItem> = ({ friendId, name, chatId, src }) => {
   return (
     <StyledFriendItem>
       <div>
-        <ImageLink
+        <LinkImage
           href="/userpage/[userID]"
           as={`/userpage/${friendId}`}
           size={'80'}

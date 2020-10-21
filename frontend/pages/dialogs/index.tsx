@@ -56,7 +56,7 @@ export default function Dialogs({ chats, user }: IDialogs) {
         } else {
             partic = participant1;
         }
-        return partic;
+        return partic
     };
 
     const isConversation = (people: Array<IChatParticipiant>) => {

@@ -17,7 +17,7 @@ interface ILike {
 const Like: React.FC<ILike> = ({ isTap, postId, pageUserId, partyId }) => {
     const dispatch = useDispatch();
 
-    const likeMutate = (postId: number): void => {
+    const likeMutate = (): void => {
         const postUrl = whereAreThePostLink(pageUserId, partyId);
         mutate(
             postUrl,
@@ -49,7 +49,7 @@ const Like: React.FC<ILike> = ({ isTap, postId, pageUserId, partyId }) => {
     };
 
     return (
-        <StyledLike onClick={() => likeMutate(postId)}>
+        <StyledLike onClick={likeMutate}>
             {isTap ? (
                 <HeartTwoTone
                     twoToneColor="#eb2f96"
