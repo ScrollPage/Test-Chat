@@ -18,7 +18,7 @@ class PartyDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Party
-        exclude = ['blacklist']
+        fields = '__all__'
 
 class PartyCreateSerializer(serializers.ModelSerializer):
     '''Сериализация создания групп'''
