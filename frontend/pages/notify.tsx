@@ -1,4 +1,4 @@
-import { instanceWithSSR } from '@/api/api';
+import { instance, instanceWithSSR } from '@/api/api';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import NotifyItem from '@/components/Notify/NotifyItem';
 import { zeroingNotify } from '@/store/actions/notify';
@@ -9,6 +9,7 @@ import { GetServerSideProps } from 'next';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import Cookie from 'js-cookie';
 
 interface INotify {
     user: IUser;
@@ -21,6 +22,14 @@ export default function Notify({ user, notify }: INotify) {
     useEffect(() => {
         dispatch(zeroingNotify());
     }, []);
+
+    useEffect(() => {
+        const watchedNotify = async () => {
+            const token = Cookie.get('token');
+            await instance(token).put('/api/v1/notifications/');
+        };
+        watchedNotify();
+    });
 
     const renderNotifyItems = (notify: INotifyItem[]) => {
         return notify.map((item, index) => (
