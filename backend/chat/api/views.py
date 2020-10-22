@@ -17,7 +17,8 @@ from .service import (
     PermissionCreateRetrieveUpdate, 
     ListDestroyCreateViewset, 
     is_friend,
-    not_in_blacklist
+    not_in_blacklist, 
+    make_refs
 )
 from .permissions import IsMember, YourChatRef, NoRef, IsCreator
 from parties.api.serializers import IntegerFieldSerializer
@@ -46,22 +47,22 @@ class ChatModelPermissionViewSet(PermissionCreateRetrieveUpdate):
     def add(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
+        pk = kwargs['pk']
+        chat = get_object_or_404(Chat, id=pk)
         participants = serializer.data['participants']
         participants = [get_object_or_404(Contact, id=id) for id in participants]
         self.validate(participants)
-        pk = kwargs['pk']
-        chat = get_object_or_404(Chat, id=pk)
-        chat.add_members(participants)
+        make_refs(chat, participants)
         return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
     def remove(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
-        id = serializer.data['some_id']
-        user = get_object_or_404(Contact, id=id)
         pk = kwargs['pk']
         chat = get_object_or_404(Chat, id=pk)
+        id = serializer.data['some_id']
+        user = get_object_or_404(Contact, id=id)
         chat.participants.remove(user)
         return Response(status=status.HTTP_200_OK)
 

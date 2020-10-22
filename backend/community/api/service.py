@@ -7,6 +7,7 @@ from django.db.models import Prefetch
 from backend.service import PermissionMixin, PermissionSerializerMixin
 from feed.api.exceptions import BadRequestError
 from contact.models import Contact
+from chat.models import Chat
 
 class RetrieveUpdateDestroyPermissionViewset(PermissionMixin, 
                                      GenericViewSet,
@@ -78,3 +79,9 @@ def friend_manipulation(sender_id, receiver_id, add=True):
         receiver_contact.receiver_page.friends.remove(sender_contact)
     sender_contact.sender_page.save()
     receiver_contact.receiver_page.save()
+
+def get_chat(current_user_id, other_user_id):
+    return Chat.objects.filter(
+        participants__id__in=[current_user_id, other_user_id], 
+        is_chat=True
+    ).first()

@@ -61,6 +61,7 @@ class ContactDetailSerializer(serializers.ModelSerializer):
     info = UserInfoUpdateSerializer(read_only=True)
     avatar_id = serializers.IntegerField(read_only=True)
     chat_id = serializers.IntegerField(read_only=True)
+    exists_ref = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Contact

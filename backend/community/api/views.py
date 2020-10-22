@@ -32,10 +32,11 @@ from .service import (
     ViewSetPermission,
     filter_by_query_name,
     friend_manipulation,
-    UpdateCreatePermissionViewset
+    UpdateCreatePermissionViewset,
+    get_chat
 )
 from contact.models import Contact
-from chat.models import Chat
+from chat.models import Chat, ChatRef
 from community.models import AddRequest, UserInfo
 from notifications.service import new_friend_notification
 
@@ -73,8 +74,14 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
         ).annotate(
             chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user) &
                                             Q(chats__is_chat=True))
+        ).annotate(
+            exists_ref=Exists(
+                ChatRef.objects.filter(
+                    user=self.request.user,
+                    chat=get_chat(self.request.user.id, pk)
+                )
+            )
         )
-
         if self.request.user.id == pk:
             queryset = queryset.annotate(
                 num_notes=Count('notifications', filter=Q(notifications__seen=False))

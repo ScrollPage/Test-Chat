@@ -8,6 +8,7 @@ from .service import get_last_10_messages, get_current_chat
 from contact.models import Contact
 from notifications.service import send_message_notifications
 from photos.models import Photo
+from chat.models import Chat, ChatRef
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -25,7 +26,11 @@ class ChatConsumer(WebsocketConsumer):
             contact=user_contact,
             content=data['message']
         )
-        current_chat = get_current_chat(data['chatId'])
+        current_chat = get_object_or_404(Chat, id=data['chatId'])
+        ChatRef.objects.get_or_create(
+            user=user_contact, 
+            chat=current_chat
+        )
         current_chat.messages.add(message)
         current_chat.save()
         content = {
