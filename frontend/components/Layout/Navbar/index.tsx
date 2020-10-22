@@ -7,6 +7,7 @@ import {
     UserOutlined,
     TeamOutlined,
     SearchOutlined,
+    FolderOpenOutlined,
 } from '@ant-design/icons';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -30,6 +31,7 @@ const renderIcons = (key: string) => {
     if (key === 'dialogs') return <CommentOutlined />;
     if (key === 'friends') return <UserOutlined />;
     if (key === 'teams') return <TeamOutlined />;
+    if (key === 'photos/[userID]') return <FolderOpenOutlined />;
     if (key === 'settings') return <SettingOutlined />;
 };
 
@@ -57,6 +59,11 @@ const Navbar: React.FC<INavbar> = ({ user }) => {
         { key: 'dialogs', name: 'Сообщения' },
         { key: 'friends', name: 'Друзья' },
         { key: 'teams', name: 'Сообщества' },
+        {
+            key: 'photos/[userID]',
+            name: 'Фотографии',
+            as: `/photos/${user.userId}`
+        },
         { key: 'settings', name: 'Настройки' },
     ];
 
