@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { instanceWithSSR } from '@/api/api';
-import cookies from 'next-cookies';
 import useSWR from 'swr';
 import Friend from '@/components/Friend/FriendItem';
 import Search from '@/components/UI/Search';
