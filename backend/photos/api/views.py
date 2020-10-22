@@ -23,7 +23,7 @@ class PhotoViewset(ListRetrieveCreateDestroyViewset):
     def get_queryset(self):
         if self.action != 'list':
             return super().get_queryset()
-        id = self.request.query_params.get('user_id', None)
+        id = self.request.query_params.get('id', None)
         if id:
             try:
                 id = int(id)

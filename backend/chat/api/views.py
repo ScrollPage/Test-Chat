@@ -8,7 +8,8 @@ from .serializers import (
     ChatCreateSerializer, 
     ChatOverviewSerializer, 
     ChatRefSerializer,
-    ChatRefCreateSerializer
+    ChatRefCreateSerializer,
+    ChatUpdateSerializer
 )
 from .service import PermissionCreateRetrieveUpdate, ListDestroyCreateViewset
 from .permissions import IsMember, YourChatRef, NoRef
@@ -16,13 +17,14 @@ from .permissions import IsMember, YourChatRef, NoRef
 class ChatModelPermissionViewSet(PermissionCreateRetrieveUpdate):
     '''Все, что связано с чатами'''
     queryset = Chat.objects.all()
-    serializer_class = ChatCreateSerializer
+    serializer_class = ChatUpdateSerializer
     permission_classes = [IsMember]
     permission_classes_by_action = {
         'create': [],
     }
     serializer_class_by_action = {
         'retrieve': ChatOverviewSerializer,
+        'create': ChatCreateSerializer
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 

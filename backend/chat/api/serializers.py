@@ -63,6 +63,12 @@ class ChatOverviewSerializer(ChatSerializer):
             response.update({'name': name[:-1]})
         return response
 
+class ChatUpdateSerializer(serializers.ModelSerializer):
+    '''Обновление чата'''
+    class Meta:
+        model = Chat
+        fields = ['name']
+
 class ChatRefSerializer(serializers.ModelSerializer):
     chat = ChatOverviewSerializer(read_only=True)
     class Meta:
