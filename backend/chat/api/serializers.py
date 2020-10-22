@@ -112,6 +112,7 @@ class ChatCreateSerializer(ChatSerializer):
         return super().validate(data)
 
     def create(self, validated_data):
+        print(validated_data)
         participants = validated_data.pop('participants')
         participants = self.check_participant_blacklist(participants)
         chat = Chat()
@@ -124,3 +125,6 @@ class ChatCreateSerializer(ChatSerializer):
             )
         chat = make_refs(chat, participants)
         return chat
+
+class ListSerializer(serializers.Serializer):
+    participants = serializers.ListField()

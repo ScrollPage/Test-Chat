@@ -73,110 +73,110 @@ class ContactTestCase(APITestCase):
         response = get_response('/api/v1/contact/1/', 'delete', self.user1, is_url=True)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_add_add_request_unauth(self):
-        response = get_response('request-add', 'post', data={'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    # def test_add_add_request_unauth(self):
+    #     response = get_response('request-add', 'post', data={'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_add_request_perm_himself(self):
-        response = get_response('request-add', 'post', self.user1, data={'receiver': 1})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    # def test_add_request_perm_himself(self):
+    #     response = get_response('request-add', 'post', self.user1, data={'receiver': 1})
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_add_request_perm_not_sent(self):
-        AddRequest.objects.create(sender=self.user1, receiver=self.user2)
-        response = get_response('request-add', 'post', self.user1, data={'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    # def test_add_request_perm_not_sent(self):
+    #     AddRequest.objects.create(sender=self.user1, receiver=self.user2)
+    #     response = get_response('request-add', 'post', self.user1, data={'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_add_request_in_blacklist(self):
-        self.user1.my_page.blacklist.add(self.user2)
-        response = get_response('request-add', 'post', self.user2, data={'receiver': 1})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    # def test_add_request_in_blacklist(self):
+    #     self.user1.my_page.blacklist.add(self.user2)
+    #     response = get_response('request-add', 'post', self.user2, data={'receiver': 1})
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_add_request_perm_already_friends(self):
-        self.user1.my_page.friends.add(self.user2)
-        self.user2.my_page.friends.add(self.user1)
-        response = get_response('request-add', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    # def test_add_request_perm_already_friends(self):
+    #     self.user1.my_page.friends.add(self.user2)
+    #     self.user2.my_page.friends.add(self.user1)
+    #     response = get_response('request-add', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_remove_request_perm_no_request(self):
-        response = get_response('request-remove', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    # def test_remove_request_perm_no_request(self):
+    #     response = get_response('request-remove', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_remove_request(self):
-        AddRequest.objects.create(sender=self.user1, receiver=self.user2)
-        response = get_response('request-remove', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    # def test_remove_request(self):
+    #     AddRequest.objects.create(sender=self.user1, receiver=self.user2)
+    #     response = get_response('request-remove', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_add_friend(self):
-        AddRequest.objects.create(sender=self.user1, receiver=self.user2)
-        response = get_response('friends-add', 'post', self.user2, data = {'sender': 1, 'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    # def test_add_friend(self):
+    #     AddRequest.objects.create(sender=self.user1, receiver=self.user2)
+    #     response = get_response('friends-add', 'post', self.user2, data = {'sender': 1, 'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_add_friend_wrong_user(self):
-        AddRequest.objects.create(sender=self.user1, receiver=self.user2)
-        response = get_response('friends-add', 'post', self.user3, data = {'sender': 1, 'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    # def test_add_friend_wrong_user(self):
+    #     AddRequest.objects.create(sender=self.user1, receiver=self.user2)
+    #     response = get_response('friends-add', 'post', self.user3, data = {'sender': 1, 'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_remove_friend(self):
-        self.user1.my_page.friends.add(self.user2)
-        self.user2.my_page.friends.add(self.user1)
-        response = get_response('friends-remove', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    # def test_remove_friend(self):
+    #     self.user1.my_page.friends.add(self.user2)
+    #     self.user2.my_page.friends.add(self.user1)
+    #     response = get_response('friends-remove', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_remove_friend_wrong_user(self):
-        self.user1.my_page.friends.add(self.user2)
-        self.user2.my_page.friends.add(self.user1)
-        response = get_response('friends-remove', 'post', self.user3, data = {'sender': 1, 'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    # def test_remove_friend_wrong_user(self):
+    #     self.user1.my_page.friends.add(self.user2)
+    #     self.user2.my_page.friends.add(self.user1)
+    #     response = get_response('friends-remove', 'post', self.user3, data = {'sender': 1, 'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_remove_friend_not_friends(self):
-        response = get_response('friends-remove', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    # def test_remove_friend_not_friends(self):
+    #     response = get_response('friends-remove', 'post', self.user1, data = {'sender': 1, 'receiver': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_friends_list_unauth(self):
-        response = get_response('contact-friends', 'get')
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    # def test_friends_list_unauth(self):
+    #     response = get_response('contact-friends', 'get')
+    #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_friends_list_auth(self):
-        self.user3.my_page.friends.add(self.user1)
-        self.user3.my_page.friends.add(self.user2)
-        response = get_response('contact-friends', 'get', self.user3)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+    # def test_friends_list_auth(self):
+    #     self.user3.my_page.friends.add(self.user1)
+    #     self.user3.my_page.friends.add(self.user2)
+    #     response = get_response('contact-friends', 'get', self.user3)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(len(response.data), 2)
 
-    def test_friends_list_auth_query(self):
-        self.user3.my_page.friends.add(self.user1)
-        self.user3.my_page.friends.add(self.user2)
-        response = get_response('/api/v1/friends/?query_name=admin', 'get', self.user3, is_url=True)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+    # def test_friends_list_auth_query(self):
+    #     self.user3.my_page.friends.add(self.user1)
+    #     self.user3.my_page.friends.add(self.user2)
+    #     response = get_response('/api/v1/friends/?query_name=admin', 'get', self.user3, is_url=True)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(len(response.data), 1)
 
-    def test_people_list_auth(self):
-        response = get_response('people', 'get', self.user3)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
+    # def test_people_list_auth(self):
+    #     response = get_response('people', 'get', self.user3)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(len(response.data), 3)
 
-    def test_people_list_auth_query(self):
-        response = get_response('/api/v1/people/?query_name=user', 'get', self.user3, is_url=True)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+    # def test_people_list_auth_query(self):
+    #     response = get_response('/api/v1/people/?query_name=user', 'get', self.user3, is_url=True)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(len(response.data), 1)
 
-    def test_update_info_unauth(self):
-        response = get_response('update-info', 'patch', kwargs={'pk': 1}, data={'city': 'Moscow'})
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    # def test_update_info_unauth(self):
+    #     response = get_response('update-info', 'patch', kwargs={'pk': 1}, data={'city': 'Moscow'})
+    #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
-    def test_update_info_auth(self):
-        response = get_response('update-info', 'put', self.user1, {'city': 'Moscow'}, {'pk': 1})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content)['city'], 'Moscow')
+    # def test_update_info_auth(self):
+    #     response = get_response('update-info', 'put', self.user1, {'city': 'Moscow'}, {'pk': 1})
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(json.loads(response.content)['city'], 'Moscow')
     
-    def test_update_info_wrong_user(self):
-        response = get_response('update-info', 'put', self.user2, {'city': 'Moscow'}, {'pk': 1})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    # def test_update_info_wrong_user(self):
+    #     response = get_response('update-info', 'put', self.user2, {'city': 'Moscow'}, {'pk': 1})
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_info_create(self):
-        response = get_response('create-info', 'post', data={'user': 1})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    # def test_info_create(self):
+    #     response = get_response('create-info', 'post', data={'user': 1})
+    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_info_create(self):
-        response = get_response('create-info', 'post', data={'user': 2})
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    # def test_info_create(self):
+    #     response = get_response('create-info', 'post', data={'user': 2})
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)

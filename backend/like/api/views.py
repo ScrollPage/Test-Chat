@@ -12,43 +12,20 @@ from like.models import Like
 from photos.models import Photo
 from backend.exceptions import ForbiddenError, NotFoundError
 from notifications.service import send_like_notification 
+from .service import liked, not_liked, not_in_blacklist, is_published
 
 class LikesCustomViewset(GenericViewSet):
     '''Создание и удаление лайков'''
     serializer_class = IntegerFieldSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def not_liked(self, inst):
-        if not inst.likes.aggregate(like=Count('user', filter=Q(user=self.request.user)))['like']:
-            return
-        raise ForbiddenError("You've already liked this.")
-
-    def liked(self, inst):
-        if inst.likes.aggregate(like=Count('user', filter=Q(user=self.request.user)))['like']:
-            return
-        raise ForbiddenError("You did not like this yet.")
-
-    def not_in_blacklist(self, inst):
-        if type(inst) != Comment:
-            if inst.owner:
-                if not self.request.user in inst.owner.blacklist.all():
-                    return
-            else:
-                if not self.request.user in inst.group_owner.blacklist.all():
-                    return
+    def validate(self, inst, add_like=True):
+        not_in_blacklist(self.request.user, inst)
+        is_published(inst)
+        if add_like:
+            not_liked(self.request.user, inst)
         else:
-            return
-        raise ForbiddenError('You are in blacklist')
-
-    def is_published(self, inst):
-        if type(inst) == Post:
-            if not inst.published:
-                raise NotFoundError('Maybe this post is not published yet.')
-        return
-
-    def validate(self, inst):
-        self.not_in_blacklist(inst)
-        self.is_published(inst)
+            liked(self.request.user, inst)
 
     def like_add(self, instance):
         serializer = self.get_serializer(data=self.request.data)
@@ -56,7 +33,6 @@ class LikesCustomViewset(GenericViewSet):
         id = serializer.data['some_id']
         inst = get_object_or_404(instance, id=id)
         self.validate(inst)
-        self.not_liked(inst)
         like = Like.objects.create(user=self.request.user)
         inst.likes.add(like)
         try:
@@ -71,8 +47,7 @@ class LikesCustomViewset(GenericViewSet):
         serializer.is_valid(raise_exception=True)
         id = serializer.data['some_id']
         inst = get_object_or_404(instance, id=id)
-        self.validate(inst)
-        self.liked(inst)
+        self.validate(self.request.user, inst, False)
         like = inst.likes.get(user=self.request.user)
         like.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

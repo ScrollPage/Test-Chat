@@ -16,5 +16,5 @@ class TestModels(TestCase):
         )
 
     def test_photo_str(self):
-        photo = mixer.blend('photos.Photo', user=self.user.my_page)
-        self.assertEqual(str(photo), "1 owner's picture")
+        photo = mixer.blend('photos.Photo', owner=self.user.my_page)
+        self.assertEqual(str(photo), "1's page owner's picture")

@@ -25,6 +25,14 @@ class Chat(models.Model):
     def __str__(self):
         return f'{self.pk}'
 
+    def add_members(self, arr):
+        for user in arr:
+            self.participants.add(user)
+
+    def remove_members(self, arr):
+        for user in arr:
+            self.participants.remove(user)
+
     class Meta:
         verbose_name = 'Чат'
         verbose_name_plural = 'Чаты'
@@ -41,7 +49,7 @@ class ChatRef(models.Model):
 
     def delete(self):
         chat = self.chat
-        super().delete
+        super().delete()
         ChatRef.is_one_left(chat)
 
     def __str__(self):
