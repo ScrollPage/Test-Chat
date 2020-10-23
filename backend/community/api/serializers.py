@@ -36,9 +36,11 @@ class UserInfoCreateSerializer(serializers.ModelSerializer):
 class ContactFriendsSerializer(LowReadContactSerializer):
     '''Менее развернутый контакт'''
     chat_id = serializers.IntegerField(read_only=True)
+    exists_ref = serializers.BooleanField(read_only=True)
+    
     class Meta:
         model = Contact 
-        fields = ['id', 'first_name', 'last_name', 'slug', 'chat_id']
+        fields = ['id', 'first_name', 'last_name', 'slug', 'chat_id', 'exists_ref']
 
 class PageSerializer(serializers.ModelSerializer):
     '''Сериализация страницы пользователя'''

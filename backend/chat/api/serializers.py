@@ -103,6 +103,7 @@ class ChatCreateSerializer(ChatSerializer):
 
     def validate(self, data):
         participants = data.get('participants', None)
+        print(participants)
         if data.get('is_chat'):
             if len(participants) != 2:
                 raise BadRequestError('Number of participants must be equal 2.')
@@ -122,7 +123,8 @@ class ChatCreateSerializer(ChatSerializer):
                 is_chat=False, 
                 creator=self.context['request'].user
             )
-        chat = make_refs(chat, participants)
+        make_refs(chat, participants)
+
         return chat
 
 class ListSerializer(serializers.Serializer):

@@ -195,14 +195,7 @@ class ContactFriendsView(generics.ListAPIView):
                 user = Contact.objects.get(id=id)
         else:
             user = self.request.user
-        queryset = user.my_page.friends.all().annotate(
-            exists_ref=Exists(
-                ChatRef.objects.filter(
-                    user=self.request.user,
-                    chat=get_chat(self.request.user.id, OuterRef('id'))
-                )
-            )
-        )
+            queryset = user.my_page.friends.all()
 
         if id == self.request.user.id or not id:
             queryset = queryset.annotate(
@@ -219,14 +212,8 @@ class SearchPeopleView(generics.ListAPIView):
     def get_queryset(self):
         queryset = Contact.objects.exclude(id=self.request.user.id).annotate(
             chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user))
-        ).annotate(
-            exists_ref=Exists(
-                ChatRef.objects.filter(
-                    user=self.request.user,
-                    chat=get_chat(self.request.user.id, OuterRef('id'))
-                )
-            )
         )
+
         return queryset.filter(is_active=True)
 
 class UserInfoViewset(UpdateCreatePermissionViewset):

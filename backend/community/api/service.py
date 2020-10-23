@@ -1,8 +1,7 @@
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework import mixins
 from rest_framework.response import Response
-from django.db.models import Q
-from django.db.models import Prefetch
+from django.db.models import Q, Prefetch, Subquery, OuterRef
 
 from backend.service import PermissionMixin, PermissionSerializerMixin
 from feed.api.exceptions import BadRequestError
@@ -73,7 +72,8 @@ def friend_manipulation(sender_id, receiver_id, add=True):
     receiver_contact.receiver_page.save()
 
 def get_chat(current_user_id, other_user_id):
+
     return Chat.objects.filter(
-        participants__id__in=[current_user_id, other_user_id], 
+        participants__id__in=[current_user_id, other_user_id],
         is_chat=True
     ).first()
