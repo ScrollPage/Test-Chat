@@ -47,7 +47,7 @@ class LikesCustomViewset(GenericViewSet):
         serializer.is_valid(raise_exception=True)
         id = serializer.data['some_id']
         inst = get_object_or_404(instance, id=id)
-        self.validate(self.request.user, inst, False)
+        self.validate(inst, False)
         like = inst.likes.get(user=self.request.user)
         like.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

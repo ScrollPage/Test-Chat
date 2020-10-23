@@ -4,7 +4,7 @@ import json
 from django.shortcuts import get_object_or_404
 
 from .models import Message
-from .service import get_last_10_messages, get_current_chat
+from .service import get_last_10_messages
 from contact.models import Contact
 from notifications.service import send_message_notifications
 from photos.models import Photo
@@ -27,10 +27,6 @@ class ChatConsumer(WebsocketConsumer):
             content=data['message']
         )
         current_chat = get_object_or_404(Chat, id=data['chatId'])
-        ChatRef.objects.get_or_create(
-            user=user_contact, 
-            chat=current_chat
-        )
         current_chat.messages.add(message)
         current_chat.save()
         content = {

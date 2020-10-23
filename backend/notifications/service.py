@@ -27,7 +27,6 @@ def send_message_notifications(chat, sender):
                 'new_message', 
                 {'sender': sender.id, 'chat_id': chat.id, 'name': sender.get_full_name()}
             )
-            create_notification(sender, user, 1)
 
 def send_addrequest_notification(sender, receiver):
     pusher.trigger(
@@ -35,7 +34,7 @@ def send_addrequest_notification(sender, receiver):
         'new_request', 
         {'sender': sender.id, 'name': sender.get_full_name()}
     )
-    create_notification(sender, receiver, 2)
+    create_notification(sender, receiver, 1)
 
 def new_friend_notification(sender_id, receiver_id):
     pusher.trigger(
@@ -46,7 +45,7 @@ def new_friend_notification(sender_id, receiver_id):
     create_notification(
         get_object_or_404(Contact, id=sender_id), 
         get_object_or_404(Contact, id=receiver_id), 
-        event=3,
+        event=2,
     )
 
 def send_like_notification(owner, liker, kind, inst_id):
@@ -56,7 +55,7 @@ def send_like_notification(owner, liker, kind, inst_id):
             'new_like', 
             {'liker': liker.id, 'type': kind, 'id': inst_id, 'name': liker.get_full_name()}
         )
-        create_notification(liker, owner, 4)
+        create_notification(liker, owner, 3)
 
 def send_repost_notification(owner, reposter, post):
     if owner != reposter:
@@ -65,4 +64,4 @@ def send_repost_notification(owner, reposter, post):
             'new_repost', 
             {'reposter': reposter.id, 'post': post.id, 'name': reposter.get_full_name()}
         )
-        create_notification(owner, reposter, 5)
+        create_notification(owner, reposter, 4)

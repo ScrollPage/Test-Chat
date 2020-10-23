@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
+from django.db.models import Q, Count
 
 from .serializers import (
     CreateContactSerializer, 
@@ -39,7 +40,19 @@ class MeViewset(viewsets.GenericViewSet):
     @action(detail=True, methods=['get'])
     def me(self, request, *args, **kwargs):
         serializer = self.get_serializer()
-        return Response(data=serializer.to_representation(request.user), status=status.HTTP_200_OK)
+        queryset = Contact.objects.filter(id=request.user.id).annotate(
+            num_notifications=Count(
+                'notifications', 
+                filter=Q(
+                    notifications__receiver=request.user, 
+                    notifications__seen=False
+                ), 
+                distinct=True
+            )
+        ).annotate(
+            unread=Count('chats', filter=Q(chats__messages__is_read=False), distinct=True)
+        )
+        return Response(data=serializer.to_representation(queryset.first()), status=status.HTTP_200_OK)
 
 class ContactActivationView(SerializerViewset):
     '''Подтверждение аккаунта пользователя'''

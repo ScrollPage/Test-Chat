@@ -88,6 +88,26 @@ class ChatCreationTestCase(APITestCase):
         response = get_response('add-user', 'post', self.user1, {'participants': [3]}, {'pk': 2})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_chat_remove(self):
+        self.chat2.participants.add(self.user4)
+        response = get_response('remove-user', 'post', self.user1, {'some_id': 4}, {'pk': 2})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_chat_remove_self(self):
+        self.chat2.participants.add(self.user4)
+        response = get_response('remove-user', 'post', self.user4, {'some_id': 4}, {'pk': 2})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_chat_remove_not_self(self):
+        self.chat2.participants.add(self.user4)
+        response = get_response('remove-user', 'post', self.user4, {'some_id': 1}, {'pk': 2})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_chat_remove_other_user(self):
+        self.chat2.participants.add(self.user4)
+        response = get_response('remove-user', 'post', self.user2, {'some_id': 2}, {'pk': 2})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_chat_add(self):
         response = get_response('add-user', 'post', self.user1, {'participants': [4]}, {'pk': 2})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -121,3 +141,11 @@ class ChatCreationTestCase(APITestCase):
         response = get_response('chat-ref-list', 'get', self.user2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+
+    def test_read_messages_participant(self):
+        response = get_response('read-messages', 'put', self.user2, kwargs={'pk': 1})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_read_messages_random_user(self):
+        response = get_response('read-messages', 'put', self.user3, kwargs={'pk': 1})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

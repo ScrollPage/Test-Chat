@@ -20,8 +20,8 @@ from .service import (
     not_in_blacklist, 
     make_refs
 )
-from .permissions import IsMember, YourChatRef, NoRef, IsCreator
-from parties.api.serializers import IntegerFieldSerializer
+from .permissions import IsMember, YourChatRef, NoRef, IsCreator, IsSelfOrCreator
+from parties.api.serializers import IntegerFieldSerializer, EmptySerializer
 
 class ChatModelPermissionViewSet(PermissionCreateRetrieveUpdate):
     '''Все, что связано с чатами'''
@@ -30,12 +30,16 @@ class ChatModelPermissionViewSet(PermissionCreateRetrieveUpdate):
     permission_classes_by_action = {
         'create': [],
         'retrieve': [],
+        'remove': [IsSelfOrCreator],
+        'read': [IsMember],
+
     }
     serializer_class_by_action = {
         'retrieve': ChatOverviewSerializer,
         'create': ChatCreateSerializer,
         'add': ListSerializer,
-        'remove': IntegerFieldSerializer
+        'remove': IntegerFieldSerializer,
+        'read': EmptySerializer
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 
@@ -64,6 +68,14 @@ class ChatModelPermissionViewSet(PermissionCreateRetrieveUpdate):
         id = serializer.data['some_id']
         user = get_object_or_404(Contact, id=id)
         chat.participants.remove(user)
+        ChatRef.objects.filter(chat=chat, user=user).delete()
+        return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['put'])
+    def read(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        chat = get_object_or_404(Chat, id=pk)
+        chat.messages.all().update(is_read=True)
         return Response(status=status.HTTP_200_OK)
 
     def get_queryset(self):

@@ -12,12 +12,8 @@ from notifications.models import Notice
 class MeSerializer(LowReadContactSerializer):
     '''Обзор самого себя'''
     id = serializers.IntegerField()
-
-    def to_representation(self, value):
-        res = super().to_representation(value)
-        num_notifications = Notice.objects.filter(receiver=value, seen=False).count()
-        res.update({'num_notifications': num_notifications})
-        return res
+    num_notifications = serializers.IntegerField(read_only=True)
+    unread = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Contact
@@ -28,6 +24,8 @@ class MeSerializer(LowReadContactSerializer):
             'last_name',
             'phone_number',
             'slug',
+            'num_notifications',
+            'unread'
         ]
 
 class CreateContactSerializer(ContactDetailSerializer):

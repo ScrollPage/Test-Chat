@@ -6,6 +6,7 @@ class Message(models.Model):
     contact = models.ForeignKey(Contact, related_name='messages', on_delete=models.CASCADE, null=True)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
 
     def __str__(self):
         return self.contact.slug
@@ -24,14 +25,6 @@ class Chat(models.Model):
 
     def __str__(self):
         return f'{self.pk}'
-
-    def add_members(self, arr):
-        for user in arr:
-            self.participants.add(user)
-
-    def remove_members(self, arr):
-        for user in arr:
-            self.participants.remove(user)
 
     class Meta:
         verbose_name = 'Чат'

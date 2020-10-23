@@ -23,12 +23,17 @@ class TestUrls(TestCase):
         path = reverse('chat-ref-list')
         self.assertEqual(resolve(path).view_name, 'chat-ref-list')
 
-    def test_chat_add_user(self):
+    def test_chat_add_user_url(self):
         '''Убедиться, что ссылка и вью связаны правильно'''
         path = reverse('add-user', kwargs={'pk': 1})
         self.assertEqual(resolve(path).view_name, 'add-user')
 
-    def test_chat_remove_user(self):
+    def test_read_messages_url(self):
+        '''Убедиться, что ссылка и вью связаны правильно'''
+        path = reverse('read-messages', kwargs={'pk': 1})
+        self.assertEqual(resolve(path).view_name, 'read-messages')
+
+    def test_chat_remove_user_url(self):
         '''Убедиться, что ссылка и вью связаны правильно'''
         path = reverse('remove-user', kwargs={'pk': 1})
         self.assertEqual(resolve(path).view_name, 'remove-user')

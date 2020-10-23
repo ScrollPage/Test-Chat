@@ -8,6 +8,10 @@ urlpatterns = [
     
 ]
 
+read_message = ChatModelPermissionViewSet.as_view({
+    'put': 'read'
+})
+
 add_user = ChatModelPermissionViewSet.as_view({
     'post': 'add'
 })
@@ -19,6 +23,7 @@ remove_user = ChatModelPermissionViewSet.as_view({
 urlpatterns += format_suffix_patterns([
     path('chat/add/<int:pk>/', add_user, name='add-user'),
     path('chat/remove/<int:pk>/', remove_user, name='remove-user'),
+    path('chat/read/<int:pk>/', read_message, name='read-messages'),
 ])
 
 r = DefaultRouter()

@@ -5,14 +5,12 @@ from contact.models import Contact
 
 class Notice(models.Model):
     '''Модель уведомления'''
-    NEW_MESSAGE = 1
-    NEW_FRIEND_REQUEST = 2
-    NEW_FRIEND_ADDED = 3
-    NEW_LIKE = 4
-    NEW_REPOST = 5
+    NEW_FRIEND_REQUEST = 1
+    NEW_FRIEND_ADDED = 2
+    NEW_LIKE = 3
+    NEW_REPOST = 4
 
     CHOICES = (
-        (NEW_MESSAGE, 'message'),
         (NEW_FRIEND_REQUEST, 'new_friend'),
         (NEW_FRIEND_ADDED, 'added_friend'),
         (NEW_LIKE, 'like'),
