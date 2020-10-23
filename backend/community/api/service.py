@@ -53,14 +53,6 @@ class ViewSetPermission(PermissionMixin, GenericViewSet):
     '''ModelViewSet and PermissionMixin'''
     pass
 
-def filter_by_query_name(query_name, queryset):
-    if query_name:
-        for term in query_name.split('_')[:2]:
-            queryset = queryset.filter(
-                Q(first_name__icontains=term) | Q(last_name__icontains=term)
-            )
-    return queryset
-
 def friend_manipulation(sender_id, receiver_id, add=True):
     try:
         sender_contact = Contact.objects.prefetch_related(

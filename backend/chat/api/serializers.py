@@ -102,7 +102,7 @@ class ChatCreateSerializer(ChatSerializer):
         return arr
 
     def validate(self, data):
-        participants = data.pop('participants', None)
+        participants = data.get('participants', None)
         if data.get('is_chat'):
             if len(participants) != 2:
                 raise BadRequestError('Number of participants must be equal 2.')
@@ -112,8 +112,7 @@ class ChatCreateSerializer(ChatSerializer):
         return super().validate(data)
 
     def create(self, validated_data):
-        print(validated_data)
-        participants = validated_data.pop('participants')
+        participants = validated_data.get('participants')
         participants = self.check_participant_blacklist(participants)
         chat = Chat()
         if validated_data.get('is_chat'):
