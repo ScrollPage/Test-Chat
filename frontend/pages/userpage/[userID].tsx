@@ -12,15 +12,18 @@ import { IUser } from '@/types/user';
 import { IContact } from '@/types/contact';
 import { GetServerSideProps } from 'next';
 import UserParties from '@/components/User/UserParties';
+import { IPhoto } from '@/types/photo';
+import UserPhotos from '@/components/User/UserPhotos';
 
 interface ITeams {
-    contact: IContact | null;
     pageUserId: number | undefined;
-    posts: IPost[];
     user: IUser;
+    contact: IContact | null;
+    posts: IPost[] | null;
+    photos: IPhoto[] | null;
 }
 
-export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
+export default function Teams({ contact, pageUserId, posts, user, photos }: ITeams) {
     const { data } = useSWR(`/api/v1/contact/${pageUserId}/`, {
         initialData: contact,
     });
@@ -53,6 +56,7 @@ export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
                 </div>
                 <div className="user-info">
                     {data ? <UserInfo contact={data} /> : <h4>Загрузка...</h4>}
+                    {photos && pageUserId && data ? <UserPhotos user={user} photos={photos} pageUserId={pageUserId} /> : <h4>Загрузка...</h4>}
                     {posts && pageUserId ? (
                         <UserPosts
                             serverPosts={posts}
@@ -70,9 +74,10 @@ export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
 
 export const getServerSideProps: GetServerSideProps<ITeams> = async ctx => {
     const pageUserId = getAsString(ctx?.params?.userID);
-
+    
     let contact: IContact | null = null;
-    let posts: Array<IPost> = [];
+    let posts: IPost[] | null = null;
+    let photos: IPhoto[] | null = null;
 
     await instanceWithSSR(ctx)
         .get(`/api/v1/contact/${pageUserId}/`)
@@ -91,13 +96,23 @@ export const getServerSideProps: GetServerSideProps<ITeams> = async ctx => {
         .catch(error => {
             console.log(error);
         });
+    
+    await instanceWithSSR(ctx)
+        .get(`/api/v1/photo/?id=${pageUserId}`)
+        .then(response => {
+            photos = response?.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
 
     return {
         props: {
-            contact,
             pageUserId: Number(pageUserId),
-            posts,
             user: getUserFromServer(ctx),
+            contact,
+            posts: posts || null,
+            photos: photos || null
         },
     };
 };

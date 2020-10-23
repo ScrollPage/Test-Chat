@@ -78,8 +78,6 @@ const UserAvatar: React.FC<IUserAvatar> = ({
         dispatch(recieveFriend(pageUserId, user.userId, url));
     };
 
-    console.log(chatId, existsRef)
-
     const chatIsNull = () => {
         if (chatId && existsRef) {
             push('/dialogs/[chatID]', `/dialogs/${chatId}`, { shallow: true });

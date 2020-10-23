@@ -3,6 +3,16 @@ import cookies from 'next-cookies';
 import { GetServerSidePropsContext } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 
+export const whereAreTheCommentLink = (postId?: number, photoId?: number) => {
+    if (postId) {
+        return `/api/v1/comment/?post_id=${postId}`
+    }
+    if (photoId) {
+        return `/api/v1/comment/?photo_id=${photoId}`
+    }
+    return `/api/v1/comment/?post_id=${postId}`
+}
+
 export const whereAreThePostLink = (pageUserId?: number, partyId?: number, isOffer?: boolean) => {
     if (pageUserId) {
         return `/api/v1/post/?id=${pageUserId}`;

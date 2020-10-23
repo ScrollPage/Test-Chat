@@ -2,21 +2,24 @@ import { StyledCommentInput } from './styles';
 import { SendOutlined } from '@ant-design/icons';
 import { IUser } from '@/types/user';
 import { useDispatch } from 'react-redux';
-import { addComment } from '@/store/actions/comment';
+import { addComment, addPhotoComment } from '@/store/actions/comment';
 import { Button, Input } from 'antd';
 import React, { useState } from 'react';
-import { addCommentMutate, commentAmountMutate } from '@/mutates/comment';
+import { addCommentMutate, addPhotoCommentMutate, commentAmountMutate } from '@/mutates/comment';
+import { whereAreTheCommentLink } from '@/utils';
 
 interface ICommentInput {
-    postId: number;
+    postId?: number;
     user: IUser;
     pageUserId?: number;
+    photoId?: number;
 }
 
 const CommentInput: React.FC<ICommentInput> = ({
     postId,
     user,
     pageUserId,
+    photoId,
 }) => {
     const dispatch = useDispatch();
 
@@ -25,14 +28,22 @@ const CommentInput: React.FC<ICommentInput> = ({
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (commentText.trim() !== '') {
-            const commentUrl = `/api/v1/comment/?post_id=${postId}`;
-            let postUrl = '/api/v1/feed/';
-            if (pageUserId) {
-                postUrl = `/api/v1/post/?id=${pageUserId}`;
+            const commentUrl = whereAreTheCommentLink(postId, photoId);
+            if (postId) {
+                let postUrl = '/api/v1/feed/';
+                if (pageUserId) {
+                    postUrl = `/api/v1/post/?id=${pageUserId}`;
+                }
+                commentAmountMutate(postId, true, postUrl);
             }
-            addCommentMutate(commentText, postId, user, commentUrl);
-            commentAmountMutate(postId, true, postUrl);
-            dispatch(addComment(commentText, postId, commentUrl));
+            if (postId) {
+                addCommentMutate(commentText, postId, user, commentUrl);
+                dispatch(addComment(commentText, postId, commentUrl));
+            }
+            if (photoId) {
+                addPhotoCommentMutate(commentText, user, commentUrl);
+                dispatch(addPhotoComment(commentText, photoId, commentUrl));
+            }
             setCommentText('');
         }
     };

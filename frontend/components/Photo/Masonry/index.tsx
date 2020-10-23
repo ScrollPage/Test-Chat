@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-// @ts-ignore: Unreachable code error
-import { useEventListener } from 'hooks';
 import { Col, MasonryDiv } from './styles';
 
 const fillCols = (children: JSX.Element[], cols: JSX.Element[][]) => {
@@ -35,7 +33,6 @@ const Masonry: React.FC<IMasonry> = ({
         };
     });
     useEffect(resizeHandler, []);
-    // useEventListener(`resize`, resizeHandler);
     return (
         <MasonryDiv ref={ref} gap={gap} {...rest}>
             {[...Array(numCols)].map((_, index) => (

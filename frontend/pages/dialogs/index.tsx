@@ -24,47 +24,11 @@ export default function Dialogs({ chats, user }: IDialogs) {
 
     const search = useSelector(getSearch);
     const applySearch = (item: IChat) => {
+        const chat = item.chat;
         return R.contains(
-            search.toUpperCase(),
-            getParticipantName(
-                item.chat.participants[0],
-                item.chat.participants[1]
-            ).toUpperCase()
+            search.toUpperCase(), (chat.is_chat && chat.companion ? `${chat.companion.first_name}${chat.companion.last_name}` : chat.name ? chat.name : '').toUpperCase()
         );
     }
-
-    const getParticipantName = (
-        participant1: IChatParticipiant,
-        participant2: IChatParticipiant
-    ): string => {
-        let partic;
-        if (participant1.id === user.userId) {
-            partic = participant2;
-        } else {
-            partic = participant1;
-        }
-        return `${partic.first_name} ${partic.last_name}`;
-    };
-
-    const getParticipant = (
-        participant1: IChatParticipiant,
-        participant2: IChatParticipiant
-    ): IChatParticipiant => {
-        let partic;
-        if (participant1.id === user.userId) {
-            partic = participant2;
-        } else {
-            partic = participant1;
-        }
-        return partic
-    };
-
-    const isConversation = (people: Array<IChatParticipiant>) => {
-        if (people.length === 2) {
-            return false;
-        }
-        return true;
-    };
 
     const renderChats = (chats: Array<IChat>) =>
         chats
@@ -74,23 +38,9 @@ export default function Dialogs({ chats, user }: IDialogs) {
                 return (
                     <DialogItem
                         key={`chat__key__${chat.id}`}
-                        name={
-                            isConversation(chat.participants)
-                                ? `Беседа №${chat.id}`
-                                : getParticipantName(
-                                      chat.participants[0],
-                                      chat.participants[1]
-                                  )
-                        }
+                        name={chat.is_chat && chat.companion ? `${chat.companion.first_name} ${chat.companion.last_name}` : chat.name ? chat.name : 'Ошибка'} 
                         chatID={chat.id}
-                        dialogUser={
-                            isConversation(chat.participants)
-                                ? undefined
-                                : getParticipant(
-                                      chat.participants[0],
-                                      chat.participants[1]
-                                  )
-                        }
+                        dialogUser={chat.is_chat ? chat.companion : undefined}
                     />
                 )
             });

@@ -11,8 +11,9 @@ import { StyledCommentItem, StyledCommentItemChildren } from './styles';
 interface ICommentItem {
     comment: IComment;
     userId: number;
-    postId: number;
+    postId?: number;
     pageUserId?: number;
+    photoId?: number;
 }
 
 const CommentItem: React.FC<ICommentItem> = ({
@@ -20,15 +21,17 @@ const CommentItem: React.FC<ICommentItem> = ({
     userId,
     postId,
     pageUserId,
+    photoId
 }) => {
     const dispatch = useDispatch();
 
-    const deleteCommentHanlder = (commentId: number, postId: number) => {
+    const deleteCommentHanlder = (commentId: number) => {
         dispatch(
             modalShow<IDeleteCommentModalProps>('COMMENT_DELETE_MODAL', {
                 commentId,
                 postId,
                 pageUserId,
+                photoId
             })
         );
     };
@@ -62,7 +65,7 @@ const CommentItem: React.FC<ICommentItem> = ({
                 {userId === comment.user.id && (
                     <div
                         className="comment__close"
-                        onClick={() => deleteCommentHanlder(comment.id, postId)}
+                        onClick={() => deleteCommentHanlder(comment.id)}
                     >
                         <CloseOutlined />
                     </div>

@@ -137,7 +137,7 @@ const PostItem: React.FC<IPostItem> = ({
                         </div>
                     </div>
                     <hr />
-                    {isCommentsOpen && (
+                    {isCommentsOpen && pageUserId && (
                         <Comments
                             user={user}
                             postId={isCommentsOpen}

@@ -24,6 +24,26 @@ export const addCommentMutate = (commentText: string, postId: number, user: IUse
   }, false);
 };
 
+export const addPhotoCommentMutate = (commentText: string, user: IUser, url: string): void => {
+  const newComment: IComment = {
+    id: 0,
+    user: {
+      id: user.userId,
+      first_name: user.firstName,
+      last_name: user.lastName,
+    },
+    children: [],
+    text: commentText,
+    image: null,
+    parent: null,
+  };
+  mutate(url, async (comments: IComment[]) => {
+    if (comments) {
+      return [...comments, newComment];
+    }
+  }, false);
+};
+
 export const addReCommentMutate = (commentText: string, parent: number, user: IUser, url: string): void => {
   mutate(url, async (comments: IComment[]) => {
     if (comments) {

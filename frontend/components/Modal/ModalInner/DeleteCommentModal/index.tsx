@@ -7,13 +7,14 @@ import { IComment } from '@/types/comment';
 import { deleteComment } from '@/store/actions/comment';
 import { commentAmountMutate, deleteCommentMutate } from '@/mutates/comment';
 import { StyledDeleteCommentModal } from './styles';
-import { whereAreThePostLink } from '@/utils';
+import { whereAreTheCommentLink, whereAreThePostLink } from '@/utils';
 
 export interface IDeleteCommentModalProps {
     commentId: number;
-    postId: number;
+    postId?: number;
     pageUserId?: number;
     partyId?: number;
+    photoId?: number;
 }
 
 interface IDeleteCommentModal extends IDeleteCommentModalProps {
@@ -26,14 +27,17 @@ const DeleteCommentModal: React.FC<IDeleteCommentModal> = ({
     commentId,
     setClose,
     partyId,
+    photoId,
 }) => {
     const dispatch = useDispatch();
 
     const deleteHanlder = () => {
-        const commentUrl = `/api/v1/comment/?post_id=${postId}`;
-        const postUrl = whereAreThePostLink(pageUserId, partyId);
-        deleteCommentMutate(commentId, commentUrl)
-        commentAmountMutate(postId, false, postUrl);
+        const commentUrl = whereAreTheCommentLink(postId, photoId);
+        if (postId) {
+            const postUrl = whereAreThePostLink(pageUserId, partyId);
+            commentAmountMutate(postId, false, postUrl);
+        }
+        deleteCommentMutate(commentId, commentUrl);
         dispatch(deleteComment(commentId));
         setClose();
     };

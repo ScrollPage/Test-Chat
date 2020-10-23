@@ -18,6 +18,26 @@ export const addComment = (commentText: string, postId: number, triggerUrl: stri
             dispatch(show('Вы успешно добавили комментарий!', 'success'));
         })
         .catch(err => {
+            trigger(triggerUrl);
+            dispatch(show('Ошибка в добавлении комментария!', 'warning'));
+        });
+};
+
+export const addPhotoComment = (commentText: string, photoId: number, triggerUrl: string): ThunkType => async dispatch => {
+    const token = Cookie.get('token');
+    await instance(token)
+        .post('/api/v1/comment/photo/', {
+            id: photoId,
+            text: commentText,
+            image: null,
+            parent: null,
+        })
+        .then(res => {
+            trigger(triggerUrl);
+            dispatch(show('Вы успешно добавили комментарий!', 'success'));
+        })
+        .catch(err => {
+            trigger(triggerUrl);
             dispatch(show('Ошибка в добавлении комментария!', 'warning'));
         });
 };

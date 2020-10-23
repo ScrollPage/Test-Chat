@@ -21,6 +21,21 @@ export const StyledSliderModal = styled(motion.div).attrs(props => ({
         }
     }
     .slider-modal {
+        &__amount {
+            font-size: 24px;
+            position: absolute;
+            color: #fff;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            -ms-user-select: none;
+            -moz-user-select: none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+        &__inner {
+            z-index: 11;
+        }
         &__photo {
             height: 100%;
             display: flex;
@@ -29,6 +44,10 @@ export const StyledSliderModal = styled(motion.div).attrs(props => ({
             background-color: #181818;
             width: 670px;
             position: relative;
+            -ms-user-select: none;
+            -moz-user-select: none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
             img {
                 max-height: 100%;
                 max-width: 100%;
@@ -47,7 +66,23 @@ export const StyledSliderModal = styled(motion.div).attrs(props => ({
         &__main {
             width: 350px;
             height: 100%;
+            padding: 20px 20px 0px 20px;
             background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll;
+            > div {
+                &:first-of-type {
+                    display: flex;
+                    align-items: center;
+                    padding-bottom: 20px;
+                    border-bottom: 1px solid #f0f0f0;
+                    h3 {
+                        margin-left: 20px;
+                        margin-bottom: 0;
+                    }
+                }
+            }
         }
         &__close {
             position: fixed;
