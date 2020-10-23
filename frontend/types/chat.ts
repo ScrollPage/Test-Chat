@@ -17,13 +17,16 @@ export interface IChatParticipiant {
   first_name: string;
   last_name: string;
   slug: string;
-  small_avatar?: string; 
+  small_avatar?: string;
 }
 
 export interface IChat {
   id: number;
-  messages: Array<IChatMessage>;
-  participants: Array<IChatParticipiant>;
+  chat: {
+    id: number;
+    messages: Array<IChatMessage>;
+    participants: Array<IChatParticipiant>;
+  }
 }
 
 export interface IChatInfo {

@@ -35,6 +35,7 @@ export default function Teams({ contact, pageUserId, posts, user }: ITeams) {
                                 contact={data}
                                 pageUserId={pageUserId}
                                 chatId={data.chat_id}
+                                existsRef={data.exists_ref}
                                 user={user}
                             />
                             <div className="user-avatar__join">

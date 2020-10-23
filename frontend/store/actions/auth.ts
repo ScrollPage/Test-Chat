@@ -1,4 +1,4 @@
-import { setNotify } from './notify';
+import { setNotify, setMessageNotify } from './notify';
 import { trigger } from 'swr';
 import Cookie from 'js-cookie';
 import Router from 'next/router';
@@ -26,6 +26,9 @@ export const authInfo = (isRouterPush: boolean, regToken?: string): ThunkType =>
             Cookie.set('phoneNumber', res.data.phone_number);
             if (res.data.num_notifications) {
                 dispatch(setNotify(res.data.num_notifications))
+            }
+            if (res.data.unread) {
+                dispatch(setMessageNotify(res.data.unread))
             }
             console.log('Информация успешно занесена в куки');
             if (isRouterPush) {

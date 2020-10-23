@@ -122,7 +122,7 @@ class ChatCreateSerializer(ChatSerializer):
                 is_chat=False, 
                 creator=self.context['request'].user
             )
-        chat = make_refs(chat, participants)
+        make_refs(chat, participants)
         return chat
 
 class ListSerializer(serializers.Serializer):

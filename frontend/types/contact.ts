@@ -41,4 +41,5 @@ export interface IContact {
   last_login: string;
   avatar?: string;
   compressed_avatar?: string;
+  exists_ref: boolean;
 }

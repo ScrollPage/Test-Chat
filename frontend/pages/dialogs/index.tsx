@@ -18,20 +18,20 @@ interface IDialogs {
 }
 
 export default function Dialogs({ chats, user }: IDialogs) {
-    const { data } = useSWR<IChat[]>(`/api/v1/chat/?id=${user.userId}`, {
+    const { data } = useSWR<IChat[]>('/api/v1/ref/chat/', {
         initialData: chats,
     });
 
     const search = useSelector(getSearch);
-
-    const applySearch = (item: IChat) =>
-        R.contains(
+    const applySearch = (item: IChat) => {
+        return R.contains(
             search.toUpperCase(),
             getParticipantName(
-                item.participants[0],
-                item.participants[1]
+                item.chat.participants[0],
+                item.chat.participants[1]
             ).toUpperCase()
         );
+    }
 
     const getParticipantName = (
         participant1: IChatParticipiant,
@@ -69,28 +69,31 @@ export default function Dialogs({ chats, user }: IDialogs) {
     const renderChats = (chats: Array<IChat>) =>
         chats
             .filter(chat => applySearch(chat))
-            .map(chat => (
-            <DialogItem
-                key={`chat__key__${chat.id}`}
-                name={
-                    isConversation(chat.participants)
-                        ? `Беседа №${chat.id}`
-                        : getParticipantName(
-                              chat.participants[0],
-                              chat.participants[1]
-                          )
-                }
-                chatID={chat.id}
-                dialogUser={
-                    isConversation(chat.participants)
-                        ? undefined
-                        : getParticipant(
-                              chat.participants[0],
-                              chat.participants[1]
-                          )
-                }
-            />
-        ));
+            .map(item => {
+                const chat = item.chat;
+                return (
+                    <DialogItem
+                        key={`chat__key__${chat.id}`}
+                        name={
+                            isConversation(chat.participants)
+                                ? `Беседа №${chat.id}`
+                                : getParticipantName(
+                                      chat.participants[0],
+                                      chat.participants[1]
+                                  )
+                        }
+                        chatID={chat.id}
+                        dialogUser={
+                            isConversation(chat.participants)
+                                ? undefined
+                                : getParticipant(
+                                      chat.participants[0],
+                                      chat.participants[1]
+                                  )
+                        }
+                    />
+                )
+            });
 
     return (
         <PrivateLayout user={user}>
@@ -111,13 +114,10 @@ export default function Dialogs({ chats, user }: IDialogs) {
 }
 
 export const getServerSideProps: GetServerSideProps<IDialogs> = async ctx => {
-    const user: IUser = getUserFromServer(ctx);
-    const { userId } = user;
-
     let chats: Array<IChat> = [];
 
     await instanceWithSSR(ctx)
-        .get(`/api/v1/chat/?id=${userId}`)
+        .get('/api/v1/ref/chat/')
         .then(response => {
             chats = response?.data;
         })
@@ -127,7 +127,7 @@ export const getServerSideProps: GetServerSideProps<IDialogs> = async ctx => {
     return {
         props: {
             chats,
-            user,
+            user: getUserFromServer(ctx)
         },
     };
 };

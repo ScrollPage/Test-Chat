@@ -10,6 +10,8 @@ import PhotosUpload from '@/components/UI/PhotosUpload';
 import { motion } from 'framer-motion';
 import LazyLoadImage from '@/components/UI/Image/LazyLoadImage';
 import Masonry from '@/components/Photo/Masonry';
+import { useState } from 'react';
+import SliderModal from '@/components/Modal/SliderModal';
 
 interface IPhotos {
     user: IUser;
@@ -18,18 +20,21 @@ interface IPhotos {
 }
 
 export default function Photos({ user, photos, pageUserId }: IPhotos) {
+    const [selectedImage, setSelectedImage] = useState<number | null>(null);
+
     const { data } = useSWR(`/api/v1/photo/?id=${pageUserId}`, {
         initialData: photos,
     });
 
     const renderPhotos = (photos: IPhoto[]) => (
-        <Masonry minWidth={220} >
+        <Masonry minWidth={220}>
             {photos.map((photo, index) => (
                 <motion.div
                     layout
                     whileHover={{ scale: 1.05 }}
                     key={`photos__key__${photo.id}__${index}`}
                     className="photos__item"
+                    onClick={() => setSelectedImage(index)}
                 >
                     <LazyLoadImage
                         src={photo.picture}
@@ -72,6 +77,13 @@ export default function Photos({ user, photos, pageUserId }: IPhotos) {
                     )}
                 </motion.div>
             </StyledPhotos>
+            {photos && selectedImage && (
+                <SliderModal
+                    setSelectedImage={setSelectedImage}
+                    selectedImage={selectedImage}
+                    photos={photos}
+                />
+            )}
         </PrivateLayout>
     );
 }
@@ -98,7 +110,7 @@ export const getServerSideProps: GetServerSideProps<IPhotos> = async ctx => {
 };
 
 const StyledPhotos = styled.div`
-    margin-top: 20px;
+    margin: 20px 0 ;
     display: flex;
     flex-direction: column;
     .photos {

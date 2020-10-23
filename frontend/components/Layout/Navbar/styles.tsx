@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
-export const NavLink = styled.a<{active: boolean}>`
+export const NavLink = styled.a<{ active: boolean }>`
     color: ${({ active }) => (active ? '#1890ff' : 'black')};
     display: flex;
     padding: 20px 20px 20px 0;
     opacity: 0.6;
+    position: relative;
     @media (max-width: 575.98px) {
         padding-left: 5px;
     }
@@ -15,10 +16,26 @@ export const NavLink = styled.a<{active: boolean}>`
                 margin: 0;
             }
         }
-        &:last-of-type {
-            @media (max-width: 575.98px) {
-                display: none;
-            }
+    }
+    .nav-link__dialogs {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: red;
+        border-radius: 50%;
+        height: 16px;
+        width: 16px;
+        span {
+            transform: translateY(-1px);
+            color: #fff;
+        }
+    }
+    .nav-link__name {
+        @media (max-width: 575.98px) {
+            display: none;
         }
     }
 `;
