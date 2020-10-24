@@ -14,6 +14,7 @@ class PhotoViewset(ListRetrieveCreateDestroyViewset):
     permission_classes_by_action = {
         'list': [NotInBlacklist],
         'retrieve': [NotInBlacklist],
+        'create': []
     }
     mass_permission_classes = [permissions.IsAuthenticated]
 

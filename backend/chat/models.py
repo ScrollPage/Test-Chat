@@ -27,7 +27,7 @@ class Chat(models.Model):
         return f'{self.pk}'
 
     def make_refs(self):
-        for participant in self.participants:
+        for participant in self.participants.all():
             ChatRef.objects.get_or_create(
                 chat=self,
                 user=participant

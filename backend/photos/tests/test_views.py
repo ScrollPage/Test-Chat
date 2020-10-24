@@ -56,3 +56,11 @@ class TestViews(APITestCase):
     def test_retrieve_in_blacklist(self):
         response = get_response('photo-detail', 'get', self.user2, kwargs={'pk': 1})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_by_owner(self):
+        response = get_response('photo-detail', 'delete', self.user1, kwargs={'pk': 1})
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_not_by_owner(self):
+        response = get_response('photo-detail', 'delete', self.user1, kwargs={'pk': 1})
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
