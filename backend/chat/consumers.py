@@ -27,13 +27,13 @@ class ChatConsumer(WebsocketConsumer):
             content=data['message']
         )
         current_chat = get_object_or_404(Chat, id=data['chatId'])
+        send_message_notifications(current_chat, user_contact)
         current_chat.messages.add(message)
         current_chat.make_refs()
         content = {
             'command': 'new_message',
             'message': self.message_to_json(message)
         }
-        send_message_notifications(current_chat, user_contact)
         return self.send_chat_message(content)
 
     def messages_to_json(self, messages):
