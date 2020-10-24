@@ -71,7 +71,7 @@ class ChatUpdateSerializer(serializers.ModelSerializer):
 
 class ChatRefSerializer(serializers.ModelSerializer):
     chat = ChatOverviewSerializer(read_only=True)
-    num_unread = serializers.IntegerField(read_only=True)
+    num_unread = serializers.BooleanField(read_only=True)
     class Meta:
         model = ChatRef
         fields = ['id', 'num_unread', 'chat']
