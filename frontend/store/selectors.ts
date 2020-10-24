@@ -35,3 +35,7 @@ export const getModalProps = (state: AppStateType) => {
 export const getNotify = (state: AppStateType) => {
   return state.notify.notify
 }
+
+export const getMessageNotify = (state: AppStateType) => {
+  return state.notify.messageNotify
+}

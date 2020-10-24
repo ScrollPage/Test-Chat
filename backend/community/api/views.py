@@ -32,12 +32,12 @@ from .service import (
     ViewSetPermission,
     friend_manipulation,
     UpdateCreatePermissionViewset,
-    get_chat
 )
 from contact.models import Contact
 from chat.models import Chat, ChatRef
 from community.models import AddRequest, UserInfo
 from notifications.service import new_friend_notification
+from backend.exceptions import ForbiddenError
 
 class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
     '''Обзор, обновление и удаление контакта'''
@@ -73,14 +73,8 @@ class ContactCustomViewSet(RetrieveUpdateDestroyPermissionViewset):
         ).annotate(
             chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user) &
                                             Q(chats__is_chat=True))
-        ).annotate(
-            exists_ref=Exists(
-                ChatRef.objects.filter(
-                    user=self.request.user,
-                    chat=get_chat(self.request.user.id, pk)
-                )
-            )
         )
+        
         if self.request.user.id == pk:
             queryset = queryset.annotate(
                 num_notes=Count('notifications', filter=Q(notifications__seen=False))
@@ -166,9 +160,10 @@ class BlacklistViewset(ViewSetPermission):
     def add(self, request, *args, **kwargs):
         id = request.data.get('user_id', None)
         user = get_object_or_404(Contact, id=int(id))
+        if user == self.request.user:
+            raise ForbiddenError("You can't add yourself to the blacklist.")
         request.user.my_page.blacklist.add(user)
         user.my_page.friends.remove(request.user)
-        request.user.my_page.blacklist.remove(user)
         return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
@@ -195,8 +190,8 @@ class ContactFriendsView(generics.ListAPIView):
                 user = Contact.objects.get(id=id)
         else:
             user = self.request.user
-            queryset = user.my_page.friends.all()
 
+        queryset = user.my_page.friends.all()
         if id == self.request.user.id or not id:
             queryset = queryset.annotate(
                 chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user) & 
@@ -211,7 +206,9 @@ class SearchPeopleView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = Contact.objects.exclude(id=self.request.user.id).annotate(
-            chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user))
+            chat_id=Sum('chats__id', filter=Q(chats__participants=self.request.user)&
+                                            Q(chats__is_chat=True)
+            )
         )
 
         return queryset.filter(is_active=True)

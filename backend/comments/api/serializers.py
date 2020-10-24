@@ -51,4 +51,4 @@ class CommentSerializer(AbstractPostSerializer, serializers.ModelSerializer):
     class Meta:
         list_serializer_class = FilterCommentSerializer
         model = Comment
-        exclude = ['likes']
+        exclude = ['likes', 'parent']

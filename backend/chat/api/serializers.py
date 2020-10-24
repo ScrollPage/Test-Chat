@@ -71,9 +71,10 @@ class ChatUpdateSerializer(serializers.ModelSerializer):
 
 class ChatRefSerializer(serializers.ModelSerializer):
     chat = ChatOverviewSerializer(read_only=True)
+    num_unread = serializers.IntegerField(read_only=True)
     class Meta:
         model = ChatRef
-        fields = ['id', 'chat']
+        fields = ['id', 'num_unread', 'chat']
 
 class ChatRefCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -123,8 +124,6 @@ class ChatCreateSerializer(ChatSerializer):
                 is_chat=False, 
                 creator=self.context['request'].user
             )
-        make_refs(chat, participants)
-
         return chat
 
 class ListSerializer(serializers.Serializer):

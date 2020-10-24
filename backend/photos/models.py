@@ -15,7 +15,7 @@ class Photo(models.Model):
     compressed_picture = models.ImageField(upload_to='compressed_picture/%Y/%m/%d')
     small_picture = models.ImageField(upload_to='small_picture/%Y/%m/%d')
     likes = models.ManyToManyField(Like)
-    comments = models.ManyToManyField(Comment)
+    comments = models.ManyToManyField(Comment, related_name='photo_owner')
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -64,6 +64,6 @@ class Photo(models.Model):
         super().delete()
 
 
-        class Meta:
-            verbose_name = 'Фотография'
-            verbose_name_plural = 'Фотографии'
+    class Meta:
+        verbose_name = 'Фотография'
+        verbose_name_plural = 'Фотографии'

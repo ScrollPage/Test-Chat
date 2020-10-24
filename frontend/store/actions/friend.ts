@@ -78,6 +78,7 @@ export const createChat = (friendId: number): ThunkType => async dispatch => {
     await instance(token)
         .post('/api/v1/chat/', {
             participants: [Cookie.get('userId'), String(friendId)],
+            is_chat: true
         })
         .then(res => {
             Router.push('/dialogs/[chatID]', `/dialogs/${res.data.id}`, {

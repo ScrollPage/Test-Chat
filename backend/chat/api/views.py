@@ -2,6 +2,7 @@ from rest_framework import permissions, generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
+from django.db.models import Q, Count
 
 from chat.models import Chat, ChatRef
 from contact.models import Contact
@@ -94,7 +95,9 @@ class ChatRefViewset(ListDestroyCreateViewset):
     }
 
     def get_queryset(self):
-        return ChatRef.objects.filter(user=self.request.user)
+        return ChatRef.objects.filter(user=self.request.user).annotate(
+            num_unread=Count('chat__messages', filter=Q(chat__messages__is_read=False))
+        )
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

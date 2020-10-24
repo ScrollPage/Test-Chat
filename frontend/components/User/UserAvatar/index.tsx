@@ -23,6 +23,7 @@ interface IUserAvatar {
     pageUserId: number;
     chatId: number | null;
     user: IUser;
+    existsRef: boolean;
 }
 
 const UserAvatar: React.FC<IUserAvatar> = ({
@@ -30,6 +31,7 @@ const UserAvatar: React.FC<IUserAvatar> = ({
     pageUserId,
     chatId,
     user,
+    existsRef
 }) => {
     const dispatch = useDispatch();
 
@@ -76,11 +78,13 @@ const UserAvatar: React.FC<IUserAvatar> = ({
         dispatch(recieveFriend(pageUserId, user.userId, url));
     };
 
+    console.log(chatId, existsRef)
+
     const chatIsNull = () => {
-        if (!chatId) {
-            dispatch(createChat(pageUserId));
-        } else {
+        if (chatId && existsRef) {
             push('/dialogs/[chatID]', `/dialogs/${chatId}`, { shallow: true });
+        } else {
+            dispatch(createChat(pageUserId));
         }
     };
 

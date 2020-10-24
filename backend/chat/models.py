@@ -26,6 +26,13 @@ class Chat(models.Model):
     def __str__(self):
         return f'{self.pk}'
 
+    def make_refs(self):
+        for participant in self.participants:
+            ChatRef.objects.get_or_create(
+                chat=self,
+                user=participant
+            )
+
     class Meta:
         verbose_name = 'Чат'
         verbose_name_plural = 'Чаты'

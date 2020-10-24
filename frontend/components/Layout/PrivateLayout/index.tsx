@@ -20,8 +20,8 @@ import {
     INewRequest,
 } from '@/types/notify';
 import Cookie from 'js-cookie';
-import { getNotify } from '@/store/selectors';
-import { addNotify } from '@/store/actions/notify';
+import { getMessageNotify, getNotify } from '@/store/selectors';
+import { addMessageNotify, addNotify } from '@/store/actions/notify';
 
 interface IPrivateLayout {
     children: React.ReactNode;
@@ -32,6 +32,8 @@ const PrivateLayout: React.FC<IPrivateLayout> = ({ children, user }) => {
     const dispatch = useDispatch();
 
     const notify = useSelector(getNotify);
+
+    const messageNotify = useSelector(getMessageNotify);
 
     const setMessagesHandler = (messages: IMessages) => {
         dispatch(setMessages(messages));
@@ -73,7 +75,7 @@ const PrivateLayout: React.FC<IPrivateLayout> = ({ children, user }) => {
             dispatch(show(text, 'success', true));
         });
         channel.bind('new_message', function(data: INewMessage) {
-            dispatch(addNotify());
+            dispatch(addMessageNotify());
             dispatch(show(`${data.name} отправил вам сообщение`, 'success', true));
         });
         channel.bind('new_friend', function(data: INewFriend) {
@@ -91,7 +93,8 @@ const PrivateLayout: React.FC<IPrivateLayout> = ({ children, user }) => {
 
     useEffect(() => {
         Cookie.set('notify', String(notify));
-    }, [notify])
+        Cookie.set('messageNotify', String(messageNotify));
+    }, [notify, messageNotify])
 
     return (
         <>

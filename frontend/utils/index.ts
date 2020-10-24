@@ -83,7 +83,6 @@ export const isImageLoaded = (src: string) => {
             await loadImageWithPromiseTimeout(src);
             setLoadImage(true);
         } catch {
-            console.error(`Unable to load ${src} in 1s`);
             setLoadImage(true);
         }
     };

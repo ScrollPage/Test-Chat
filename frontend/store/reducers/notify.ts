@@ -3,7 +3,8 @@ import * as actions from './../actions/notify';
 import Cookie from 'js-cookie';
 
 const initialState = {
-  notify: Cookie.get('notify') === undefined ? 0 : Number(Cookie.get('notify'))
+  notify: Cookie.get('notify') === undefined ? 0 : Number(Cookie.get('notify')),
+  messageNotify: Cookie.get('messageNotify') === undefined ? 0 : Number(Cookie.get('messageNotify'))
 };
 
 type InititalStateType = typeof initialState;
@@ -17,7 +18,13 @@ export const notifyReducer = (state = initialState, action: AlertActionsTypes): 
     case 'ZEROING_NOTIFY':
       return { ...state, notify: 0 }
     case 'SET_NOTIFY':
-      return {...state, notify: action.setNumber}
+      return { ...state, notify: action.setNumber }
+    case 'ADD_MESSAGE_NOTIFY':
+      return { ...state, messageNotify: state.messageNotify + 1 }
+    case 'REMOVE_MESSAGE_NOTIFY':
+      return { ...state, messageNotify: state.messageNotify - 1 }
+    case 'SET_MESSAGE_NOTIFY':
+      return { ...state, messageNotify: action.setNumber }
     default:
       return state;
   }
