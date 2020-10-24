@@ -8,14 +8,16 @@ import CommentInput from '../CommentInput';
 import { StyledComments } from './styles';
 
 interface IComments {
-  postId: number;
   user: IUser;
-  pageUserId?: number;
+  postId?: number;
+  pageUserId: number;
+  photoId?: number;
 }
 
-const Comments: React.FC<IComments> = ({ postId, user, pageUserId }) => {
+const Comments: React.FC<IComments> = ({ postId, user, pageUserId, photoId }) => {
+
   const { data: comments } = useSWR<IComment[]>(
-    `/api/v1/comment/?post_id=${postId}`
+    postId ? `/api/v1/comment/?post_id=${postId}` : `/api/v1/comment/?photo_id=${photoId}`
   );
 
   const renderComments = (comments: Array<IComment>) => {
@@ -25,6 +27,7 @@ const Comments: React.FC<IComments> = ({ postId, user, pageUserId }) => {
         userId={user.userId}
         comment={comment}
         postId={postId}
+        photoId={photoId}
         pageUserId={pageUserId}
       />
     ));
@@ -43,7 +46,7 @@ const Comments: React.FC<IComments> = ({ postId, user, pageUserId }) => {
           <Loading />
         </div>
       )}
-      <CommentInput pageUserId={pageUserId} postId={postId} user={user} />
+      <CommentInput pageUserId={pageUserId} photoId={photoId} postId={postId} user={user} />
     </StyledComments>
   );
 };

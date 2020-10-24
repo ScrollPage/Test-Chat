@@ -14,5 +14,5 @@ export interface IComment {
   text: string;
   image: string | null;
   parent: number | null;
-  post_id: number;
+  post_id?: number;
 }

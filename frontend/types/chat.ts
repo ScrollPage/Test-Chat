@@ -24,8 +24,11 @@ export interface IChat {
   id: number;
   chat: {
     id: number;
-    messages: Array<IChatMessage>;
     participants: Array<IChatParticipiant>;
+    is_chat: boolean;
+    name?: string;
+    creator?: IChatParticipiant;
+    companion?: IChatParticipiant;
   }
 }
 

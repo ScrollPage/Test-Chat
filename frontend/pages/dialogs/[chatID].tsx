@@ -17,6 +17,7 @@ import { GetServerSideProps } from 'next';
 import { IMessages } from '@/types/message';
 import { instanceWithSSR } from '@/api/api';
 import { IChatInfo } from '@/types/chat';
+import { removeMessageNotify } from '@/store/actions/notify';
 
 interface ChatPage {
     user: IUser;
@@ -40,6 +41,7 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
     }, [messages]);
 
     useEffect(() => {
+        // dispatch(removeMessageNotify())
         dispatch(actionMessage.setLoading());
         initialiseChat();
         return () => {

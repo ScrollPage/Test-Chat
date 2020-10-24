@@ -82,6 +82,8 @@ export default function Photos({ user, photos, pageUserId }: IPhotos) {
                     setSelectedImage={setSelectedImage}
                     selectedImage={selectedImage}
                     photos={photos}
+                    user={user}
+                    pageUserId={pageUserId}
                 />
             )}
         </PrivateLayout>

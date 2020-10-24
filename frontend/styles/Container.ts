@@ -1,6 +1,10 @@
 import styled, { css } from 'styled-components';
 
-const Container = styled.div<{fluid?: boolean}>`
+// styled(motion.div)`
+
+const Container = styled.div.attrs(props => ({
+    className: props.className,
+})) <{ fluid?: boolean }>`
     flex-grow: 1;
     margin: 0 auto;
     padding: 0 15px;
