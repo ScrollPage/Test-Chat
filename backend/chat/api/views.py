@@ -96,7 +96,8 @@ class ChatRefViewset(ListDestroyCreateViewset):
 
     def get_queryset(self):
         return ChatRef.objects.filter(user=self.request.user).annotate(
-            unread=Count('chat__messages', filter=Q(chat__messages__is_read=False))
+            unread=Count('chat__messages', filter=Q(chat__messages__is_read=False)&
+                                                    Q(chat__messages__contact!=self.request.user))
         )
 
     def perform_create(self, serializer):

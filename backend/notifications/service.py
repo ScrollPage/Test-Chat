@@ -1,5 +1,6 @@
 from backend.settings import pusher_client as pusher
 from django.shortcuts import get_object_or_404
+from django.db.models import Count, Q
 
 from .models import Notice
 from contact.models import Contact
@@ -25,7 +26,14 @@ def send_message_notifications(chat, sender):
             pusher.trigger(
                 f'notifications{user.id}', 
                 'new_message', 
-                {'sender': sender.id, 'chat_id': chat.id, 'name': sender.get_full_name()}
+                {
+                    'sender': sender.id, 
+                    'chat_id': chat.id, 
+                    'name': sender.get_full_name(), 
+                    'is_increase': not bool(chat.messages.aggregate(
+                        is_increase=Count('id', filter=Q(is_read=False)))['is_increase']
+                    )
+                }
             )
 
 def send_addrequest_notification(sender, receiver):
