@@ -13,7 +13,7 @@ const UserFriends: React.FC<UserFriends> = ({ people }) => {
       {people.map((man, index) => (
         <StyledUserFriend
           key={`user-friends__key__${man.id}`}
-          end={index ? (index + 1) % 6 === 0 : undefined}
+          end={index ? (index + 1) % 6 === 0 ? 1 : undefined : undefined}
         >
           <div className="user-friends__avatar">
             <LoadImage

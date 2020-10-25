@@ -1,8 +1,9 @@
+import Head from 'next/head';
 import styled from 'styled-components';
 import { instanceWithSSR } from '@/api/api';
 import useSWR from 'swr';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
-import { getAsString, getUserFromServer } from '@/utils/index';
+import { ensureAuth, getAsString, getUserFromServer } from '@/utils/index';
 import { GetServerSideProps } from 'next';
 import { IUser } from '@/types/user';
 import { IPhoto } from '@/types/photo';
@@ -47,6 +48,9 @@ export default function Photos({ user, photos, pageUserId }: IPhotos) {
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Фотографии</title>
+            </Head>
             <StyledPhotos>
                 <div className="photos__header">
                     <h2>
@@ -91,6 +95,7 @@ export default function Photos({ user, photos, pageUserId }: IPhotos) {
 }
 
 export const getServerSideProps: GetServerSideProps<IPhotos> = async ctx => {
+    ensureAuth(ctx);
     const pageUserId = getAsString(ctx?.params?.userID);
     let photos: IPhoto[] | null = null;
 
@@ -112,7 +117,7 @@ export const getServerSideProps: GetServerSideProps<IPhotos> = async ctx => {
 };
 
 const StyledPhotos = styled.div`
-    margin: 20px 0 ;
+    margin: 20px 0;
     display: flex;
     flex-direction: column;
     .photos {

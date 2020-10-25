@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 export const StyledChatInput = styled.div`
-    z-index: 1;
     background: white;
     border-top: 1px solid #f0f0f0;
     position: sticky;

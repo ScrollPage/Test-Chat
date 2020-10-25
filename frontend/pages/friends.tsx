@@ -1,10 +1,11 @@
+import Head from 'next/head';
 import styled from 'styled-components';
 import { instanceWithSSR } from '@/api/api';
 import useSWR from 'swr';
 import Friend from '@/components/Friend/FriendItem';
 import Search from '@/components/UI/Search';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
-import { getUserFromServer } from '@/utils/index';
+import { ensureAuth, getUserFromServer } from '@/utils/index';
 import { GetServerSideProps } from 'next';
 import { IGlobalUser } from '@/types/people';
 import { IUser } from '@/types/user';
@@ -41,6 +42,9 @@ export default function Friends({ friends, user }: IFriends) {
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Друзья</title>
+            </Head>
             <Search />
             <StyledFriends>
                 {data ? (
@@ -58,7 +62,8 @@ export default function Friends({ friends, user }: IFriends) {
 }
 
 export const getServerSideProps: GetServerSideProps<IFriends> = async (ctx) => {
-    let friends: Array<IGlobalUser> = [];
+    ensureAuth(ctx);
+    let friends: IGlobalUser[] = [];
 
     await instanceWithSSR(ctx)
         .get(`/api/v1/friends/`)

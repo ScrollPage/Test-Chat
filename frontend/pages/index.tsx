@@ -1,14 +1,15 @@
 import { useFormik } from 'formik';
 import Link from 'next/link';
 import * as Yup from 'yup';
-
+import Head from 'next/head';
 import { useDispatch } from 'react-redux';
-
 import styled from 'styled-components';
 import { Form, Input, Button } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import { authLogin } from '@/store/actions/auth.ts';
 import VisitorLayout from '@/components/Layout/VisitorLayout';
+import { GetServerSideProps } from 'next';
+import { ensureRedirectToDialogs } from '@/utils';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required('Введите логин'),
@@ -78,6 +79,9 @@ export default function Login() {
 
   return (
     <VisitorLayout>
+      <Head>
+        <title>ScrollChat</title>
+      </Head>
       <StyledLogin>
         <div className="log__top">
           <h3>Войти в аккаунт</h3>
@@ -137,6 +141,13 @@ export default function Login() {
       </StyledLogin>
     </VisitorLayout>
   );
+}
+
+export const getServerSideProps: GetServerSideProps = async ctx => {
+  ensureRedirectToDialogs(ctx);
+  return {
+    props: {}
+  }
 }
 
 const StyledLogin = styled.div`

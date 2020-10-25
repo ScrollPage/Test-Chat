@@ -1,7 +1,8 @@
+import Head from 'next/head';
 import cookies from 'next-cookies';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { getUserFromServer } from '@/utils/index';
+import { ensureAuth, getUserFromServer } from '@/utils/index';
 import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
@@ -94,6 +95,9 @@ export default function Change({ email, user, phoneNumber }: IChange) {
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Смена данных</title>
+            </Head>
             <StyledChange>
                 <div className="change__top">
                     <h3>Сменить данные</h3>
@@ -188,6 +192,7 @@ export default function Change({ email, user, phoneNumber }: IChange) {
 }
 
 export const getServerSideProps: GetServerSideProps<IChange> = async (ctx) => {
+    ensureAuth(ctx);
     const email = cookies(ctx)?.email || "";
     const phoneNumber = cookies(ctx)?.phoneNumber || "";
 

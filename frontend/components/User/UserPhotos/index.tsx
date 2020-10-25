@@ -31,7 +31,7 @@ const UserPhotos: React.FC<IUserPhotos> = ({ photos, pageUserId, user }) => {
             <div className="user-photos__header">
                 <Link href="/photos/[userID]" as={`/photos/${pageUserId}`}>
                     <a>
-                        <h3>Фотографии</h3>
+                        <h3>Фотографии ({photos.length})</h3>
                     </a>
                 </Link>
             </div>

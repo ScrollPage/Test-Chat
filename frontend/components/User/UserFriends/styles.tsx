@@ -9,14 +9,14 @@ export const StyledUserFriends = styled.div`
     margin-left: -10px;
 `;
 
-export const StyledUserFriend = styled.div<{ end?: boolean }>`
+export const StyledUserFriend = styled.div<{ end?: number }>`
     display: contents;
     .user-friends__avatar {
         width: 25px;
         height: 25px;
     }
     ${({ end }) =>
-        end &&
+        end === 1 &&
         css`
             &::after {
                 content: '';

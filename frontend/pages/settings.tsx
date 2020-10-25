@@ -1,6 +1,7 @@
+import Head from 'next/head';
 import { IUser } from '@/types/user';
 import { useDispatch } from 'react-redux';
-import { getUserFromServer } from '@/utils/index';
+import { ensureAuth, getUserFromServer } from '@/utils/index';
 import styled from 'styled-components';
 import { Button } from 'antd';
 import { logout } from '@/store/actions/auth';
@@ -15,6 +16,9 @@ export default function Settings({user}: ISettings) {
     const dispatch = useDispatch();
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Настройки</title>
+            </Head>
             <StyledSettings>
                 <div>Settings</div>
                 <div>
@@ -28,6 +32,7 @@ export default function Settings({user}: ISettings) {
 }
 
 export const getServerSideProps: GetServerSideProps<ISettings> = async (ctx) => {
+    ensureAuth(ctx);
     return {
         props: {
             user: getUserFromServer(ctx)

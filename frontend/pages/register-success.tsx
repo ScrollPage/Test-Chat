@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Error from 'next/error';
 import { useDispatch } from 'react-redux';
@@ -6,7 +7,7 @@ import styled from 'styled-components';
 import VisitorLayout from '@/components/Layout/VisitorLayout';
 import { GetServerSideProps } from 'next';
 import { Button, Input } from 'antd';
-import { getAsString } from '@/utils';
+import { ensureRedirectToDialogs, getAsString } from '@/utils';
 import { FormEvent, useState } from 'react';
 
 interface IRegisterSuccess {
@@ -80,6 +81,7 @@ export default function RegisterSuccess({ confirmMethod }: IRegisterSuccess) {
 }
 
 export const getServerSideProps: GetServerSideProps<IRegisterSuccess> = async ctx => {
+    ensureRedirectToDialogs(ctx);
     let confirmMethod = getAsString(ctx.query.confirmMethod);
     return {
         props: {

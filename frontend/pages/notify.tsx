@@ -1,10 +1,11 @@
+import Head from 'next/head';
 import { instance, instanceWithSSR } from '@/api/api';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import NotifyItem from '@/components/Notify/NotifyItem';
 import { zeroingNotify } from '@/store/actions/notify';
 import { INotifyItem } from '@/types/notify';
 import { IUser } from '@/types/user';
-import { getUserFromServer } from '@/utils/index';
+import { ensureAuth, getUserFromServer } from '@/utils/index';
 import { GetServerSideProps } from 'next';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -43,6 +44,9 @@ export default function Notify({ user, notify }: INotify) {
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Уведомления</title>
+            </Head>
             <StyledNotify>
                 <div className="notify__header">
                     <h2>Уведомления</h2>
@@ -64,6 +68,7 @@ export default function Notify({ user, notify }: INotify) {
 }
 
 export const getServerSideProps: GetServerSideProps<INotify> = async ctx => {
+    ensureAuth(ctx);
     let notify: INotifyItem[] | null = null;
 
     await instanceWithSSR(ctx)

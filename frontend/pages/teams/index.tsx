@@ -1,7 +1,8 @@
+import Head from 'next/head';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { ITeam } from '@/types/contact';
 import { IUser } from '@/types/user';
-import { getUserFromServer } from '@/utils/index';
+import { ensureAuth, getUserFromServer } from '@/utils/index';
 import { GetServerSideProps } from 'next';
 import useSWR from 'swr';
 import Search from '@/components/UI/Search';
@@ -41,6 +42,9 @@ export default function Teams({ user, parties }: ITeamsFC) {
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Сообщества</title>
+            </Head>
             <Search />
             <StyledTeams>
                 {data ? (
@@ -58,6 +62,7 @@ export default function Teams({ user, parties }: ITeamsFC) {
 }
 
 export const getServerSideProps: GetServerSideProps<ITeamsFC> = async ctx => {
+    ensureAuth(ctx);
     if (!ctx?.req) {
         return {
             props: {

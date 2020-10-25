@@ -1,6 +1,7 @@
+import Head from 'next/head';
 import { instanceWithSSR } from '@/api/api';
 import useSWR from 'swr';
-import { getAsString, getUserFromServer } from '@/utils/index';
+import { ensureAuth, getAsString, getUserFromServer } from '@/utils/index';
 import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import UserInfo from '@/components/User/UserInfo';
@@ -30,6 +31,9 @@ export default function Teams({ contact, pageUserId, posts, user, photos }: ITea
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>{`${data?.first_name} ${data?.last_name}`}</title>
+            </Head>
             <StyledUser>
                 <div className="user-avatar">
                     {data && pageUserId ? (
@@ -73,6 +77,7 @@ export default function Teams({ contact, pageUserId, posts, user, photos }: ITea
 }
 
 export const getServerSideProps: GetServerSideProps<ITeams> = async ctx => {
+    ensureAuth(ctx);
     const pageUserId = getAsString(ctx?.params?.userID);
     
     let contact: IContact | null = null;

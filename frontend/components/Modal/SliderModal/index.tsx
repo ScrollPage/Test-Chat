@@ -11,7 +11,6 @@ import { motion } from 'framer-motion';
 import Comments from '@/components/Comment/Comments';
 import { IUser } from '@/types/user';
 import LinkImage from '@/components/UI/Image/LinkImage';
-import noScroll from 'no-scroll';
 
 interface ISliderModal {
     setSelectedImage: Dispatch<SetStateAction<number | null>>;
@@ -28,14 +27,6 @@ const SliderModal: React.FC<ISliderModal> = ({
     pageUserId,
     user,
 }) => {
-
-    useEffect(() => {
-        if (selectedImage) {
-          noScroll.on()
-        }
-    
-        return () => noScroll.off()
-      })
 
     const handleClick = (event: MouseEvent) => {
         const target = event.target as HTMLElement;

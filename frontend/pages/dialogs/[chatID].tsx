@@ -1,7 +1,8 @@
+import Head from 'next/head';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed';
-import { getAsString, getUserFromServer } from '@/utils/index';
+import { ensureAuth, getAsString, getUserFromServer } from '@/utils/index';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { message as actionMessage } from '@/store/actions/message';
@@ -41,7 +42,6 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
     }, [messages]);
 
     useEffect(() => {
-        // dispatch(removeMessageNotify())
         dispatch(actionMessage.setLoading());
         initialiseChat();
         return () => {
@@ -109,11 +109,16 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Чат</title>
+            </Head>
             <StyledChat>
                 {chatInfo && <ChatHeader chatInfo={chatInfo} />}
                 <StyledChatInner>
-                    {!messages && loading ? (
-                        <Loading />
+                    {!messages || loading ? (
+                        <div className="chat__loading">
+                            <Loading />
+                        </div>
                     ) : messages.length === 0 ? (
                         <p className="not-messages">У вас нет сообщений</p>
                     ) : (
@@ -136,6 +141,7 @@ export default function ChatPage({ user, chatInfo }: ChatPage) {
 }
 
 export const getServerSideProps: GetServerSideProps<ChatPage> = async ctx => {
+    ensureAuth(ctx);
     const chatId = getAsString(ctx?.params?.chatID);
     let chatInfo: IChatInfo | null = null;
 
@@ -151,7 +157,7 @@ export const getServerSideProps: GetServerSideProps<ChatPage> = async ctx => {
     return {
         props: {
             user: getUserFromServer(ctx),
-            chatInfo: chatInfo || null
+            chatInfo: chatInfo || null,
         },
     };
 };
@@ -162,7 +168,8 @@ const StyledChat = styled.div`
     min-height: calc(100vh - 80px);
     overflow-y: scroll;
     &::-webkit-scrollbar {
-        width: 1em;
+        width: 5px;
+        border-radius: 50%;
         background-color: #f5f5f5;
         @media (max-width: 575.98px) {
             width: 0px;
@@ -194,5 +201,8 @@ const StyledChatInner = styled.div`
         position: absolute;
         bottom: -50px;
         left: 0;
+    }
+    .chat__loading {
+        height: 90vh;
     }
 `;

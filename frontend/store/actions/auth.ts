@@ -24,12 +24,8 @@ export const authInfo = (isRouterPush: boolean, regToken?: string): ThunkType =>
             Cookie.set('avatar', res.data.avatar);
             Cookie.set('smallAvatar', res.data.small_avatar);
             Cookie.set('phoneNumber', res.data.phone_number);
-            if (res.data.num_notifications) {
-                dispatch(setNotify(res.data.num_notifications))
-            }
-            if (res.data.unread) {
-                dispatch(setMessageNotify(res.data.unread))
-            }
+            dispatch(setNotify(res.data.num_notifications))
+            dispatch(setMessageNotify(res.data.unread))
             console.log('Информация успешно занесена в куки');
             if (isRouterPush) {
                 Router.push({ pathname: '/dialogs' }, undefined, { shallow: true });
@@ -51,9 +47,6 @@ export const authLogin = (email: string, password: string): ThunkType => async d
         .then(res => {
             const expirationDate = new Date(new Date().getTime() + 3600 * 1000 * 24);
             Cookie.set('token', res.data.access);
-            console.log(res.data.access)
-            console.log(email);
-            console.log(password);
             Cookie.set('expirationDate', expirationDate);
             dispatch(authInfo(true));
             dispatch(checkAuthTimeout(3600 * 24));
@@ -109,7 +102,7 @@ export const authSignupNext = (
 ): ThunkType => async dispatch => {
     await instanceWithOutHeaders
         .post('/api/v1/create_info/', {
-            id,
+            user: id,
             status,
             birth_date: date,
             country,
@@ -246,3 +239,7 @@ export const avatarChange = (
             trigger(postUrl);
         });
 };
+
+export const ffff = () => {
+    console.log('sadasd')
+}

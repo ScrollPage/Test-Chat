@@ -31,7 +31,7 @@ export const StyledRootModal = styled.div`
 `;
 
 export const StyledBackDrop = styled.div`
-    z-index: 8;
+    z-index: 9;
     background-color: rgba(0, 0, 0, 0.7);
     position: fixed;
     top: 0;

@@ -1,5 +1,6 @@
+import Head from 'next/head';
 import { IUser } from '@/types/user';
-import { getAsString, getUserFromServer } from '@/utils/index';
+import { ensureAuth, getAsString, getUserFromServer } from '@/utils/index';
 import styled from 'styled-components';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { GetServerSideProps } from 'next';
@@ -33,6 +34,9 @@ export default function Party({ user, party, partyId, posts }: IPartyFC) {
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Сообщества</title>
+            </Head>
             {data ? (
                 <StyledParty>
                     <PartyHeader
@@ -104,6 +108,7 @@ export default function Party({ user, party, partyId, posts }: IPartyFC) {
 }
 
 export const getServerSideProps: GetServerSideProps<IPartyFC> = async ctx => {
+    ensureAuth(ctx);
     const partyId = getAsString(ctx?.params?.partyID);
 
     let party: IParty | undefined = undefined;

@@ -1,7 +1,8 @@
+import Head from 'next/head';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
 import { IPost } from '@/types/post';
 import { IUser } from '@/types/user';
-import { getUserFromServer } from '@/utils/index';
+import { ensureAuth, getUserFromServer } from '@/utils/index';
 import { instanceWithSSR } from '@/api/api';
 import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
@@ -12,9 +13,12 @@ interface INews {
     serverPosts: IPost[];
 }
 
-export default function News({ user, serverPosts }: INews) {
+function News({ user, serverPosts }: INews) {
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Новости</title>
+            </Head>
             <StyledNews>
                 <Posts serverPosts={serverPosts} user={user} />
             </StyledNews>
@@ -23,6 +27,7 @@ export default function News({ user, serverPosts }: INews) {
 }
 
 export const getServerSideProps: GetServerSideProps<INews> = async ctx => {
+    ensureAuth(ctx);
     let posts: Array<IPost> = [];
 
     await instanceWithSSR(ctx)
@@ -41,10 +46,12 @@ export const getServerSideProps: GetServerSideProps<INews> = async ctx => {
     };
 };
 
+export default News
+
 const StyledNews = styled.div`
     margin-top: 20px;
     max-width: 500px;
-    @media (max-width: 767.98px) {
+    @media (max-width: 575.98px) {
         margin-top: 0px;
     }
 `;

@@ -1,7 +1,8 @@
+import Head from 'next/head';
 import React from 'react';
 import styled from 'styled-components';
 import { GetServerSideProps } from 'next';
-import { getAsString, getUserFromServer } from '@/utils';
+import { ensureAuth, getAsString, getUserFromServer } from '@/utils';
 import { IUser } from '@/types/user';
 import Error from 'next/error';
 import { instanceWithSSR } from '@/api/api';
@@ -25,6 +26,9 @@ const TeamsChange = ({ user, party, partyId }: ITeamChange) => {
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Сообщества</title>
+            </Head>
             <StyledTeamChange>
                 <div className="team-change">
                     <h3>Сменить данные сообщества</h3>
@@ -56,6 +60,7 @@ const TeamsChange = ({ user, party, partyId }: ITeamChange) => {
 export default TeamsChange;
 
 export const getServerSideProps: GetServerSideProps<ITeamChange> = async ctx => {
+    ensureAuth(ctx);
     const partyId = getAsString(ctx?.params?.partyID);
 
     let party: IParty | null = null;

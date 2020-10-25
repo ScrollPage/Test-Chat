@@ -1,8 +1,7 @@
 import Link from 'next/link';
-import React, { Dispatch, SetStateAction, useRef } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { StyledAvatarMenu, StyledBackDrop, StyledHeaderMenu } from './styles';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { TweenMax } from 'gsap';
 
 interface IHeaderMenu {
     menuOpen: boolean;
@@ -15,7 +14,6 @@ const HeaderMenu: React.FC<IHeaderMenu> = ({
     setMenuOpen,
     logoutHandler,
 }) => {
-    let menu = useRef<HTMLDivElement | null>(null);
 
     const menuOpenHandler = () => {
         setMenuOpen(state => !state);

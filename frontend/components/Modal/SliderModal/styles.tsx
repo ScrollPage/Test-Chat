@@ -35,6 +35,12 @@ export const StyledSliderModal = styled(motion.div).attrs(props => ({
         }
         &__inner {
             z-index: 11;
+            display: flex;
+            flex-direction: row;
+            @media (max-width: 767.98px) {
+                flex-direction: column;
+                padding: 30px 10px;
+            }
         }
         &__photo {
             height: 100%;
@@ -54,13 +60,15 @@ export const StyledSliderModal = styled(motion.div).attrs(props => ({
             }
             @media (max-width: 575.98px) {
             }
-            @media (max-width: 767.98px) {
-            }
-            @media (max-width: 991.98px) {
-                width: 300px !important;
-            }
             @media (max-width: 1199.98px) {
                 width: 500px;
+            }
+            @media (max-width: 991.98px) {
+                width: 300px;
+            }
+            @media (max-width: 767.98px) {
+                width: 100%;
+                height: 65%;
             }
         }
         &__main {
@@ -71,6 +79,24 @@ export const StyledSliderModal = styled(motion.div).attrs(props => ({
             display: flex;
             flex-direction: column;
             overflow-y: scroll;
+            &::-webkit-scrollbar {
+                width: 5px;
+                border-radius: 50%;
+                background-color: #f5f5f5;
+                @media (max-width: 575.98px) {
+                    width: 0px;
+                }
+            }
+            &::-webkit-scrollbar-track {
+                height: 90%;
+            }
+            &::-webkit-scrollbar-thumb {
+                background-color: #1890ff;
+            }
+            @media (max-width: 767.98px) {
+                width: 100%;
+                height: 35%;
+            }
             > div {
                 &:first-of-type {
                     display: flex;

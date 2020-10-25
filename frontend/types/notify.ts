@@ -15,6 +15,7 @@ export interface INewMessage {
   name: string;
   sender: number;
   chat_id: number;
+  is_increase: boolean;
 }
 
 export interface INewFriend {

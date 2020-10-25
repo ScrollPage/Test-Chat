@@ -13,18 +13,31 @@ display: flex;
 justify-content: space-between;
 align-items: center;
 @media (max-width: 575.98px) {
-    padding-top: 15px;
+    padding-top: 0px;
     padding-right: 0;
 }
-.chat-header__nav {
-    width: 100%;
-    cursor: pointer !important;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    > div {
-        &:first-of-type {
-            margin-right: 20px;
+.chat-header {
+    &__nav {
+        width: 100%;
+        cursor: pointer !important;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        > div {
+            &:first-of-type {
+                margin-right: 10px;
+            }
+        }
+    }
+    &__right {
+        display: flex;
+    }
+    &__plus {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+        > span {
+            cursor: pointer;
         }
     }
 }

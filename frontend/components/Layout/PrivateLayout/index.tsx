@@ -22,6 +22,7 @@ import {
 import Cookie from 'js-cookie';
 import { getMessageNotify, getNotify } from '@/store/selectors';
 import { addMessageNotify, addNotify } from '@/store/actions/notify';
+import { trigger } from 'swr';
 
 interface IPrivateLayout {
     children: React.ReactNode;
@@ -74,9 +75,12 @@ const PrivateLayout: React.FC<IPrivateLayout> = ({ children, user }) => {
             dispatch(addNotify());
             dispatch(show(text, 'success', true));
         });
-        channel.bind('new_message', function(data: INewMessage) {
-            dispatch(addMessageNotify());
+        channel.bind('new_message', function (data: INewMessage) {
+            if (data.is_increase) {
+                dispatch(addMessageNotify());
+            }
             dispatch(show(`${data.name} отправил вам сообщение`, 'success', true));
+            trigger('/api/v1/ref/chat/');
         });
         channel.bind('new_friend', function(data: INewFriend) {
             dispatch(addNotify());

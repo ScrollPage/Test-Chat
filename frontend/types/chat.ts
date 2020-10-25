@@ -22,6 +22,7 @@ export interface IChatParticipiant {
 
 export interface IChat {
   id: number;
+  unread: boolean;
   chat: {
     id: number;
     participants: Array<IChatParticipiant>;

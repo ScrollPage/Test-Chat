@@ -1,9 +1,10 @@
+import Head from 'next/head';
 import styled from 'styled-components';
 import { instanceWithSSR } from '@/api/api';
 import useSWR from 'swr';
 import DialogItem from '@/components/Dialog/DialogItem';
 import PrivateLayout from '@/components/Layout/PrivateLayout';
-import { getUserFromServer } from '@/utils/index';
+import { ensureAuth, getUserFromServer } from '@/utils/index';
 import { IUser } from '@/types/user';
 import { IChat, IChatParticipiant } from '@/types/chat';
 import { GetServerSideProps } from 'next';
@@ -26,9 +27,15 @@ export default function Dialogs({ chats, user }: IDialogs) {
     const applySearch = (item: IChat) => {
         const chat = item.chat;
         return R.contains(
-            search.toUpperCase(), (chat.is_chat && chat.companion ? `${chat.companion.first_name}${chat.companion.last_name}` : chat.name ? chat.name : '').toUpperCase()
+            search.toUpperCase(),
+            (chat.is_chat && chat.companion
+                ? `${chat.companion.first_name}${chat.companion.last_name}`
+                : chat.name
+                ? chat.name
+                : ''
+            ).toUpperCase()
         );
-    }
+    };
 
     const renderChats = (chats: Array<IChat>) =>
         chats
@@ -38,15 +45,25 @@ export default function Dialogs({ chats, user }: IDialogs) {
                 return (
                     <DialogItem
                         key={`chat__key__${chat.id}`}
-                        name={chat.is_chat && chat.companion ? `${chat.companion.first_name} ${chat.companion.last_name}` : chat.name ? chat.name : 'Ошибка'} 
-                        chatID={chat.id}
+                        name={
+                            chat.is_chat && chat.companion
+                                ? `${chat.companion.first_name} ${chat.companion.last_name}`
+                                : chat.name
+                                ? chat.name
+                                : 'Ошибка'
+                        }
+                        chatId={chat.id}
                         dialogUser={chat.is_chat ? chat.companion : undefined}
+                        unread={item.unread}
                     />
-                )
+                );
             });
 
     return (
         <PrivateLayout user={user}>
+            <Head>
+                <title>Чат</title>
+            </Head>
             <Search />
             <StyledDialogs>
                 {data ? (
@@ -64,6 +81,7 @@ export default function Dialogs({ chats, user }: IDialogs) {
 }
 
 export const getServerSideProps: GetServerSideProps<IDialogs> = async ctx => {
+    ensureAuth(ctx);
     let chats: Array<IChat> = [];
 
     await instanceWithSSR(ctx)
@@ -77,7 +95,7 @@ export const getServerSideProps: GetServerSideProps<IDialogs> = async ctx => {
     return {
         props: {
             chats,
-            user: getUserFromServer(ctx)
+            user: getUserFromServer(ctx),
         },
     };
 };

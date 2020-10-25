@@ -16,7 +16,7 @@ const UserInfo: React.FC<IUserInfo> = ({ contact }) => {
                 <h1>{`${contact.first_name} ${contact.last_name}`}</h1>
                 <p>
                     <span>Статус:&nbsp;</span>
-                    {contact.info.status === '' ? '...' : contact.info.status}
+                    {!contact.info?.status ? '...' : contact.info.status}
                 </p>
                 <hr />
                 <div
@@ -34,31 +34,31 @@ const UserInfo: React.FC<IUserInfo> = ({ contact }) => {
                         <li>
                             <p>
                                 <span>E-mail:&nbsp;</span>
-                                {contact.email}
+                                {contact?.email}
                             </p>
                         </li>
                         <li>
                             <p>
                                 <span>Номер телефона:&nbsp;</span>
-                                {contact.phone_number}
+                                {contact?.phone_number}
                             </p>
                         </li>
                         <li>
                             <p>
                                 <span>Дата рождения:&nbsp;</span>
-                                {contact.info.birth_date}
+                                {contact.info?.birth_date}
                             </p>
                         </li>
                         <li>
                             <p>
                                 <span>Страна:&nbsp;</span>
-                                {contact.info.country}
+                                {contact.info?.country}
                             </p>
                         </li>
                         <li>
                             <p>
                                 <span>Город:&nbsp;</span>
-                                {contact.info.city}
+                                {contact.info?.city}
                             </p>
                         </li>
                     </ul>

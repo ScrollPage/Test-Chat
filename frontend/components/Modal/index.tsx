@@ -8,12 +8,14 @@ import ChangeAvatarModal from './ModalInner/ChangeAvatarModal';
 import DeleteCommentModal from './ModalInner/DeleteCommentModal';
 import DeletePostModal from './ModalInner/DeletePostModal';
 import { StyledBackDrop, StyledRootModal } from './styles';
+import AddConversationModal from './ModalInner/AddConversationModal';
 
 const MODAL_COMPONENTS = {
   'POST_REPOST_MODAL': AddRepostModal, 
   'AVATAR_CHANGE_MODAL': ChangeAvatarModal, 
   'COMMENT_DELETE_MODAL': DeleteCommentModal,
-  'POST_DELETE_MODAL': DeletePostModal
+  'POST_DELETE_MODAL': DeletePostModal,
+  'ADD_CONVERSATION_MODAL': AddConversationModal
 }
 
 const RootModal: React.FC = () => {

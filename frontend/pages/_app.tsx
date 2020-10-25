@@ -15,8 +15,8 @@ import Alert from '@/components/UI/Alert';
 import { AppProps } from 'next/app';
 
 NProgress.configure({
-  showSpinner: false,
-  trickleSpeed: 300,
+    showSpinner: false,
+    trickleSpeed: 300,
 });
 
 Router.events.on('routeChangeStart', () => NProgress.start());
@@ -24,41 +24,43 @@ Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
-  return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-      <style dangerouslySetInnerHTML={{ __html: nprogress }} />
-      <Head>
-        <title>My page</title>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
-        />
-      </Head>
-      <>
-        <GlobalStyle />
-        <SWRConfig
-          value={{
-            revalidateOnMount: true,
-            dedupingInterval: 1000,
-            fetcher: (url) => axios({
-              url: url,
-              baseURL: 'http://localhost:8000',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Token ${Cookie.get('token')}`
-              }
-            }).then(r => r.data)
-          }}
-        >
-          <Provider store={store}>
-            <Alert />
-            <Component {...pageProps} />
-          </Provider>
-        </SWRConfig>
-      </>
-    </>
-  );
+    return (
+        <>
+            <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
+            <style dangerouslySetInnerHTML={{ __html: nprogress }} />
+            <Head>
+                <meta
+                    name="viewport"
+                    content="minimum-scale=1, initial-scale=1, width=device-width"
+                />
+            </Head>
+            <>
+                <GlobalStyle />
+                <SWRConfig
+                    value={{
+                        revalidateOnMount: true,
+                        dedupingInterval: 1000,
+                        fetcher: url =>
+                            axios({
+                                url: url,
+                                baseURL: 'http://localhost:8000',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Token ${Cookie.get(
+                                        'token'
+                                    )}`,
+                                },
+                            }).then(r => r.data),
+                    }}
+                >
+                    <Provider store={store}>
+                        <Alert />
+                        <Component {...pageProps} />
+                    </Provider>
+                </SWRConfig>
+            </>
+        </>
+    );
 };
 
 const makestore = () => store;
@@ -88,6 +90,20 @@ const GlobalStyle = createGlobalStyle`
     overflow-y: scroll;
     &.no-scroll {
       overflow-y: hidden;
+    }
+    &::-webkit-scrollbar {
+        width: 5px;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        @media (max-width: 575.98px) {
+            width: 0px;
+        }
+    }
+    &::-webkit-scrollbar-track {
+        height: 90%;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: #1890ff;
     }
   }
 

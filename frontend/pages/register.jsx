@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -7,7 +8,7 @@ import {
     MailOutlined,
     PhoneOutlined,
     TeamOutlined,
-    FireOutlined
+    FireOutlined,
 } from '@ant-design/icons';
 import { Button, Steps } from 'antd';
 import { authSignup } from '@/store/actions/auth';
@@ -15,7 +16,8 @@ import VisitorLayout from '@/components/Layout/VisitorLayout';
 import { object, string, ref } from 'yup';
 import { Form, Input, Radio, Select, DatePicker } from 'formik-antd';
 import { useState, Children } from 'react';
-import { Formik} from 'formik';
+import { Formik } from 'formik';
+import { ensureRedirectToDialogs } from '@/utils';
 
 const DataValidate = object().shape({
     email: string()
@@ -46,21 +48,21 @@ const DataValidate = object().shape({
 });
 
 const AddValidate = object().shape({
-    country: string()
-        .required('Выберите страну'),
-    city: string()
-        .required('Выберите город'),
-    date: string()
-        .required('Выберите дату рождения'),
+    country: string().required('Выберите страну'),
+    city: string().required('Выберите город'),
+    date: string().required('Выберите дату рождения'),
     status: string()
         .required('Введите статус')
         .min(3, 'Слишком короткий статус')
-        .max(30, 'Слишком длинная статус')
+        .max(30, 'Слишком длинная статус'),
 });
 
 export default function Register() {
     return (
         <VisitorLayout>
+            <Head>
+                <title>Регистрация</title>
+            </Head>
             <StyledRegister>
                 <FormikStepper
                     initialValues={{
@@ -74,14 +76,11 @@ export default function Register() {
                         country: '',
                         city: '',
                         status: '',
-                        date: ''
+                        date: '',
                     }}
                     enableReinitialize={true}
                 >
-                    <FormikStep
-                        label="Данные"
-                        validationSchema={DataValidate}
-                    >
+                    <FormikStep label="Данные" validationSchema={DataValidate}>
                         <Link href="/">
                             <a>
                                 <p>У вас уже есть аккаунт? Войти</p>
@@ -130,10 +129,13 @@ export default function Register() {
                             />
                         </Form.Item>
                     </FormikStep>
-                    <FormikStep label="Дополнительно" validationSchema={AddValidate} >
-                        <div className="form-item">
+                    <FormikStep
+                        label="Дополнительно"
+                        validationSchema={AddValidate}
+                    >
+                        <Form.Item name="country">
                             <Select
-                            size="large"
+                                size="large"
                                 name="country"
                                 style={{ width: '100%' }}
                                 placeholder="Выберите страну"
@@ -148,10 +150,10 @@ export default function Register() {
                                     Азербайджан
                                 </Select.Option>
                             </Select>
-                        </div>
-                        <div className="form-item">
+                        </Form.Item>
+                        <Form.Item name="city">
                             <Select
-                            size="large"
+                                size="large"
                                 name="city"
                                 style={{ width: '100%' }}
                                 placeholder="Выберите город"
@@ -166,23 +168,23 @@ export default function Register() {
                                     Королев
                                 </Select.Option>
                             </Select>
-                        </div>
-                        <div className="form-item">
+                        </Form.Item>
+                        <Form.Item name="date">
                             <DatePicker
-                            size="large"
+                                size="large"
                                 name="date"
                                 placeholder="Дата рождения"
                                 style={{ width: '100%' }}
                             />
-                        </div>
-                        <div className="form-item">
+                        </Form.Item>
+                        <Form.Item name="status">
                             <Input
-                            size="large"
+                                size="large"
                                 name="status"
                                 placeholder="Введите ваш статус"
                                 prefix={<FireOutlined />}
                             />
-                        </div>
+                        </Form.Item>
                     </FormikStep>
                     <FormikStep label="Поддтверждение">
                         <h3>Выберите способ подтверждения аккаунта:</h3>
@@ -209,6 +211,7 @@ function FormikStepper({ children, ...stepperProps }) {
     const dispatch = useDispatch();
 
     const [step, setStep] = useState(0);
+
     const childrenArray = Children.toArray(children);
     const currentChild = childrenArray[step];
 
@@ -233,8 +236,8 @@ function FormikStepper({ children, ...stepperProps }) {
                             values.password,
                             values.confirmMethod,
                             values.country,
-                            values.city, 
-                            values.date, 
+                            values.city,
+                            values.date,
                             values.status
                         )
                     );
@@ -242,62 +245,69 @@ function FormikStepper({ children, ...stepperProps }) {
                         setSubmitting(false);
                     }, 1000);
                 } else {
+                    setSubmitting(false);
                     setStep(e => e + 1);
                 }
             }}
         >
-            {({ isSubmitting, onSubmitHandler }) => (
-                <Form onSubmit={onSubmitHandler}>
-                    <Steps current={step} size="small">
-                        {childrenArray.map(child => (
-                            <Steps.Step
-                                key={child.props.label}
-                                title={child.props.label}
-                            />
-                        ))}
-                    </Steps>
-                    <StyledForm>{currentChild}</StyledForm>
-                    <StyledButtons>
-                        {step > 0 ? (
+            {({ isSubmitting, onSubmitHandler }) => {
+                console.log(isSubmitting);
+                return (
+                    <Form onSubmit={onSubmitHandler}>
+                        <Steps current={step} size="small">
+                            {childrenArray.map(child => (
+                                <Steps.Step
+                                    key={child.props.label}
+                                    title={child.props.label}
+                                />
+                            ))}
+                        </Steps>
+                        <StyledForm>{currentChild}</StyledForm>
+                        <StyledButtons>
+                            {step > 0 ? (
+                                <Button
+                                    onClick={() => setStep(e => e - 1)}
+                                    type="primary"
+                                    disabled={isSubmitting}
+                                >
+                                    Назад
+                                </Button>
+                            ) : null}
                             <Button
-                                onClick={() => setStep(e => e - 1)}
                                 type="primary"
+                                htmlType="submit"
                                 disabled={isSubmitting}
                             >
-                                Назад
+                                {isLastElement()
+                                    ? 'Зарегистрироваться'
+                                    : 'Дальше'}
                             </Button>
-                        ) : null}
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            disabled={isSubmitting}
-                        >
-                            {isLastElement() ? 'Зарегистрироваться' : 'Дальше'}
-                        </Button>
-                    </StyledButtons>
-                </Form>
-            )}
+                        </StyledButtons>
+                    </Form>
+                );
+            }}
         </Formik>
     );
 }
 
-// export const getServerSideProps = async ctx => {
-//     let countries = [];
+export const getServerSideProps = async ctx => {
+    ensureRedirectToDialogs(ctx);
+    // let countries = [];
 
-//     await instanceWithSSR(ctx)
-//         .get('https://parseapi.back4app.com/classes/Country/volodya?keys=name,code,capital')
-//         .then(response => {
-//             countries = response?.data;
-//         })
-//         .catch(error => {
-//             console.log(error);
-//         });
-//     return {
-//         props: {
-//             countries
-//         },
-//     };
-// };
+    // await instanceWithSSR(ctx)
+    //     .get('https://parseapi.back4app.com/classes/Country/volodya?keys=name,code,capital')
+    //     .then(response => {
+    //         countries = response?.data;
+    //     })
+    //     .catch(error => {
+    //         console.log(error);
+    //     });
+    return {
+        props: {
+            
+        }
+    };
+};
 
 const StyledRegister = styled.div`
     display: flex;

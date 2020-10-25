@@ -90,3 +90,21 @@ export const createChat = (friendId: number): ThunkType => async dispatch => {
             dispatch(show('Ошибка создания чата!', 'warning'));
         });
 };
+
+export const createConversation = (friendId: number[]): ThunkType => async dispatch => {
+    const token = Cookie.get('token');
+    await instance(token)
+        .post('/api/v1/chat/', {
+            participants: [Number(Cookie.get('userId')), ...friendId],
+            is_chat: false
+        })
+        .then(res => {
+            Router.push('/dialogs/[chatID]', `/dialogs/${res.data.id}`, {
+                shallow: true,
+            });
+            dispatch(show('Вы успешно создали беседу!', 'success'));
+        })
+        .catch(err => {
+            dispatch(show('Ошибка создания беседы!', 'warning'));
+        });
+};

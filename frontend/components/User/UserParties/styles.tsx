@@ -9,14 +9,14 @@ export const StyledUserParties = styled.div`
     margin-left: -10px;
 `;
 
-export const StyledUserParty = styled.div<{ end?: boolean }>`
+export const StyledUserParty = styled.div<{ end?: number }>`
     display: contents;
     .user-parties__avatar {
         width: 25px;
         height: 25px;
     }
     ${({ end }) =>
-        end &&
+        end === 1 &&
         css`
             &::after {
                 content: '';
