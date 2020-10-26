@@ -8,7 +8,7 @@ def get_last_10_messages(chat_id):
 
 def get_chat_and_user(data):
     chat_id = data['chatId']
-    user_id = data['id]
+    user_id = data['id']
     chat = get_object_or_404(Chat, id=chat_id)
     user = get_object_or_404(Contact, id=user_id)
     return chat, user

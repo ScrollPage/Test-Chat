@@ -22,7 +22,7 @@ class RetrieveModelCustomMixin:
 
 class PermissionCreateRetrieveUpdate(PermissionSerializerMixin,
                                      mixins.CreateModelMixin, 
-                                     RetrieveModelCustomMixin,
+                                     mixins.RetrieveModelMixin,
                                      mixins.UpdateModelMixin,
                                      GenericViewSet, 
                                     ):
