@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 
 from .models import Chat, ChatRef
+from contact.models import Contact
 
 def get_last_10_messages(chat_id):
     chat = get_object_or_404(Chat, id=chat_id)
