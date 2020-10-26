@@ -80,9 +80,7 @@ class ChatModelPermissionViewSet(PermissionCreateRetrieveUpdate):
         return Response(status=status.HTTP_200_OK)
 
     def get_queryset(self):
-        queryset = Chat.objects.filter(participants__in=[self.request.user])
-        
-        return 
+        return Chat.objects.filter(participants__in=[self.request.user])
 
 class ChatRefViewset(ListDestroyCreateViewset):
     '''Ссылки на чаты'''
