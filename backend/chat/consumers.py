@@ -55,6 +55,14 @@ class ChatConsumer(WebsocketConsumer):
             'small_avatar': small_avatar,
         }
 
+    def join(self, data):
+        chat, user = get_chat_and_user(data)
+        chat.online.add(user)
+    
+    def leave(self, data):
+        chat, user = get_chat_and_user(data)
+        chat.online.remove(user)
+
     commands = {
         'fetch_messages': fetch_messages,
         'new_message': new_message,
@@ -77,14 +85,6 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-    
-    def join(self, data):
-        chat, user = get_chat_and_user(data)
-        chat.online.add(user)
-    
-    def leave(self, data):
-        chat, user = get_chat_and_user(data)
-        chat.online.remove(user)
 
     def receive(self, text_data):
         data = json.loads(text_data)
