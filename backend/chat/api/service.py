@@ -1,5 +1,6 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins, serializers
+from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Q, Count
 
@@ -15,14 +16,14 @@ class RetrieveModelCustomMixin:
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.participants.annotate(
-            online=Count('id', filter=Q(id__in=[user.id for user in instance.online.all()]))
+            is_online=Count('id', filter=Q(id__in=[user.id for user in instance.online.all()]))
         )
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
 class PermissionCreateRetrieveUpdate(PermissionSerializerMixin,
                                      mixins.CreateModelMixin, 
-                                     mixins.RetrieveModelMixin,
+                                     RetrieveModelCustomMixin,
                                      mixins.UpdateModelMixin,
                                      GenericViewSet, 
                                     ):
