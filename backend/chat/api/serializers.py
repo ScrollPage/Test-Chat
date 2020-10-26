@@ -117,13 +117,10 @@ class ChatCreateSerializer(ChatSerializer):
         participants = validated_data.get('participants')
         participants = self.check_participant_blacklist(participants)
         chat = Chat()
-        if validated_data.get('is_chat'):
-            chat.save()
-        else:
-            chat.save(
-                is_chat=False, 
-                creator=self.context['request'].user
-            )
+        if not validated_data.get('is_chat'):
+            chat.is_chat = True
+            chat.creator = self.context['request'].user
+        chat.save()
         return chat
 
 class ListSerializer(serializers.Serializer):

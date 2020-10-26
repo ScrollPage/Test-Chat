@@ -72,9 +72,10 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class LowContactSerializer(serializers.ModelSerializer):
     '''Базовая сриализация контакта'''
+    is_online = serializers.BooleanField(read_only=True)
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'slug']
+        fields = ['id', 'first_name', 'last_name', 'slug', 'is_online']
 
 class LowReadContactSerializer(LowContactSerializer):
     '''Все поля для чтения, кроме slug'''

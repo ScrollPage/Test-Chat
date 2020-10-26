@@ -34,9 +34,12 @@ class PartyCreateSerializer(serializers.ModelSerializer):
         return party
 
     def update(self, instance, validated_data):
-        party = super().update(instance, validated_data)
         if validated_data.get('image', None):
+            instance.delete_images()
+            party = super().update(instance, validated_data)
             party.image_save()
+        else:
+            party = super().update(instance, validated_data)
         return party
 
 

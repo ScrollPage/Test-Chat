@@ -24,7 +24,7 @@ def send_message_notifications(chat, sender):
     for user in chat.participants.all():
         if user != sender:
             pusher.trigger(
-                f'notifications{user.id}', 
+                f'notifications{user.id}',
                 'new_message', 
                 {
                     'sender': sender.id, 

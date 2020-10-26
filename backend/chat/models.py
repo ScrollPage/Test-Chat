@@ -18,6 +18,7 @@ class Message(models.Model):
 
 class Chat(models.Model):
     participants = models.ManyToManyField(Contact, related_name='chats')
+    online = models.ManyToManyField(Contact, related_name='online')
     messages = models.ManyToManyField(Message, blank=True)
     is_chat = models.BooleanField(default=True)
     creator = models.ForeignKey(Contact, null=True, on_delete=models.DO_NOTHING)

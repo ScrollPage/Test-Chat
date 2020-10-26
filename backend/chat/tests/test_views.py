@@ -1,7 +1,6 @@
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
-import requests
 from django.conf import settings
 import json
 

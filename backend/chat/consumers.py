@@ -4,7 +4,7 @@ import json
 from django.shortcuts import get_object_or_404
 
 from .models import Message
-from .service import get_last_10_messages
+from .service import get_last_10_messages, get_chat_and_user
 from contact.models import Contact
 from notifications.service import send_message_notifications
 from photos.models import Photo
@@ -57,7 +57,9 @@ class ChatConsumer(WebsocketConsumer):
 
     commands = {
         'fetch_messages': fetch_messages,
-        'new_message': new_message
+        'new_message': new_message,
+        'join': join,
+        'leave': leave
     }
 
     def connect(self):
@@ -67,6 +69,7 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+
         self.accept()
 
     def disconnect(self, close_code):
@@ -74,6 +77,14 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+    
+    def join(self, data):
+        chat, user = get_chat_and_user(data)
+        chat.online.add(user)
+    
+    def leave(self, data):
+        chat, user = get_chat_and_user(data)
+        chat.online.remove(user)
 
     def receive(self, text_data):
         data = json.loads(text_data)
