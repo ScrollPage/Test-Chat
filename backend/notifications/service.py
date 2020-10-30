@@ -21,20 +21,20 @@ def create_notification(sender, receiver, event):
         )
 
 def send_message_notifications(chat, sender):
-    for user in chat.participants.all():
-        if user != sender:
-            pusher.trigger(
-                f'notifications{user.id}',
-                'new_message', 
-                {
-                    'sender': sender.id, 
-                    'chat_id': chat.id, 
-                    'name': sender.get_full_name(), 
-                    'is_increase': not bool(chat.messages.aggregate(
-                        is_increase=Count('id', filter=Q(is_read=False)))['is_increase']
-                    )
-                }
-            )
+    arr = chat.participants.exclude(id__in=chat.online.all()).exclude(sender)
+    for user in arr:
+        pusher.trigger(
+            f'notifications{user.id}',
+            'new_message', 
+            {
+                'sender': sender.id, 
+                'chat_id': chat.id, 
+                'name': sender.get_full_name(), 
+                'is_increase': not bool(chat.messages.aggregate(
+                    is_increase=Count('id', filter=Q(is_read=False)))['is_increase']
+                )
+            }
+        )
 
 def send_addrequest_notification(sender, receiver):
     pusher.trigger(

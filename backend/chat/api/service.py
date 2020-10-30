@@ -9,21 +9,9 @@ from contact.models import Contact
 from backend.exceptions import ForbiddenError
 from backend.service import PermissionSerializerMixin, SerializerMixin
 
-class RetrieveModelCustomMixin:
-    """
-    Retrieve a model instance.
-    """
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.participants.annotate(
-            is_online=Count('id', filter=Q(id__in=[user.id for user in instance.online.all()]))
-        )
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
 class PermissionCreateRetrieveUpdate(PermissionSerializerMixin,
                                      mixins.CreateModelMixin, 
-                                     RetrieveModelCustomMixin,
+                                     mixins.RetrieveModelMixin,
                                      mixins.UpdateModelMixin,
                                      GenericViewSet, 
                                     ):

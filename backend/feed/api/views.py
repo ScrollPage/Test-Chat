@@ -67,7 +67,6 @@ class RePostMechanicsCustomViewset(CreateViewset):
             post_id=parent, 
             user=user
         )
-        print(fl)
         if fl:
             send_repost_notification(parent.user, user, parent)
 

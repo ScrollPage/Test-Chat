@@ -22,8 +22,6 @@ class PhotoViewset(ListRetrieveCreateDestroyViewset):
         serializer.save(owner=self.request.user.my_page)
 
     def get_queryset(self):
-        if self.action != 'list':
-            return super().get_queryset()
         id = self.request.query_params.get('id', None)
         if id:
             try:
@@ -37,6 +35,8 @@ class PhotoViewset(ListRetrieveCreateDestroyViewset):
             num_likes=Count('likes', distinct=True)
         ).annotate(
             num_comments=Count('comments', distinct=True)
+        ).annotate(
+            is_liked=Count('likes', filter=Q(likes__user=self.request.user))
         )
         return queryset.order_by('-timestamp')
 

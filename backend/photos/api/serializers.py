@@ -12,6 +12,7 @@ class PhotoSerializer(serializers.ModelSerializer):
     owner = PageSerializer(read_only=True)
     num_likes = serializers.IntegerField(read_only=True)
     num_comments = serializers.IntegerField(read_only=True)
+    is_liked = serializers.BooleanField(read_only=True)
 
     def create(self, validated_data):
         photo = super().create(validated_data)
